@@ -9,5 +9,4 @@ import com.example.p1_backend.models.User;
 
 @Repository
 public interface UserDao extends JpaRepository<User, Integer> {
-    Optional<User> findByUserId(int userId);
 }

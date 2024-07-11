@@ -3,19 +3,14 @@ package com.example.p1_backend.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.stereotype.Component;
 
 @Entity
+@Component
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,5 +35,13 @@ public class User {
         this.username = username;
         this.roles.add(role);
         this.plans.add(plan);
+    }
+
+    public User(String email, String password, String username, List<String> roles, List<String> plans) {
+        this.email = email;
+        this.password = password;
+        this.username = username;
+        this.roles = roles;
+        this.plans = plans;
     }
 }
