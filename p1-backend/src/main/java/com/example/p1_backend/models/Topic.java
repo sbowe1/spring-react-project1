@@ -8,9 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 @NoArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
 public class Topic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
