@@ -15,11 +15,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
-    private final JwtTokenFilter jwtTokenFilter;
+    private final JwtFilter jwtFilter;
 
     @Autowired
-    public WebSecurityConfig(JwtTokenFilter jwtTokenFilter) {
-        this.jwtTokenFilter = jwtTokenFilter;
+    public WebSecurityConfig(JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,7 +37,7 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 // Adds JWT filter to authenticate incoming requests
-                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
