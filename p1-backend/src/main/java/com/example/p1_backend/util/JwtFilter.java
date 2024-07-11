@@ -19,13 +19,13 @@ import java.util.Optional;
 
 @Component
 @Slf4j
-public class JwtTokenFilter extends OncePerRequestFilter {
-    private final JwtTokenUtil jwtTokenUtil;
+public class JwtFilter extends OncePerRequestFilter {
+    private final JwtUtil jwtUtil;
     private final UserDao userDao;
 
     @Autowired
-    public JwtTokenFilter(JwtTokenUtil jwtTokenUtil, UserDao userDao) {
-        this.jwtTokenUtil = jwtTokenUtil;
+    public JwtFilter(JwtUtil jwtUtil, UserDao userDao) {
+        this.jwtUtil = jwtUtil;
         this.userDao = userDao;
     }
 
@@ -42,7 +42,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
-            username = jwtTokenUtil.extractUsername(jwt);
+            username = jwtUtil.extractUsername(jwt);
         }
 
         // Validation checks
@@ -50,7 +50,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             // Ensures that the user exists
             Optional<User> user = userDao.getByUsername(username);
 
-            if (jwtTokenUtil.validateToken(jwt) && user.isPresent()) {
+            if (jwtUtil.validateToken(jwt) && user.isPresent()) {
                 // Sets principal to user
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user.get(), null, null);
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
