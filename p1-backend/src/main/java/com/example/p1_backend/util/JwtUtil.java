@@ -11,7 +11,7 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class JwtTokenUtil {
+public class JwtUtil {
     // Expiration time (24 hrs) for Token
     private static final long EXPIRE_TIME = 1000 * 60 * 60 * 24;
 
