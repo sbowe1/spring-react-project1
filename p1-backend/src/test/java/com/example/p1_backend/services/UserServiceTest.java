@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -18,20 +18,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.example.p1_backend.models.User;
 import com.example.p1_backend.repositories.UserDao;
 
-@SpringBootTest
+//@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
-    @InjectMocks
-    private UserService us;
-
     @Mock
     private UserDao uDao;
+
+    @InjectMocks
+    private UserService us;
 
     @Test
     public void findByUserId() {
         // Arrange
         User mockUser = getMockUser();
+        mockUser.setUserId(1);
 
         // Mock the behavior of the repository to return the mock user
         Mockito.when(uDao.findById(mockUser.getUserId())).thenReturn(Optional.of(mockUser));
@@ -50,7 +51,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void findAll() {
+    public void findAll() {
         Mockito.doReturn(getMockUsers(5)).when(uDao).findAll();
         List<User> users = this.us.findAll();
         assertEquals(5, users.size());
