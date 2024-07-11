@@ -34,10 +34,11 @@ public class User {
 
     private List<String> plans = new ArrayList<>();
 
-    public User(String email, String password, String username, String role) {
+    public User(String email, String password, String username, String role, String plan) {
         this.email = email;
         this.password = password;
         this.username = username;
         this.roles.add(role);
+        this.plans.add(plan);
     }
 }

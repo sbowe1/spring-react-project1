@@ -15,11 +15,12 @@ public class UserService {
         this.uDao = uDao;
     }
 
-    public List<User> getAll() {
-        return uDao.findAll();
-    }
-
     public User findByUserId(int userId) {
         return uDao.findByUserId(userId).get();
     }
+
+    public List<User> findAll() {
+        return uDao.findAll();
+    }
+
 }
