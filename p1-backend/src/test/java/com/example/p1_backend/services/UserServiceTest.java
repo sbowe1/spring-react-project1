@@ -18,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.example.p1_backend.models.User;
 import com.example.p1_backend.repositories.UserDao;
 
-//@SpringBootTest
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
@@ -35,10 +35,10 @@ public class UserServiceTest {
         mockUser.setUserId(1);
 
         // Mock the behavior of the repository to return the mock user
-        Mockito.when(uDao.findById(mockUser.getUserId())).thenReturn(Optional.of(mockUser));
+        Mockito.when(uDao.findById(mockUser.getUserId())).thenReturn(Optional.of(mockUser)); // TODO: add literal int
 
         // Act
-        User result = us.findByUserId(mockUser.getUserId());
+        User result = us.findByUserId(mockUser.getUserId()); // TODO: add literal int
 
         // Assert
         assertNotNull(result);
