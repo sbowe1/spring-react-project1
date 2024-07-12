@@ -3,6 +3,7 @@ package com.example.p1_backend.services;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.p1_backend.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,11 +20,13 @@ import javax.security.auth.login.AccountNotFoundException;
 @Slf4j
 public class UserService {
     private final UserDao uDao;
+    private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Autowired
-    public UserService(UserDao uDao) {
+    public UserService(UserDao uDao, JwtUtil jwtUtil) {
         this.uDao = uDao;
+        this.jwtUtil = jwtUtil;
     }
 
     public List<User> findAll() {
@@ -81,8 +84,18 @@ public class UserService {
     }
     
     // DELETE
-    public void delete(int userId) {
+    public String delete(String token) {
+        int userId = jwtUtil.extractUserId(token);
+
         uDao.deleteById(userId);
+
+        if(uDao.findById(userId).isPresent()){
+            log.warn("Cannot delete account!");
+            return "Could not delete account";
+        }
+
+        log.info("User with userId: {}'s account deleted", userId);
+        return "Account deleted successfully!";
     }
 
 }
