@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.p1_backend.models.dtos.OutUserDto;
 import com.example.p1_backend.util.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -104,36 +105,43 @@ public class UserServiceTest {
     @Test
     public void findByUserId() throws AccountNotFoundException {
         // Arrange
+        String token = getToken();
+
         User mockUser = getMockUser();
         mockUser.setPassword(passwordEncoder.encode(mockUser.getPassword()));
         mockUser.setUserId(1);
 
         // Mock the behavior of the repository to return the mock user
         // Set expected behavior
+        when(jwtUtil.extractUserId(token)).thenReturn(1);
         Mockito.when(uDao.findById(mockUser.getUserId())).thenReturn(Optional.of(mockUser));
 
         // Act
-        User result = us.findByUserId(mockUser.getUserId());
+        OutUserDto result = us.findByUserId(token);
 
         // Assert
         assertNotNull(result);
-        assertEquals(mockUser.getUserId(), result.getUserId());
-        assertEquals("test-user-email@test.com", result.getEmail());
-        assertTrue(passwordEncoder.matches("test-user-password", result.getPassword()));
+//        assertEquals(mockUser.getUserId(), result.getUserId());
+//        assertEquals("test-user-email@test.com", result.getEmail());
+//        assertTrue(passwordEncoder.matches("test-user-password", result.getPassword()));
         assertEquals("test-user-username", result.getUsername());
         assertEquals("ROLE_USER", result.getRoles().get(0)); // TODO: grab roles dynamically
         assertEquals("Spring Boot Roadmap", result.getPlans().get(0));
+        assertEquals(token, result.getToken());
     }
 
     // UPDATE
     @Test
     void update() throws AccountNotFoundException {
         // Arrange
+        String token = getToken();
+
         User mockUser = getMockUser();
         mockUser.setPassword(passwordEncoder.encode(mockUser.getPassword()));
         mockUser.setUserId(1);
 
         // Set expected behavior
+        when(jwtUtil.extractUserId(token)).thenReturn(1);
         when(uDao.save(any(User.class))).thenReturn(mockUser);
         when(uDao.findById(anyInt())).thenReturn(Optional.of(mockUser));
 
@@ -147,7 +155,7 @@ public class UserServiceTest {
         );
         user.setUserId(mockUser.getUserId());
 
-        user = us.update(user);
+        user = us.update(token, user);
 
         // Assert
         assertNotNull(user);

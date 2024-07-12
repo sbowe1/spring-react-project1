@@ -3,6 +3,7 @@ package com.example.p1_backend.services;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.p1_backend.models.dtos.OutUserDto;
 import com.example.p1_backend.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,21 +64,32 @@ public class UserService {
     }
 
     // READ
-    public User findByUserId(int userId) throws AccountNotFoundException {
+    public OutUserDto findByUserId(String token) throws AccountNotFoundException {
+        int userId = jwtUtil.extractUserId(token);
+
         Optional<User> optUser = uDao.findById(userId);
         if (optUser.isEmpty()) {
             log.warn("User not found");
              throw new AccountNotFoundException("User with userId: " + userId + " not found");
         }
-        return uDao.findById(userId).get(); // TODO: return webDto? (no password, id, etc.)
+        User user = uDao.findById(userId).get();
+        return new OutUserDto(
+           token,
+           user.getPlans(),
+           user.getRoles(),
+           user.getUsername()
+        ); // TODO: return webDto? (no password, id, etc.)
     }
     
     // UPDATE
-    public User update(User updatedUser) throws AccountNotFoundException {
-        Optional<User> optUser = uDao.findById(updatedUser.getUserId());
+    public User update(String token, User updatedUser) throws AccountNotFoundException {
+        int userId = jwtUtil.extractUserId(token);
+
+        Optional<User> optUser = uDao.findById(userId);
         if (optUser.isEmpty()) {
-            throw new AccountNotFoundException("User with userId: " + updatedUser.getUserId() + " not found");
+            throw new AccountNotFoundException("User with userId: " + userId + " not found");
         }
+        updatedUser.setUserId(userId);
 
         log.info("User {}'s information updated", optUser.get().getUsername());
         return uDao.save(updatedUser);
