@@ -10,27 +10,29 @@ import org.springframework.stereotype.Component;
 @Data
 @NoArgsConstructor
 public class Subtopic {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "subtopicId")
-    private int subtopicId;
 
-    private String title;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "subtopicId")
+	private int subtopicId;
 
-    private String description;
+	private String title;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "topicId")
-    @JsonIgnoreProperties({"planId", "status"})
-    private Topic topic;
+	private String description;
 
-    private boolean status;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "topicId")
+	@JsonIgnoreProperties({ "planId", "status" })
+	private Topic topic;
 
-    public Subtopic(int subtopicId, String title, String description, Topic topic, boolean status) {
-        this.subtopicId = subtopicId;
-        this.title = title;
-        this.description = description;
-        this.topic = topic;
-        this.status = status;
-    }
+	private boolean status;
+
+	public Subtopic(int subtopicId, String title, String description, Topic topic, boolean status) {
+		this.subtopicId = subtopicId;
+		this.title = title;
+		this.description = description;
+		this.topic = topic;
+		this.status = status;
+	}
+
 }

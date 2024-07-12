@@ -10,15 +10,17 @@ import org.springframework.stereotype.Component;
 @Data
 @NoArgsConstructor
 public class Plan {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "planId")
-    private int planId;
 
-    private String name;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "planId")
+	private int planId;
 
-    public Plan(int planId, String name) {
-        this.planId = planId;
-        this.name = name;
-    }
+	private String name;
+
+	public Plan(int planId, String name) {
+		this.planId = planId;
+		this.name = name;
+	}
+
 }
