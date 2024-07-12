@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.p1_backend.models.dtos.LoginDto;
 import com.example.p1_backend.models.dtos.OutUserDto;
 import com.example.p1_backend.util.JwtUtil;
 import org.junit.jupiter.api.Test;
@@ -184,4 +185,27 @@ public class UserServiceTest {
         verify(uDao, times(1)).findById(1);
     }
 
+    // LOGIN
+    @Test
+    public void login() throws AccountNotFoundException {
+        String token = getToken();
+        User mockUser = getMockUser();
+        mockUser.setUserId(1);
+        LoginDto loginDto = new LoginDto(
+          mockUser.getUsername(),
+          mockUser.getPassword()
+        );
+        mockUser.setPassword(passwordEncoder.encode(mockUser.getPassword()));
+
+        when(uDao.getByUsername(loginDto.getUsername())).thenReturn(Optional.of(mockUser));
+        when(jwtUtil.generateToken(mockUser)).thenReturn(token);
+
+        OutUserDto result = us.login(loginDto);
+
+        assertNotNull(result);
+        assertEquals("test-user-username", result.getUsername());
+        assertEquals("ROLE_USER", result.getRoles().get(0)); // TODO: grab roles dynamically
+        assertEquals("Spring Boot Roadmap", result.getPlans().get(0));
+        assertEquals(token, result.getToken());
+    }
 }

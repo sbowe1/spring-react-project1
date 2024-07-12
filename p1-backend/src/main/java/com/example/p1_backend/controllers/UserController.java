@@ -3,6 +3,7 @@ package com.example.p1_backend.controllers;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
+import com.example.p1_backend.models.dtos.LoginDto;
 import com.example.p1_backend.models.dtos.OutUserDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,5 +50,12 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String token){
         String message = us.delete(token);
         return new ResponseEntity<>(message, OK);
+    }
+
+    // LOGIN
+    @PostMapping("login")
+    public ResponseEntity<OutUserDto> login(@RequestBody LoginDto loginDto) throws AccountNotFoundException {
+        OutUserDto outUser = us.login(loginDto);
+        return new ResponseEntity<>(outUser, OK);
     }
 }

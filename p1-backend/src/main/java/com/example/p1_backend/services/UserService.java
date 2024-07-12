@@ -3,6 +3,7 @@ package com.example.p1_backend.services;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.p1_backend.models.dtos.LoginDto;
 import com.example.p1_backend.models.dtos.OutUserDto;
 import com.example.p1_backend.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -110,4 +111,26 @@ public class UserService {
         return "Account deleted successfully!";
     }
 
+    public OutUserDto login(LoginDto loginDto) throws AccountNotFoundException {
+        Optional<User> optUser = uDao.getByUsername(loginDto.getUsername());
+
+        if (optUser.isEmpty()) {
+            log.warn("Account not found");
+            throw new AccountNotFoundException("User with username: " + loginDto.getUsername() + " not found");
+        }
+
+        log.info("Login successful");
+        if(passwordEncoder.matches(loginDto.getPassword(), optUser.get().getPassword())){
+            String token = jwtUtil.generateToken(optUser.get());
+            return new OutUserDto(
+                    token,
+                    optUser.get().getPlans(),
+                    optUser.get().getRoles(),
+                    optUser.get().getUsername()
+            );
+        }else{
+            log.warn("Incorrect login credentials");
+            return null;
+        }
+    }
 }
