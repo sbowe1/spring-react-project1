@@ -3,6 +3,7 @@ package com.example.p1_backend.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.stereotype.Component;
 
 import jakarta.persistence.Column;
@@ -26,6 +27,7 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    @JsonIgnore
     private String password;
 
     @Column(unique = true)
