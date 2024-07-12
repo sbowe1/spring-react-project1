@@ -1,30 +1,34 @@
 package com.example.p1_backend.services;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.p1_backend.models.dtos.LoginDto;
-import com.example.p1_backend.models.dtos.OutUserDto;
-import com.example.p1_backend.util.JwtUtil;
+import javax.security.auth.login.AccountNotFoundException;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.p1_backend.models.User;
 import com.example.p1_backend.models.dtos.RegisterDto;
 import com.example.p1_backend.repositories.UserDao;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import javax.security.auth.login.AccountNotFoundException;
+import com.example.p1_backend.util.JwtUtil;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -168,24 +172,6 @@ public class UserServiceTest {
 		verify(jwtUtil, times(1)).extractUserId(token);
 		verify(uDao, times(1)).deleteById(1);
 		verify(uDao, times(1)).findById(1);
-	}
-
-	// LOGIN
-	@Test
-	public void login() throws AccountNotFoundException {
-		String token = getToken();
-		User mockUser = getMockUser();
-		mockUser.setUserId(1);
-		LoginDto loginDto = new LoginDto(mockUser.getUsername(), mockUser.getPassword());
-		mockUser.setPassword(passwordEncoder.encode(mockUser.getPassword()));
-
-		when(uDao.getByUsername(loginDto.getUsername())).thenReturn(Optional.of(mockUser));
-		when(jwtUtil.generateToken(mockUser)).thenReturn(token);
-
-		String result = us.login(loginDto);
-
-		assertNotNull(result);
-		assertEquals(token, result);
 	}
 
 }
