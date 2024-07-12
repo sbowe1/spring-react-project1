@@ -4,7 +4,6 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 import com.example.p1_backend.models.dtos.LoginDto;
-import com.example.p1_backend.models.dtos.OutUserDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +28,7 @@ public class UserController {
 	@PostMapping("register")
 	public ResponseEntity<User> register(@RequestBody RegisterDto registerDto) {
 		User newUser = us.register(registerDto);
-		return new ResponseEntity<>(newUser, CREATED); // TODO: return webDto in
-														// UserService?
+		return new ResponseEntity<>(newUser, CREATED);
 	}
 
 	// READ
@@ -43,14 +41,14 @@ public class UserController {
 
 	// UPDATE
 	@PutMapping("update")
-	public ResponseEntity<?> update(@RequestHeader("Authorization") String token, User updateUser)
+	public ResponseEntity<String> update(@RequestHeader("Authorization") String token, @RequestBody User updateUser)
 			throws AccountNotFoundException {
-		User updatedUser = us.update(token, updateUser);
-		return new ResponseEntity<>(updatedUser, OK);
+		String message = us.update(token, updateUser);
+		return new ResponseEntity<>(message, OK);
 	}
 
 	// DELETE
-	@DeleteMapping("delete")
+	@DeleteMapping
 	public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String token) {
 		String message = us.delete(token);
 		return new ResponseEntity<>(message, OK);

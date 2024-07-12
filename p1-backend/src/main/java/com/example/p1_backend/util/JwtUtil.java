@@ -70,8 +70,8 @@ public class JwtUtil {
 	}
 
 	// Extract roles from JWT token
-	public List<?> extractRoles(String token) {
-		return Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token).getPayload().get("roles", List.class);
+	public String[] extractRoles(String token) {
+		return Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token).getPayload().get("roles", String[].class);
 	}
 
 }

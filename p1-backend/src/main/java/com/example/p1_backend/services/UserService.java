@@ -1,13 +1,14 @@
 package com.example.p1_backend.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import com.example.p1_backend.models.dtos.LoginDto;
-import com.example.p1_backend.models.dtos.OutUserDto;
 import com.example.p1_backend.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,22 @@ public class UserService {
 		this.jwtUtil = jwtUtil;
 	}
 
-	public List<User> findAll() {
+	public List<User> findAll(String token) {
+		// String[] roles = jwtUtil.extractRoles(token.substring(7));
+		// boolean isAdmin = false;
+		//
+		// for(String role : roles){
+		// if(role.equals("ROLE_ADMIN")){
+		// isAdmin = true;
+		// break;
+		// }
+		// }
+		//
+		// if(!isAdmin){
+		// log.warn("User does not have permission to access this request");
+		// throw new AccessDeniedException("Unauthorized request");
+		// }
+
 		return uDao.findAll();
 	}
 
@@ -47,7 +63,12 @@ public class UserService {
 			throw new IllegalArgumentException("Username: " + registerDto.getUsername() + " was already taken");
 		}
 
-		// validate email is unique
+		// validate email is a valid email address and unique
+		String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+		if (registerDto.getEmail().isBlank() || !registerDto.getEmail().matches(emailRegex)) {
+			log.warn("Account must be linked to an email address");
+			throw new IllegalArgumentException("Account must be linked to a valid email address");
+		}
 		Optional<User> email = uDao.getByEmail(registerDto.getEmail());
 		if (email.isPresent()) {
 			log.warn("Email already in use");
@@ -69,7 +90,8 @@ public class UserService {
 
 	// READ
 	public User findByUserId(String token) throws AccountNotFoundException {
-		int userId = jwtUtil.extractUserId(token);
+		// Substring to remove "Bearer " from the token String
+		int userId = jwtUtil.extractUserId(token.substring(7));
 
 		Optional<User> optUser = uDao.findById(userId);
 		if (optUser.isEmpty()) {
@@ -80,22 +102,48 @@ public class UserService {
 	}
 
 	// UPDATE
-	public User update(String token, User updatedUser) throws AccountNotFoundException {
-		int userId = jwtUtil.extractUserId(token);
+	public String update(String token, User updatedUser) throws AccountNotFoundException {
+		int userId = jwtUtil.extractUserId(token.substring(7));
 
 		Optional<User> optUser = uDao.findById(userId);
 		if (optUser.isEmpty()) {
 			throw new AccountNotFoundException("User with userId: " + userId + " not found");
 		}
-		updatedUser.setUserId(userId);
 
-		log.info("User {}'s information updated", optUser.get().getUsername());
-		return uDao.save(updatedUser);
+		if (updatedUser.getUsername() != null && !updatedUser.getUsername().isBlank()) {
+			// Ensuring that Username is not taken
+			if (uDao.getByUsername(updatedUser.getUsername()).isPresent()) {
+				log.warn("Username is already taken");
+				throw new IllegalArgumentException("Username is already taken!");
+			}
+		}
+		if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
+			optUser.get().setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+		}
+		if (updatedUser.getEmail() != null && !updatedUser.getEmail().isEmpty()) {
+			// Ensuring that Email is not taken
+			if (uDao.getByEmail(updatedUser.getEmail()).isPresent()) {
+				log.warn("Email is already linked to another account");
+				throw new IllegalArgumentException("Email is already linked to an account!");
+			}
+
+			optUser.get().setEmail(updatedUser.getEmail());
+		}
+		if (updatedUser.getRoles() != null && !updatedUser.getRoles().isEmpty()) {
+			optUser.get().setRoles(updatedUser.getRoles());
+		}
+		if (updatedUser.getPlans() != null && !updatedUser.getPlans().isEmpty()) {
+			optUser.get().setPlans(updatedUser.getPlans());
+		}
+
+		log.info("User with userId: {}'s information updated", optUser.get().getUserId());
+		uDao.save(optUser.get());
+		return "Profile updated successfully!";
 	}
 
 	// DELETE
 	public String delete(String token) {
-		int userId = jwtUtil.extractUserId(token);
+		int userId = jwtUtil.extractUserId(token.substring(7));
 
 		uDao.deleteById(userId);
 
