@@ -3,16 +3,23 @@ package com.example.p1_backend.services;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.p1_backend.models.User;
 import com.example.p1_backend.models.dtos.RegisterDto;
 import com.example.p1_backend.repositories.UserDao;
 
+import javax.security.auth.login.AccountNotFoundException;
+
 @Service
+@Slf4j
 public class UserService {
     private final UserDao uDao;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Autowired
     public UserService(UserDao uDao) {
@@ -28,42 +35,48 @@ public class UserService {
         // validate username is unique
         Optional<User> username = uDao.getByUsername(registerDto.getUsername());
         if (username.isPresent()) {
-            // TODO: throw new UsernameAlreadyTakenException("Username: " + optUser.get().getUsername() + " was already taken");
+            log.warn("Username already taken");
+            throw new IllegalArgumentException("Username: " + registerDto.getUsername() + " was already taken");
         }
 
         // validate email is unique
         Optional<User> email = uDao.getByEmail(registerDto.getEmail());
         if (email.isPresent()) {
-            // TODO: throw new EmailAlreadyTakenException("Email: " + optUser.get().getEmail() + " was already taken");
+            log.warn("Email already in use");
+            throw new IllegalArgumentException("Email: " + registerDto.getEmail() + " was already taken");
         }
 
         // create new user if username and email are unique
         User newUser = new User();
         newUser.setEmail(registerDto.getEmail());
-        newUser.setPassword(registerDto.getPassword()); // TODO: hash password
+        newUser.setPassword(passwordEncoder.encode(registerDto.getPassword()));
         newUser.setUsername(registerDto.getUsername());
         newUser.getRoles().add("ROLE_USER");
         newUser.getPlans().add("Spring Boot Roadmap");
 
         // persist user to database
+        log.info("User {} created successfully", newUser.getUsername());
         return uDao.save(newUser); // TODO: return webDto? (no password, id, etc.)
     }
 
     // READ
-    public User findByUserId(int userId) {
+    public User findByUserId(int userId) throws AccountNotFoundException {
         Optional<User> optUser = uDao.findById(userId);
         if (optUser.isEmpty()) {
-            // TODO: throw new UserNotFoundException("User with userId: " + optUser.get().getUserId() + " not found");
+            log.warn("User not found");
+             throw new AccountNotFoundException("User with userId: " + userId + " not found");
         }
         return uDao.findById(userId).get(); // TODO: return webDto? (no password, id, etc.)
     }
     
     // UPDATE
-    public User update(User updatedUser) {
+    public User update(User updatedUser) throws AccountNotFoundException {
         Optional<User> optUser = uDao.findById(updatedUser.getUserId());
         if (optUser.isEmpty()) {
-            // TODO: throw new UserNotFoundException("User with userId: " + optUser.get().getUserId() + " not found");
+            throw new AccountNotFoundException("User with userId: " + updatedUser.getUserId() + " not found");
         }
+
+        log.info("User {}'s information updated", optUser.get().getUsername());
         return uDao.save(updatedUser);
     }
     
