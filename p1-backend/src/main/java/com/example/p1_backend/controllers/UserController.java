@@ -1,10 +1,6 @@
 package com.example.p1_backend.controllers;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
-
 import com.example.p1_backend.models.dtos.LoginDto;
-import com.example.p1_backend.models.dtos.OutUserDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +9,8 @@ import com.example.p1_backend.models.dtos.RegisterDto;
 import com.example.p1_backend.services.UserService;
 
 import javax.security.auth.login.AccountNotFoundException;
+
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("users")
@@ -28,7 +26,7 @@ public class UserController {
     @PostMapping("register")
     public ResponseEntity<User> register(@RequestBody RegisterDto registerDto) {
         User newUser = us.register(registerDto);
-        return new ResponseEntity<>(newUser, CREATED); // TODO: return webDto in UserService?
+        return new ResponseEntity<>(newUser, CREATED);
     }
 
     // READ
@@ -40,13 +38,13 @@ public class UserController {
 
     // UPDATE
     @PutMapping("update")
-    public ResponseEntity<?> update(@RequestHeader("Authorization") String token, User updateUser) throws AccountNotFoundException {
-        User updatedUser = us.update(token, updateUser);
-        return new ResponseEntity<>(updatedUser, OK);
+    public ResponseEntity<String> update(@RequestHeader("Authorization") String token, @RequestBody User updateUser) throws AccountNotFoundException {
+        String message = us.update(token, updateUser);
+        return new ResponseEntity<>(message, OK);
     }
 
     // DELETE
-    @DeleteMapping("delete")
+    @DeleteMapping
     public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String token){
         String message = us.delete(token);
         return new ResponseEntity<>(message, OK);

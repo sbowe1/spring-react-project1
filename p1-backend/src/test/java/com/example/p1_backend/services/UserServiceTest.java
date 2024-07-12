@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.p1_backend.models.dtos.LoginDto;
-import com.example.p1_backend.models.dtos.OutUserDto;
 import com.example.p1_backend.util.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,8 +40,11 @@ public class UserServiceTest {
 
     @Test
     public void findAll() {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiLCJST0xFX0FETUlOIl0sImlzcyI6InByb2plY3QxdGVhbSIsImlhdCI6MTcyMDgxOTc5MSwiZXhwIjoxNzIwOTA2MTkxfQ.KtN6nwRV2VI8heOvXyq1l3-r9_UEETZN_4Fso-BuUiA";
+
         Mockito.doReturn(getMockUsers(5)).when(uDao).findAll();
-        List<User> users = this.us.findAll();
+        List<User> users = this.us.findAll("Bearer " + token);
+
         assertEquals(5, users.size());
     }
 
@@ -73,9 +75,8 @@ public class UserServiceTest {
     }
 
     private String getToken(){
-        User user = getMockUser();
-        user.setUserId(1);
-        return jwtUtil.generateToken(user);
+        // This function broke???? so here's an example token I got from postman
+        return "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
     }
 
     // CREATE
@@ -118,7 +119,7 @@ public class UserServiceTest {
         Mockito.when(uDao.findById(mockUser.getUserId())).thenReturn(Optional.of(mockUser));
 
         // Act
-        User result = us.findByUserId(token);
+        User result = us.findByUserId("Bearer " + token);
 
         // Assert
         assertNotNull(result);
@@ -136,36 +137,39 @@ public class UserServiceTest {
         // Arrange
         String token = getToken();
 
-        User mockUser = getMockUser();
-        mockUser.setPassword(passwordEncoder.encode(mockUser.getPassword()));
-        mockUser.setUserId(1);
+        User currentUser = getMockUser();
+        currentUser.setPassword(passwordEncoder.encode(currentUser.getPassword()));
+        currentUser.setUserId(1);
 
         // Set expected behavior
         when(jwtUtil.extractUserId(token)).thenReturn(1);
-        when(uDao.save(any(User.class))).thenReturn(mockUser);
-        when(uDao.findById(anyInt())).thenReturn(Optional.of(mockUser));
+        when(uDao.save(any(User.class))).thenReturn(currentUser);
+        when(uDao.findById(anyInt())).thenReturn(Optional.of(currentUser));
 
         // Act
-        User user = new User(
-            mockUser.getEmail(),
-            passwordEncoder.encode(mockUser.getPassword()),
-            mockUser.getUsername(),
-            mockUser.getRoles().get(0),
-            mockUser.getPlans().get(0)
+        User updatedUser = new User(
+            currentUser.getEmail(),
+            currentUser.getPassword(),
+            currentUser.getUsername(),
+            currentUser.getRoles(),
+            currentUser.getPlans()
         );
-        user.setUserId(mockUser.getUserId());
+        updatedUser.setUserId(currentUser.getUserId());
 
-        user = us.update(token, user);
+        String result = us.update("Bearer " + token, updatedUser);
 
         // Assert
-        assertNotNull(user);
-        assertEquals(mockUser.getUserId(), user.getUserId());
-        assertEquals("test-user-email@test.com", user.getEmail());
-        assertTrue(passwordEncoder.matches("test-user-password", user.getPassword()));
-        assertEquals("test-user-username", user.getUsername());
-        assertEquals("ROLE_USER", user.getRoles().get(0)); // TODO: grab roles dynamically
-        assertEquals("Spring Boot Roadmap", user.getPlans().get(0));
+        assertNotNull(result);
+        assertEquals(currentUser.getUserId(), updatedUser.getUserId());
+        assertEquals("test-user-email@test.com", updatedUser.getEmail());
+        assertTrue(passwordEncoder.matches("test-user-password", updatedUser.getPassword()));
+        assertEquals("test-user-username", updatedUser.getUsername());
+        assertEquals("ROLE_USER", updatedUser.getRoles().get(0)); // TODO: grab roles dynamically
+        assertEquals("Spring Boot Roadmap", updatedUser.getPlans().get(0));
+        assertEquals("Profile updated successfully!", result);
         verify(uDao, times(1)).findById(anyInt());
+        verify(uDao, atMost(1)).getByUsername(anyString());
+        verify(uDao, atMost(1)).getByEmail(anyString());
     }
 
     // DELETE
@@ -176,7 +180,7 @@ public class UserServiceTest {
         when(jwtUtil.extractUserId(token)).thenReturn(1);
         doNothing().when(uDao).deleteById(1);
 
-        String message = us.delete(token);
+        String message = us.delete("Bearer " + token);
 
         assertEquals("Account deleted successfully!", message);
         verify(jwtUtil, times(1)).extractUserId(token);
@@ -187,13 +191,16 @@ public class UserServiceTest {
     // LOGIN
     @Test
     public void login() throws AccountNotFoundException {
-        String token = getToken();
         User mockUser = getMockUser();
         mockUser.setUserId(1);
+
+        String token = getToken();
+
         LoginDto loginDto = new LoginDto(
           mockUser.getUsername(),
           mockUser.getPassword()
         );
+
         mockUser.setPassword(passwordEncoder.encode(mockUser.getPassword()));
 
         when(uDao.getByUsername(loginDto.getUsername())).thenReturn(Optional.of(mockUser));

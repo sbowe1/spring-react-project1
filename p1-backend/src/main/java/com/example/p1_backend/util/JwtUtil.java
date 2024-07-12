@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class JwtUtil {
     }
 
     // Extract roles from JWT token
-    public List<?> extractRoles(String token){
-        return Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token).getPayload().get("roles", List.class);
+    public String[] extractRoles(String token){
+        return Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token).getPayload().get("roles", String[].class);
     }
 }
