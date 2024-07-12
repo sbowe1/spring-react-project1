@@ -32,7 +32,7 @@ public class UserController {
     }
 
     // READ
-    @GetMapping("profile")
+    @GetMapping("read")
     public ResponseEntity<OutUserDto> viewProfile(@RequestHeader("Authorization") String token) throws AccountNotFoundException {
         OutUserDto user = us.findByUserId(token);
         return new ResponseEntity<>(user, OK);
@@ -54,8 +54,8 @@ public class UserController {
 
     // LOGIN
     @PostMapping("login")
-    public ResponseEntity<OutUserDto> login(@RequestBody LoginDto loginDto) throws AccountNotFoundException {
-        OutUserDto outUser = us.login(loginDto);
-        return new ResponseEntity<>(outUser, OK);
+    public ResponseEntity<String> login(@RequestBody LoginDto loginDto) throws AccountNotFoundException {
+        String token = us.login(loginDto);
+        return new ResponseEntity<>(token, OK);
     }
 }
