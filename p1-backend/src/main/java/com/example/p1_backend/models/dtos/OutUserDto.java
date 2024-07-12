@@ -7,18 +7,20 @@ import java.util.List;
 
 @Data
 public class OutUserDto {
-    private String username;
 
-    private List<String> roles;
+	private String username;
 
-    private List<String> plans;
+	private List<String> roles;
 
-    private String token;
+	private List<String> plans;
 
-    public OutUserDto(String token, List<String> plans, List<String> roles, String username) {
-        this.token = token;
-        this.plans = plans;
-        this.roles = roles;
-        this.username = username;
-    }
+	private String token;
+
+	public OutUserDto(String token, List<String> plans, List<String> roles, String username) {
+		this.token = token;
+		this.plans = plans;
+		this.roles = roles;
+		this.username = username;
+	}
+
 }

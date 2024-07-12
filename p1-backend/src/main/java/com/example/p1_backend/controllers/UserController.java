@@ -16,46 +16,51 @@ import javax.security.auth.login.AccountNotFoundException;
 
 @RestController
 @RequestMapping("users")
-@CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
+@CrossOrigin(origins = { "http://localhost:3000" }, allowCredentials = "true")
 public class UserController {
-    private final UserService us;
 
-    public UserController(UserService us) {
-        this.us = us;
-    }
+	private final UserService us;
 
-    // CREATE
-    @PostMapping("register")
-    public ResponseEntity<User> register(@RequestBody RegisterDto registerDto) {
-        User newUser = us.register(registerDto);
-        return new ResponseEntity<>(newUser, CREATED); // TODO: return webDto in UserService?
-    }
+	public UserController(UserService us) {
+		this.us = us;
+	}
 
-    // READ
-    @GetMapping("profile")
-    public ResponseEntity<User> viewProfile(@RequestHeader("Authorization") String token) throws AccountNotFoundException {
-        User user = us.findByUserId(token);
-        return new ResponseEntity<>(user, OK);
-    }
+	// CREATE
+	@PostMapping("register")
+	public ResponseEntity<User> register(@RequestBody RegisterDto registerDto) {
+		User newUser = us.register(registerDto);
+		return new ResponseEntity<>(newUser, CREATED); // TODO: return webDto in
+														// UserService?
+	}
 
-    // UPDATE
-    @PutMapping("update")
-    public ResponseEntity<?> update(@RequestHeader("Authorization") String token, User updateUser) throws AccountNotFoundException {
-        User updatedUser = us.update(token, updateUser);
-        return new ResponseEntity<>(updatedUser, OK);
-    }
+	// READ
+	@GetMapping("profile")
+	public ResponseEntity<User> viewProfile(@RequestHeader("Authorization") String token)
+			throws AccountNotFoundException {
+		User user = us.findByUserId(token);
+		return new ResponseEntity<>(user, OK);
+	}
 
-    // DELETE
-    @DeleteMapping("delete")
-    public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String token){
-        String message = us.delete(token);
-        return new ResponseEntity<>(message, OK);
-    }
+	// UPDATE
+	@PutMapping("update")
+	public ResponseEntity<?> update(@RequestHeader("Authorization") String token, User updateUser)
+			throws AccountNotFoundException {
+		User updatedUser = us.update(token, updateUser);
+		return new ResponseEntity<>(updatedUser, OK);
+	}
 
-    // LOGIN
-    @PostMapping("login")
-    public ResponseEntity<String> login(@RequestBody LoginDto loginDto) throws AccountNotFoundException {
-        String token = us.login(loginDto);
-        return new ResponseEntity<>(token, OK);
-    }
+	// DELETE
+	@DeleteMapping("delete")
+	public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String token) {
+		String message = us.delete(token);
+		return new ResponseEntity<>(message, OK);
+	}
+
+	// LOGIN
+	@PostMapping("login")
+	public ResponseEntity<String> login(@RequestBody LoginDto loginDto) throws AccountNotFoundException {
+		String token = us.login(loginDto);
+		return new ResponseEntity<>(token, OK);
+	}
+
 }

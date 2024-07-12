@@ -10,27 +10,29 @@ import org.springframework.stereotype.Component;
 @Data
 @NoArgsConstructor
 public class Question {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "questionId")
-    private int questionId;
 
-    private String question;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "questionId")
+	private int questionId;
 
-    private String answer;
+	private String question;
 
-    private boolean correct;
+	private String answer;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "topicId")
-    @JsonIgnoreProperties({"planId", "status"})
-    private Topic topic;
+	private boolean correct;
 
-    public Question(int questionId, String question, String answer, boolean correct, Topic topic) {
-        this.questionId = questionId;
-        this.question = question;
-        this.answer = answer;
-        this.correct = correct;
-        this.topic = topic;
-    }
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "topicId")
+	@JsonIgnoreProperties({ "planId", "status" })
+	private Topic topic;
+
+	public Question(int questionId, String question, String answer, boolean correct, Topic topic) {
+		this.questionId = questionId;
+		this.question = question;
+		this.answer = answer;
+		this.correct = correct;
+		this.topic = topic;
+	}
+
 }

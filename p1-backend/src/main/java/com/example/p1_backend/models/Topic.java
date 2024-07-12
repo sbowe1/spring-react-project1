@@ -9,23 +9,25 @@ import org.springframework.stereotype.Component;
 @Data
 @NoArgsConstructor
 public class Topic {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "topicId")
-    private int topicId;
 
-    private String title;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "topicId")
+	private int topicId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "planId")
-    private Plan plan;
+	private String title;
 
-    private boolean status;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "planId")
+	private Plan plan;
 
-    public Topic(int topicId, String title, Plan plan, boolean status) {
-        this.topicId = topicId;
-        this.title = title;
-        this.plan = plan;
-        this.status = status;
-    }
+	private boolean status;
+
+	public Topic(int topicId, String title, Plan plan, boolean status) {
+		this.topicId = topicId;
+		this.title = title;
+		this.plan = plan;
+		this.status = status;
+	}
+
 }
