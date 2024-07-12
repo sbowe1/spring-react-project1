@@ -122,9 +122,6 @@ public class UserServiceTest {
 
         // Assert
         assertNotNull(result);
-//        assertEquals(mockUser.getUserId(), result.getUserId());
-//        assertEquals("test-user-email@test.com", result.getEmail());
-//        assertTrue(passwordEncoder.matches("test-user-password", result.getPassword()));
         assertEquals("test-user-username", result.getUsername());
         assertEquals("ROLE_USER", result.getRoles().get(0)); // TODO: grab roles dynamically
         assertEquals("Spring Boot Roadmap", result.getPlans().get(0));
@@ -200,12 +197,9 @@ public class UserServiceTest {
         when(uDao.getByUsername(loginDto.getUsername())).thenReturn(Optional.of(mockUser));
         when(jwtUtil.generateToken(mockUser)).thenReturn(token);
 
-        OutUserDto result = us.login(loginDto);
+        String result = us.login(loginDto);
 
         assertNotNull(result);
-        assertEquals("test-user-username", result.getUsername());
-        assertEquals("ROLE_USER", result.getRoles().get(0)); // TODO: grab roles dynamically
-        assertEquals("Spring Boot Roadmap", result.getPlans().get(0));
         assertEquals(token, result.getToken());
     }
 }
