@@ -22,152 +22,157 @@ import javax.security.auth.login.AccountNotFoundException;
 @Service
 @Slf4j
 public class UserService {
-    private final UserDao uDao;
-    private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @Autowired
-    public UserService(UserDao uDao, JwtUtil jwtUtil) {
-        this.uDao = uDao;
-        this.jwtUtil = jwtUtil;
-    }
+	private final UserDao uDao;
 
-    public List<User> findAll(String token) {
-//        String[] roles = jwtUtil.extractRoles(token.substring(7));
-//        boolean isAdmin = false;
-//
-//        for(String role : roles){
-//            if(role.equals("ROLE_ADMIN")){
-//                isAdmin = true;
-//                break;
-//            }
-//        }
-//
-//        if(!isAdmin){
-//            log.warn("User does not have permission to access this request");
-//            throw new AccessDeniedException("Unauthorized request");
-//        }
+	private final JwtUtil jwtUtil;
 
-        return uDao.findAll();
-    }
+	private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    // CREATE
-    public User register(RegisterDto registerDto) {
-        // validate username is unique
-        Optional<User> username = uDao.getByUsername(registerDto.getUsername());
-        if (username.isPresent()) {
-            log.warn("Username already taken");
-            throw new IllegalArgumentException("Username: " + registerDto.getUsername() + " was already taken");
-        }
+	@Autowired
+	public UserService(UserDao uDao, JwtUtil jwtUtil) {
+		this.uDao = uDao;
+		this.jwtUtil = jwtUtil;
+	}
 
-        // validate email is a valid email address and unique
-        String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-        if(registerDto.getEmail().isBlank() || !registerDto.getEmail().matches(emailRegex)){
-            log.warn("Account must be linked to an email address");
-            throw new IllegalArgumentException("Account must be linked to a valid email address");
-        }
-        Optional<User> email = uDao.getByEmail(registerDto.getEmail());
-        if (email.isPresent()) {
-            log.warn("Email already in use");
-            throw new IllegalArgumentException("Email: " + registerDto.getEmail() + " was already taken");
-        }
+	public List<User> findAll(String token) {
+		// String[] roles = jwtUtil.extractRoles(token.substring(7));
+		// boolean isAdmin = false;
+		//
+		// for(String role : roles){
+		// if(role.equals("ROLE_ADMIN")){
+		// isAdmin = true;
+		// break;
+		// }
+		// }
+		//
+		// if(!isAdmin){
+		// log.warn("User does not have permission to access this request");
+		// throw new AccessDeniedException("Unauthorized request");
+		// }
 
-        // create new user if username and email are unique
-        User newUser = new User();
-        newUser.setEmail(registerDto.getEmail());
-        newUser.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        newUser.setUsername(registerDto.getUsername());
-        newUser.getRoles().add("ROLE_USER");
-        newUser.getPlans().add("Spring Boot Roadmap");
+		return uDao.findAll();
+	}
 
-        // persist user to database
-        log.info("User {} created successfully", newUser.getUsername());
-        return uDao.save(newUser); // TODO: return webDto? (no password, id, etc.)
-    }
+	// CREATE
+	public User register(RegisterDto registerDto) {
+		// validate username is unique
+		Optional<User> username = uDao.getByUsername(registerDto.getUsername());
+		if (username.isPresent()) {
+			log.warn("Username already taken");
+			throw new IllegalArgumentException("Username: " + registerDto.getUsername() + " was already taken");
+		}
 
-    // READ
-    public User findByUserId(String token) throws AccountNotFoundException {
-        // Substring to remove "Bearer " from the token String
-        int userId = jwtUtil.extractUserId(token.substring(7));
+		// validate email is a valid email address and unique
+		String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+		if (registerDto.getEmail().isBlank() || !registerDto.getEmail().matches(emailRegex)) {
+			log.warn("Account must be linked to an email address");
+			throw new IllegalArgumentException("Account must be linked to a valid email address");
+		}
+		Optional<User> email = uDao.getByEmail(registerDto.getEmail());
+		if (email.isPresent()) {
+			log.warn("Email already in use");
+			throw new IllegalArgumentException("Email: " + registerDto.getEmail() + " was already taken");
+		}
 
-        Optional<User> optUser = uDao.findById(userId);
-        if (optUser.isEmpty()) {
-            log.warn("User not found");
-             throw new AccountNotFoundException("User with userId: " + userId + " not found");
-        }
-        return uDao.findById(userId).get();
-    }
-    
-    // UPDATE
-    public String update(String token, User updatedUser) throws AccountNotFoundException {
-        int userId = jwtUtil.extractUserId(token.substring(7));
+		// create new user if username and email are unique
+		User newUser = new User();
+		newUser.setEmail(registerDto.getEmail());
+		newUser.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+		newUser.setUsername(registerDto.getUsername());
+		newUser.getRoles().add("ROLE_USER");
+		newUser.getPlans().add("Spring Boot Roadmap");
 
-        Optional<User> optUser = uDao.findById(userId);
-        if (optUser.isEmpty()) {
-            throw new AccountNotFoundException("User with userId: " + userId + " not found");
-        }
+		// persist user to database
+		log.info("User {} created successfully", newUser.getUsername());
+		return uDao.save(newUser); // TODO: return webDto? (no password, id, etc.)
+	}
 
-        if(updatedUser.getUsername() != null && !updatedUser.getUsername().isBlank()){
-            // Ensuring that Username is not taken
-            if(uDao.getByUsername(updatedUser.getUsername()).isPresent()){
-                log.warn("Username is already taken");
-                throw new IllegalArgumentException("Username is already taken!");
-            }
-        }
-        if(updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()){
-            optUser.get().setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-        }
-        if(updatedUser.getEmail() != null && !updatedUser.getEmail().isEmpty()){
-            // Ensuring that Email is not taken
-            if(uDao.getByEmail(updatedUser.getEmail()).isPresent()){
-                log.warn("Email is already linked to another account");
-                throw new IllegalArgumentException("Email is already linked to an account!");
-            }
+	// READ
+	public User findByUserId(String token) throws AccountNotFoundException {
+		// Substring to remove "Bearer " from the token String
+		int userId = jwtUtil.extractUserId(token.substring(7));
 
-            optUser.get().setEmail(updatedUser.getEmail());
-        }
-        if(updatedUser.getRoles() != null && !updatedUser.getRoles().isEmpty()){
-            optUser.get().setRoles(updatedUser.getRoles());
-        }
-        if(updatedUser.getPlans() != null && !updatedUser.getPlans().isEmpty()){
-            optUser.get().setPlans(updatedUser.getPlans());
-        }
+		Optional<User> optUser = uDao.findById(userId);
+		if (optUser.isEmpty()) {
+			log.warn("User not found");
+			throw new AccountNotFoundException("User with userId: " + userId + " not found");
+		}
+		return uDao.findById(userId).get();
+	}
 
-        log.info("User with userId: {}'s information updated", optUser.get().getUserId());
-        uDao.save(optUser.get());
-        return "Profile updated successfully!";
-    }
-    
-    // DELETE
-    public String delete(String token) {
-        int userId = jwtUtil.extractUserId(token.substring(7));
+	// UPDATE
+	public String update(String token, User updatedUser) throws AccountNotFoundException {
+		int userId = jwtUtil.extractUserId(token.substring(7));
 
-        uDao.deleteById(userId);
+		Optional<User> optUser = uDao.findById(userId);
+		if (optUser.isEmpty()) {
+			throw new AccountNotFoundException("User with userId: " + userId + " not found");
+		}
 
-        if(uDao.findById(userId).isPresent()){
-            log.warn("Cannot delete account!");
-            return "Could not delete account";
-        }
+		if (updatedUser.getUsername() != null && !updatedUser.getUsername().isBlank()) {
+			// Ensuring that Username is not taken
+			if (uDao.getByUsername(updatedUser.getUsername()).isPresent()) {
+				log.warn("Username is already taken");
+				throw new IllegalArgumentException("Username is already taken!");
+			}
+		}
+		if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
+			optUser.get().setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+		}
+		if (updatedUser.getEmail() != null && !updatedUser.getEmail().isEmpty()) {
+			// Ensuring that Email is not taken
+			if (uDao.getByEmail(updatedUser.getEmail()).isPresent()) {
+				log.warn("Email is already linked to another account");
+				throw new IllegalArgumentException("Email is already linked to an account!");
+			}
 
-        log.info("User with userId: {}'s account deleted", userId);
-        return "Account deleted successfully!";
-    }
+			optUser.get().setEmail(updatedUser.getEmail());
+		}
+		if (updatedUser.getRoles() != null && !updatedUser.getRoles().isEmpty()) {
+			optUser.get().setRoles(updatedUser.getRoles());
+		}
+		if (updatedUser.getPlans() != null && !updatedUser.getPlans().isEmpty()) {
+			optUser.get().setPlans(updatedUser.getPlans());
+		}
 
-    public String login(LoginDto loginDto) throws AccountNotFoundException {
-        Optional<User> optUser = uDao.getByUsername(loginDto.getUsername());
+		log.info("User with userId: {}'s information updated", optUser.get().getUserId());
+		uDao.save(optUser.get());
+		return "Profile updated successfully!";
+	}
 
-        if (optUser.isEmpty()) {
-            log.warn("Account not found");
-            throw new AccountNotFoundException("User with username: " + loginDto.getUsername() + " not found");
-        }
+	// DELETE
+	public String delete(String token) {
+		int userId = jwtUtil.extractUserId(token.substring(7));
 
-        if(passwordEncoder.matches(loginDto.getPassword(), optUser.get().getPassword())){
-            String token = jwtUtil.generateToken(optUser.get());
-            log.info("Login successful");
-            return token;
-        }else{
-            log.warn("Incorrect login credentials");
-            return null;
-        }
-    }
+		uDao.deleteById(userId);
+
+		if (uDao.findById(userId).isPresent()) {
+			log.warn("Cannot delete account!");
+			return "Could not delete account";
+		}
+
+		log.info("User with userId: {}'s account deleted", userId);
+		return "Account deleted successfully!";
+	}
+
+	public String login(LoginDto loginDto) throws AccountNotFoundException {
+		Optional<User> optUser = uDao.getByUsername(loginDto.getUsername());
+
+		if (optUser.isEmpty()) {
+			log.warn("Account not found");
+			throw new AccountNotFoundException("User with username: " + loginDto.getUsername() + " not found");
+		}
+
+		if (passwordEncoder.matches(loginDto.getPassword(), optUser.get().getPassword())) {
+			String token = jwtUtil.generateToken(optUser.get());
+			log.info("Login successful");
+			return token;
+		}
+		else {
+			log.warn("Incorrect login credentials");
+			return null;
+		}
+	}
+
 }

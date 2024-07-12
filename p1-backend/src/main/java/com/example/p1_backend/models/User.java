@@ -19,37 +19,39 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "userId")
-    private int userId;
 
-    @Column(unique = true)
-    private String email;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "userId")
+	private int userId;
 
-    @JsonIgnore
-    private String password;
+	@Column(unique = true)
+	private String email;
 
-    @Column(unique = true)
-    private String username;
+	@JsonIgnore
+	private String password;
 
-    private List<String> roles = new ArrayList<>();
+	@Column(unique = true)
+	private String username;
 
-    private List<String> plans = new ArrayList<>();
+	private List<String> roles = new ArrayList<>();
 
-    public User(String email, String password, String username, String role, String plan) {
-        this.email = email;
-        this.password = password;
-        this.username = username;
-        this.roles.add(role);
-        this.plans.add(plan);
-    }
+	private List<String> plans = new ArrayList<>();
 
-    public User(String email, String password, String username, List<String> roles, List<String> plans) {
-        this.email = email;
-        this.password = password;
-        this.username = username;
-        this.roles = roles;
-        this.plans = plans;
-    }
+	public User(String email, String password, String username, String role, String plan) {
+		this.email = email;
+		this.password = password;
+		this.username = username;
+		this.roles.add(role);
+		this.plans.add(plan);
+	}
+
+	public User(String email, String password, String username, List<String> roles, List<String> plans) {
+		this.email = email;
+		this.password = password;
+		this.username = username;
+		this.roles = roles;
+		this.plans = plans;
+	}
+
 }

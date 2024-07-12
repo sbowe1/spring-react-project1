@@ -10,37 +10,40 @@ import org.springframework.stereotype.Component;
 @Data
 @NoArgsConstructor
 public class Resource {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "resourceId")
-    private int resourceId;
 
-    private String title;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "resourceId")
+	private int resourceId;
 
-    private String description;
+	private String title;
 
-    @Column(nullable = false)
-    private String type;
+	private String description;
 
-    private String url;
+	@Column(nullable = false)
+	private String type;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "subtopicId")
-    @JsonIgnoreProperties({"description", "topicId", "status"})
-    private Subtopic subtopic;
+	private String url;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "topicId", nullable = false)
-    @JsonIgnoreProperties({"planId", "status"})
-    private Topic topic;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "subtopicId")
+	@JsonIgnoreProperties({ "description", "topicId", "status" })
+	private Subtopic subtopic;
 
-    public Resource(int resourceId, String title, String description, String type, String url, Subtopic subtopic, Topic topic) {
-        this.resourceId = resourceId;
-        this.title = title;
-        this.description = description;
-        this.type = type;
-        this.url = url;
-        this.subtopic = subtopic;
-        this.topic = topic;
-    }
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "topicId", nullable = false)
+	@JsonIgnoreProperties({ "planId", "status" })
+	private Topic topic;
+
+	public Resource(int resourceId, String title, String description, String type, String url, Subtopic subtopic,
+			Topic topic) {
+		this.resourceId = resourceId;
+		this.title = title;
+		this.description = description;
+		this.type = type;
+		this.url = url;
+		this.subtopic = subtopic;
+		this.topic = topic;
+	}
+
 }

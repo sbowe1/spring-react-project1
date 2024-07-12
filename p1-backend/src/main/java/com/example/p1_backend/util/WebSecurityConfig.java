@@ -15,30 +15,32 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
-    private final JwtFilter jwtFilter;
 
-    @Autowired
-    public WebSecurityConfig(JwtFilter jwtFilter) {
-        this.jwtFilter = jwtFilter;
-    }
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auths -> auths
-                        // Permits all requests to /users/login and /users/register
-                        .requestMatchers("/users/login").permitAll()
-                        .requestMatchers("/users/register").permitAll()
-                        // All other requests require JWT authentication
-                        .anyRequest().authenticated()
-                )
-                .anonymous(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                // Adds JWT filter to authenticate incoming requests
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+	private final JwtFilter jwtFilter;
 
-        return http.build();
-    }
+	@Autowired
+	public WebSecurityConfig(JwtFilter jwtFilter) {
+		this.jwtFilter = jwtFilter;
+	}
+
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.csrf(AbstractHttpConfigurer::disable)
+			.authorizeHttpRequests(auths -> auths
+				// Permits all requests to /users/login and /users/register
+				.requestMatchers("/users/login")
+				.permitAll()
+				.requestMatchers("/users/register")
+				.permitAll()
+				// All other requests require JWT authentication
+				.anyRequest()
+				.authenticated())
+			.anonymous(AbstractHttpConfigurer::disable)
+			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			// Adds JWT filter to authenticate incoming requests
+			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+		return http.build();
+	}
+
 }

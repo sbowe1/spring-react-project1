@@ -9,15 +9,14 @@ import javax.security.auth.login.AccountNotFoundException;
 @RestControllerAdvice
 public class HandleExceptions {
 
-    @ExceptionHandler(value = {AccountNotFoundException.class})
-    protected ResponseEntity<?> acountNotFoundException(Exception e){
-        return ResponseEntity.status(404).body(e.getMessage());
-    }
+	@ExceptionHandler(value = { AccountNotFoundException.class })
+	protected ResponseEntity<?> acountNotFoundException(Exception e) {
+		return ResponseEntity.status(404).body(e.getMessage());
+	}
 
-    @ExceptionHandler(value = {IllegalArgumentException.class})
-    protected ResponseEntity<?> illegalArgumentException(Exception e){
-        return ResponseEntity.status(401).body(e.getMessage());
-    }
-
+	@ExceptionHandler(value = { IllegalArgumentException.class })
+	protected ResponseEntity<?> illegalArgumentException(Exception e) {
+		return ResponseEntity.status(401).body(e.getMessage());
+	}
 
 }

@@ -20,44 +20,49 @@ import java.util.Optional;
 @Component
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
-    private final JwtUtil jwtUtil;
-    private final UserDao userDao;
 
-    @Autowired
-    public JwtFilter(JwtUtil jwtUtil, UserDao userDao) {
-        this.jwtUtil = jwtUtil;
-        this.userDao = userDao;
-    }
+	private final JwtUtil jwtUtil;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // Ensures that Authorization Header is occupied
-        String authHeader = request.getHeader("Authorization");
-        String jwt = null;
-        String username = null;
+	private final UserDao userDao;
 
-        if(authHeader == null || !authHeader.startsWith("Bearer ")){
-            log.error("No Authorization header found");
-        }
+	@Autowired
+	public JwtFilter(JwtUtil jwtUtil, UserDao userDao) {
+		this.jwtUtil = jwtUtil;
+		this.userDao = userDao;
+	}
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwt = authHeader.substring(7);
-            username = jwtUtil.extractUsername(jwt);
-        }
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
+		// Ensures that Authorization Header is occupied
+		String authHeader = request.getHeader("Authorization");
+		String jwt = null;
+		String username = null;
 
-        // Validation checks
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Ensures that the user exists
-            Optional<User> user = userDao.getByUsername(username);
+		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+			log.error("No Authorization header found");
+		}
 
-            if (jwtUtil.validateToken(jwt) && user.isPresent()) {
-                // Sets principal to user
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user.get(), null, null);
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
-        }
+		if (authHeader != null && authHeader.startsWith("Bearer ")) {
+			jwt = authHeader.substring(7);
+			username = jwtUtil.extractUsername(jwt);
+		}
 
-        filterChain.doFilter(request, response);
-    }
+		// Validation checks
+		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			// Ensures that the user exists
+			Optional<User> user = userDao.getByUsername(username);
+
+			if (jwtUtil.validateToken(jwt) && user.isPresent()) {
+				// Sets principal to user
+				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user.get(),
+						null, null);
+				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				SecurityContextHolder.getContext().setAuthentication(authToken);
+			}
+		}
+
+		filterChain.doFilter(request, response);
+	}
+
 }

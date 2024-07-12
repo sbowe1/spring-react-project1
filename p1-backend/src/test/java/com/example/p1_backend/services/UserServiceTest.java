@@ -27,188 +27,173 @@ import javax.security.auth.login.AccountNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @Mock
-    private UserDao uDao;
+	private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @Mock
-    private JwtUtil jwtUtil;
+	@Mock
+	private UserDao uDao;
 
-    @InjectMocks
-    private UserService us;
+	@Mock
+	private JwtUtil jwtUtil;
 
-    @Test
-    public void findAll() {
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiLCJST0xFX0FETUlOIl0sImlzcyI6InByb2plY3QxdGVhbSIsImlhdCI6MTcyMDgxOTc5MSwiZXhwIjoxNzIwOTA2MTkxfQ.KtN6nwRV2VI8heOvXyq1l3-r9_UEETZN_4Fso-BuUiA";
+	@InjectMocks
+	private UserService us;
 
-        Mockito.doReturn(getMockUsers(5)).when(uDao).findAll();
-        List<User> users = this.us.findAll("Bearer " + token);
+	@Test
+	public void findAll() {
+		String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiLCJST0xFX0FETUlOIl0sImlzcyI6InByb2plY3QxdGVhbSIsImlhdCI6MTcyMDgxOTc5MSwiZXhwIjoxNzIwOTA2MTkxfQ.KtN6nwRV2VI8heOvXyq1l3-r9_UEETZN_4Fso-BuUiA";
 
-        assertEquals(5, users.size());
-    }
+		Mockito.doReturn(getMockUsers(5)).when(uDao).findAll();
+		List<User> users = this.us.findAll("Bearer " + token);
 
-    private Iterable<User> getMockUsers(int size) {
-        List<User> users = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            users.add(
-                new User(
-                    "test-email" + i + "@test.com",
-                    "test-password",
-                    "test-username" + i,
-                    "ROLE_USER",
-                    "test-plan-" + i
-                )
-            );
-        }
-        return users;
-    }
+		assertEquals(5, users.size());
+	}
 
-    private User getMockUser() {
-        return new User(
-            "test-user-email@test.com",
-            "test-user-password",
-            "test-user-username",
-            "ROLE_USER",
-            "Spring Boot Roadmap"
-        );
-    }
+	private Iterable<User> getMockUsers(int size) {
+		List<User> users = new ArrayList<>(size);
+		for (int i = 0; i < size; i++) {
+			users.add(new User("test-email" + i + "@test.com", "test-password", "test-username" + i, "ROLE_USER",
+					"test-plan-" + i));
+		}
+		return users;
+	}
 
-    private String getToken(){
-        // This function broke???? so here's an example token I got from postman
-        return "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
-    }
+	private User getMockUser() {
+		return new User("test-user-email@test.com", "test-user-password", "test-user-username", "ROLE_USER",
+				"Spring Boot Roadmap");
+	}
 
-    // CREATE
-    @Test
-    void register() {
-        RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "test-user-password", "test-user-username");
-        User user = getMockUser();
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        
-        // Set expected behavior
-        when(uDao.getByUsername(registerDto.getUsername())).thenReturn(Optional.empty());
-        when(uDao.getByEmail(registerDto.getEmail())).thenReturn(Optional.empty());
-        when(uDao.save(any(User.class))).thenReturn(user);
-        
-        // Act
-        User result = us.register(registerDto);
-        
-        // Assert
-        assertNotNull(result);
-        assertEquals("test-user-email@test.com", result.getEmail());
-        assertTrue(passwordEncoder.matches("test-user-password", result.getPassword()));
-        assertEquals("test-user-username", result.getUsername());
-        assertEquals("ROLE_USER", result.getRoles().get(0));
-        assertEquals("Spring Boot Roadmap", result.getPlans().get(0));
-    }
+	private String getToken() {
+		// This function broke???? so here's an example token I got from postman
+		return "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
+	}
 
-    // READ
-    @Test
-    public void findByUserId() throws AccountNotFoundException {
-        // Arrange
-        String token = getToken();
+	// CREATE
+	@Test
+	void register() {
+		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "test-user-password",
+				"test-user-username");
+		User user = getMockUser();
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        User mockUser = getMockUser();
-        mockUser.setPassword(passwordEncoder.encode(mockUser.getPassword()));
-        mockUser.setUserId(1);
+		// Set expected behavior
+		when(uDao.getByUsername(registerDto.getUsername())).thenReturn(Optional.empty());
+		when(uDao.getByEmail(registerDto.getEmail())).thenReturn(Optional.empty());
+		when(uDao.save(any(User.class))).thenReturn(user);
 
-        // Mock the behavior of the repository to return the mock user
-        // Set expected behavior
-        when(jwtUtil.extractUserId(token)).thenReturn(1);
-        Mockito.when(uDao.findById(mockUser.getUserId())).thenReturn(Optional.of(mockUser));
+		// Act
+		User result = us.register(registerDto);
 
-        // Act
-        User result = us.findByUserId("Bearer " + token);
+		// Assert
+		assertNotNull(result);
+		assertEquals("test-user-email@test.com", result.getEmail());
+		assertTrue(passwordEncoder.matches("test-user-password", result.getPassword()));
+		assertEquals("test-user-username", result.getUsername());
+		assertEquals("ROLE_USER", result.getRoles().get(0));
+		assertEquals("Spring Boot Roadmap", result.getPlans().get(0));
+	}
 
-        // Assert
-        assertNotNull(result);
-        assertEquals(mockUser.getUserId(), result.getUserId());
-        assertEquals("test-user-email@test.com", result.getEmail());
-        assertTrue(passwordEncoder.matches("test-user-password", result.getPassword()));
-        assertEquals("test-user-username", result.getUsername());
-        assertEquals("ROLE_USER", result.getRoles().get(0)); // TODO: grab roles dynamically
-        assertEquals("Spring Boot Roadmap", result.getPlans().get(0));
-    }
+	// READ
+	@Test
+	public void findByUserId() throws AccountNotFoundException {
+		// Arrange
+		String token = getToken();
 
-    // UPDATE
-    @Test
-    void update() throws AccountNotFoundException {
-        // Arrange
-        String token = getToken();
+		User mockUser = getMockUser();
+		mockUser.setPassword(passwordEncoder.encode(mockUser.getPassword()));
+		mockUser.setUserId(1);
 
-        User currentUser = getMockUser();
-        currentUser.setPassword(passwordEncoder.encode(currentUser.getPassword()));
-        currentUser.setUserId(1);
+		// Mock the behavior of the repository to return the mock user
+		// Set expected behavior
+		when(jwtUtil.extractUserId(token)).thenReturn(1);
+		Mockito.when(uDao.findById(mockUser.getUserId())).thenReturn(Optional.of(mockUser));
 
-        // Set expected behavior
-        when(jwtUtil.extractUserId(token)).thenReturn(1);
-        when(uDao.save(any(User.class))).thenReturn(currentUser);
-        when(uDao.findById(anyInt())).thenReturn(Optional.of(currentUser));
+		// Act
+		User result = us.findByUserId("Bearer " + token);
 
-        // Act
-        User updatedUser = new User(
-            currentUser.getEmail(),
-            currentUser.getPassword(),
-            currentUser.getUsername(),
-            currentUser.getRoles(),
-            currentUser.getPlans()
-        );
-        updatedUser.setUserId(currentUser.getUserId());
+		// Assert
+		assertNotNull(result);
+		assertEquals(mockUser.getUserId(), result.getUserId());
+		assertEquals("test-user-email@test.com", result.getEmail());
+		assertTrue(passwordEncoder.matches("test-user-password", result.getPassword()));
+		assertEquals("test-user-username", result.getUsername());
+		assertEquals("ROLE_USER", result.getRoles().get(0)); // TODO: grab roles
+																// dynamically
+		assertEquals("Spring Boot Roadmap", result.getPlans().get(0));
+	}
 
-        String result = us.update("Bearer " + token, updatedUser);
+	// UPDATE
+	@Test
+	void update() throws AccountNotFoundException {
+		// Arrange
+		String token = getToken();
 
-        // Assert
-        assertNotNull(result);
-        assertEquals(currentUser.getUserId(), updatedUser.getUserId());
-        assertEquals("test-user-email@test.com", updatedUser.getEmail());
-        assertTrue(passwordEncoder.matches("test-user-password", updatedUser.getPassword()));
-        assertEquals("test-user-username", updatedUser.getUsername());
-        assertEquals("ROLE_USER", updatedUser.getRoles().get(0)); // TODO: grab roles dynamically
-        assertEquals("Spring Boot Roadmap", updatedUser.getPlans().get(0));
-        assertEquals("Profile updated successfully!", result);
-        verify(uDao, times(1)).findById(anyInt());
-        verify(uDao, atMost(1)).getByUsername(anyString());
-        verify(uDao, atMost(1)).getByEmail(anyString());
-    }
+		User currentUser = getMockUser();
+		currentUser.setPassword(passwordEncoder.encode(currentUser.getPassword()));
+		currentUser.setUserId(1);
 
-    // DELETE
-    @Test
-    void delete() {
-        String token = getToken();
+		// Set expected behavior
+		when(jwtUtil.extractUserId(token)).thenReturn(1);
+		when(uDao.save(any(User.class))).thenReturn(currentUser);
+		when(uDao.findById(anyInt())).thenReturn(Optional.of(currentUser));
 
-        when(jwtUtil.extractUserId(token)).thenReturn(1);
-        doNothing().when(uDao).deleteById(1);
+		// Act
+		User updatedUser = new User(currentUser.getEmail(), currentUser.getPassword(), currentUser.getUsername(),
+				currentUser.getRoles(), currentUser.getPlans());
+		updatedUser.setUserId(currentUser.getUserId());
 
-        String message = us.delete("Bearer " + token);
+		String result = us.update("Bearer " + token, updatedUser);
 
-        assertEquals("Account deleted successfully!", message);
-        verify(jwtUtil, times(1)).extractUserId(token);
-        verify(uDao, times(1)).deleteById(1);
-        verify(uDao, times(1)).findById(1);
-    }
+		// Assert
+		assertNotNull(result);
+		assertEquals(currentUser.getUserId(), updatedUser.getUserId());
+		assertEquals("test-user-email@test.com", updatedUser.getEmail());
+		assertTrue(passwordEncoder.matches("test-user-password", updatedUser.getPassword()));
+		assertEquals("test-user-username", updatedUser.getUsername());
+		assertEquals("ROLE_USER", updatedUser.getRoles().get(0)); // TODO: grab roles
+																	// dynamically
+		assertEquals("Spring Boot Roadmap", updatedUser.getPlans().get(0));
+		assertEquals("Profile updated successfully!", result);
+		verify(uDao, times(1)).findById(anyInt());
+		verify(uDao, atMost(1)).getByUsername(anyString());
+		verify(uDao, atMost(1)).getByEmail(anyString());
+	}
 
-    // LOGIN
-    @Test
-    public void login() throws AccountNotFoundException {
-        User mockUser = getMockUser();
-        mockUser.setUserId(1);
+	// DELETE
+	@Test
+	void delete() {
+		String token = getToken();
 
-        String token = getToken();
+		when(jwtUtil.extractUserId(token)).thenReturn(1);
+		doNothing().when(uDao).deleteById(1);
 
-        LoginDto loginDto = new LoginDto(
-          mockUser.getUsername(),
-          mockUser.getPassword()
-        );
+		String message = us.delete("Bearer " + token);
 
-        mockUser.setPassword(passwordEncoder.encode(mockUser.getPassword()));
+		assertEquals("Account deleted successfully!", message);
+		verify(jwtUtil, times(1)).extractUserId(token);
+		verify(uDao, times(1)).deleteById(1);
+		verify(uDao, times(1)).findById(1);
+	}
 
-        when(uDao.getByUsername(loginDto.getUsername())).thenReturn(Optional.of(mockUser));
-        when(jwtUtil.generateToken(mockUser)).thenReturn(token);
+	// LOGIN
+	@Test
+	public void login() throws AccountNotFoundException {
+		User mockUser = getMockUser();
+		mockUser.setUserId(1);
 
-        String result = us.login(loginDto);
+		String token = getToken();
 
-        assertNotNull(result);
-        assertEquals(token, result);
-    }
+		LoginDto loginDto = new LoginDto(mockUser.getUsername(), mockUser.getPassword());
+
+		mockUser.setPassword(passwordEncoder.encode(mockUser.getPassword()));
+
+		when(uDao.getByUsername(loginDto.getUsername())).thenReturn(Optional.of(mockUser));
+		when(jwtUtil.generateToken(mockUser)).thenReturn(token);
+
+		String result = us.login(loginDto);
+
+		assertNotNull(result);
+		assertEquals(token, result);
+	}
+
 }
