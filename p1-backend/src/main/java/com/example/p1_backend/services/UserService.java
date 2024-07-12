@@ -65,7 +65,7 @@ public class UserService {
     }
 
     // READ
-    public OutUserDto findByUserId(String token) throws AccountNotFoundException {
+    public User findByUserId(String token) throws AccountNotFoundException {
         int userId = jwtUtil.extractUserId(token);
 
         Optional<User> optUser = uDao.findById(userId);
@@ -73,13 +73,7 @@ public class UserService {
             log.warn("User not found");
              throw new AccountNotFoundException("User with userId: " + userId + " not found");
         }
-        User user = uDao.findById(userId).get();
-        return new OutUserDto(
-           token,
-           user.getPlans(),
-           user.getRoles(),
-           user.getUsername()
-        ); // TODO: return webDto? (no password, id, etc.)
+        return uDao.findById(userId).get();
     }
     
     // UPDATE

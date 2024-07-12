@@ -118,14 +118,16 @@ public class UserServiceTest {
         Mockito.when(uDao.findById(mockUser.getUserId())).thenReturn(Optional.of(mockUser));
 
         // Act
-        OutUserDto result = us.findByUserId(token);
+        User result = us.findByUserId(token);
 
         // Assert
         assertNotNull(result);
+        assertEquals(mockUser.getUserId(), result.getUserId());
+        assertEquals("test-user-email@test.com", result.getEmail());
+        assertTrue(passwordEncoder.matches("test-user-password", result.getPassword()));
         assertEquals("test-user-username", result.getUsername());
         assertEquals("ROLE_USER", result.getRoles().get(0)); // TODO: grab roles dynamically
         assertEquals("Spring Boot Roadmap", result.getPlans().get(0));
-        assertEquals(token, result.getToken());
     }
 
     // UPDATE
@@ -200,6 +202,6 @@ public class UserServiceTest {
         String result = us.login(loginDto);
 
         assertNotNull(result);
-        assertEquals(token, result.getToken());
+        assertEquals(token, result);
     }
 }
