@@ -111,7 +111,7 @@ public class UserService {
         return "Account deleted successfully!";
     }
 
-    public OutUserDto login(LoginDto loginDto) throws AccountNotFoundException {
+    public String login(LoginDto loginDto) throws AccountNotFoundException {
         Optional<User> optUser = uDao.getByUsername(loginDto.getUsername());
 
         if (optUser.isEmpty()) {
@@ -119,15 +119,10 @@ public class UserService {
             throw new AccountNotFoundException("User with username: " + loginDto.getUsername() + " not found");
         }
 
-        log.info("Login successful");
         if(passwordEncoder.matches(loginDto.getPassword(), optUser.get().getPassword())){
             String token = jwtUtil.generateToken(optUser.get());
-            return new OutUserDto(
-                    token,
-                    optUser.get().getPlans(),
-                    optUser.get().getRoles(),
-                    optUser.get().getUsername()
-            );
+            log.info("Login successful");
+            return token;
         }else{
             log.warn("Incorrect login credentials");
             return null;
