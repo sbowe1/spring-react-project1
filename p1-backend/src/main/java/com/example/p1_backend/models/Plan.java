@@ -26,4 +26,5 @@ public class Plan {
 	public Plan(String name) {
 		this.name = name;
 	}
+
 }

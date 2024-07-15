@@ -8,5 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface PlanDao extends JpaRepository<Plan, Integer> {
-    Optional<Plan> getByName(String name);
+
+	Optional<Plan> getByName(String name);
+
 }

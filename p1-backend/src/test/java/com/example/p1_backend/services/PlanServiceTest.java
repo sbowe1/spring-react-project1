@@ -17,25 +17,27 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class PlanServiceTest {
-    @Mock
-    private PlanDao planDao;
 
-    @InjectMocks
-    private PlanService ps;
+	@Mock
+	private PlanDao planDao;
 
-    // CREATE
-    @Test
-    public void createPlan(){
-        String name = "Spring Boot Roadmap";
-        Plan mockPlan = new Plan(name);
-        mockPlan.setPlanId(1);
+	@InjectMocks
+	private PlanService ps;
 
-        when(planDao.getByName(name)).thenReturn(Optional.empty());
-        when(planDao.save(any(Plan.class))).thenReturn(mockPlan);
+	// CREATE
+	@Test
+	public void createPlan() {
+		String name = "Spring Boot Roadmap";
+		Plan mockPlan = new Plan(name);
+		mockPlan.setPlanId(1);
 
-        Plan plan = ps.createPlan(name);
+		when(planDao.getByName(name)).thenReturn(Optional.empty());
+		when(planDao.save(any(Plan.class))).thenReturn(mockPlan);
 
-        assertNotNull(plan);
-        assertEquals("Spring Boot Roadmap", plan.getName());
-    }
+		Plan plan = ps.createPlan(name);
+
+		assertNotNull(plan);
+		assertEquals("Spring Boot Roadmap", plan.getName());
+	}
+
 }

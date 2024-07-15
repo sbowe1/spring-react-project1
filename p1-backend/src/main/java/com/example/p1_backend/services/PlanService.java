@@ -12,23 +12,25 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class PlanService {
-    private final PlanDao planDao;
 
-    @Autowired
-    public PlanService(PlanDao planDao) {
-        this.planDao = planDao;
-    }
+	private final PlanDao planDao;
 
-    // CREATE
-    public Plan createPlan(String name){
-        Optional<Plan> optPlan = planDao.getByName(name);
-        if(optPlan.isPresent()){
-            throw new KeyAlreadyExistsException("That plan already exists");
-        }
+	@Autowired
+	public PlanService(PlanDao planDao) {
+		this.planDao = planDao;
+	}
 
-        Plan newPlan = planDao.save(new Plan(name));
-        return newPlan;
-    }
+	// CREATE
+	public Plan createPlan(String name) {
+		Optional<Plan> optPlan = planDao.getByName(name);
+		if (optPlan.isPresent()) {
+			throw new KeyAlreadyExistsException("That plan already exists");
+		}
 
-    //
+		Plan newPlan = planDao.save(new Plan(name));
+		return newPlan;
+	}
+
+	//
+
 }

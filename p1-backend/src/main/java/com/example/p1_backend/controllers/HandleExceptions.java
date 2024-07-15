@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.management.openmbean.KeyAlreadyExistsException;
 import javax.security.auth.login.AccountNotFoundException;
 
 @RestControllerAdvice
@@ -16,6 +17,11 @@ public class HandleExceptions {
 
 	@ExceptionHandler(value = { IllegalArgumentException.class })
 	protected ResponseEntity<?> illegalArgumentException(Exception e) {
+		return ResponseEntity.status(401).body(e.getMessage());
+	}
+
+	@ExceptionHandler(value = { KeyAlreadyExistsException.class })
+	protected ResponseEntity<?> keyAlreadyExistsException(Exception e) {
 		return ResponseEntity.status(401).body(e.getMessage());
 	}
 
