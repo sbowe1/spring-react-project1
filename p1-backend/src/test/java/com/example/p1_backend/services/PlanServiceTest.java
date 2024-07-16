@@ -13,7 +13,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class PlanServiceTest {
@@ -38,6 +39,37 @@ public class PlanServiceTest {
 
 		assertNotNull(plan);
 		assertEquals("Spring Boot Roadmap", plan.getName());
+	}
+
+	// READ
+	@Test
+	public void readPlan() {
+		Plan mockPlan = new Plan(1, "Spring Boot Roadmap");
+
+		when(planDao.findById(anyInt())).thenReturn(Optional.of(mockPlan));
+
+		Plan result = ps.readPlan(1);
+
+		assertNotNull(result);
+		assertEquals(1, result.getPlanId());
+		assertEquals("Spring Boot Roadmap", result.getName());
+		verify(planDao, times(1)).findById(anyInt());
+	}
+
+	// DELETE
+	@Test
+	public void deletePlan() {
+		Plan mockPlan = new Plan(1, "Spring Boot Roadmap");
+
+		// Returns mockPlan the first time, and an empty Optional the second time
+		when(planDao.findById(anyInt())).thenReturn(Optional.of(mockPlan)).thenReturn(Optional.empty());
+		doNothing().when(planDao).deleteById(1);
+
+		String message = ps.deletePlan(1);
+
+		assertEquals("Plan successfully deleted", message);
+		verify(planDao, atMost(1)).deleteById(1);
+		verify(planDao, atMost(2)).findById(1);
 	}
 
 }
