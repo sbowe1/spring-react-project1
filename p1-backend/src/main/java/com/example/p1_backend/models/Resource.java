@@ -6,6 +6,7 @@ import lombok.*;
 import org.springframework.stereotype.Component;
 
 @Entity
+@Table(name = "resources")
 @Component
 @Data
 @NoArgsConstructor
