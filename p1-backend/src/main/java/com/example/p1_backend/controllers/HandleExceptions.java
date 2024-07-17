@@ -1,6 +1,7 @@
 package com.example.p1_backend.controllers;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -29,6 +30,11 @@ public class HandleExceptions {
 	@ExceptionHandler(value = { NoSuchElementException.class })
 	protected ResponseEntity<?> noSuchElementException(Exception e) {
 		return ResponseEntity.status(404).body(e.getMessage());
+	}
+
+	@ExceptionHandler(value = {AccessDeniedException.class})
+	protected ResponseEntity<?> accessDeniedException(Exception e){
+		return ResponseEntity.status(403).body(e.getMessage());
 	}
 
 }

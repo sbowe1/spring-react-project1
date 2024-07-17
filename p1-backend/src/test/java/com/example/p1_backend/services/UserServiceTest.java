@@ -41,8 +41,12 @@ public class UserServiceTest {
 
 	@Test
 	public void findAll() {
-		String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiLCJST0xFX0FETUlOIl0sImlzcyI6InByb2plY3QxdGVhbSIsImlhdCI6MTcyMDgxOTc5MSwiZXhwIjoxNzIwOTA2MTkxfQ.KtN6nwRV2VI8heOvXyq1l3-r9_UEETZN_4Fso-BuUiA";
+		String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlIjpbIlJPTEVfVVNFUiIsIlJPTEVfQURNSU4iXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIxMTkzOTY2LCJleHAiOjE3MjEyODAzNjZ9.UEVBOz2smZknOVjQmRcKgcF1DiR8osedb2kYgV7XxGA";
+		ArrayList roles = new ArrayList<String>();
+		roles.add("ROLE_USER");
+		roles.add("ROLE_ADMIN");
 
+		when(jwtUtil.extractRoles(token)).thenReturn(roles);
 		Mockito.doReturn(getMockUsers(5)).when(uDao).findAll();
 		List<User> users = this.us.findAll("Bearer " + token);
 

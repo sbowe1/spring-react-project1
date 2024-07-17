@@ -13,6 +13,7 @@ import com.example.p1_backend.models.dtos.RegisterDto;
 import com.example.p1_backend.services.UserService;
 
 import javax.security.auth.login.AccountNotFoundException;
+import java.util.List;
 
 @RestController
 @RequestMapping("users")
@@ -39,6 +40,13 @@ public class UserController {
 			throws AccountNotFoundException {
 		User user = us.findByUserId(token);
 		return new ResponseEntity<>(user, OK);
+	}
+
+	// READ
+	@GetMapping
+	public ResponseEntity<List<User>> viewAllUsers(@RequestHeader("Authorization") String token){
+		List<User> users = us.findAll(token);
+		return new ResponseEntity<>(users, OK);
 	}
 
 	// UPDATE
