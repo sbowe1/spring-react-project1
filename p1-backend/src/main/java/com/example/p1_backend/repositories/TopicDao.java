@@ -9,6 +9,6 @@ import java.util.Optional;
 @Repository
 public interface TopicDao extends JpaRepository<Topic, Integer> {
 
-	Optional<Topic> getByName(String topicName);
+	Optional<Topic> getByTitle(String topicName);
 
 }

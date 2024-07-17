@@ -28,7 +28,7 @@ public class SubtopicService {
 
 	// CREATE
 	public Subtopic createSubtopic(InSubtopicDto subtopicDto) {
-		Optional<Topic> optTopic = topicDao.getByName(subtopicDto.getTopicName());
+		Optional<Topic> optTopic = topicDao.getByTitle(subtopicDto.getTopicTitle());
 
 		Subtopic subtopic = new Subtopic(subtopicDto.getTitle(), subtopicDto.getDescription(), optTopic.get(), false);
 

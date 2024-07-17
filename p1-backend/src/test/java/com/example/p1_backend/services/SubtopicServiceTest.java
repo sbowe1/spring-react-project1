@@ -52,7 +52,7 @@ public class SubtopicServiceTest {
 		Subtopic mockSubtopic = new Subtopic(subtopicDto.getTitle(), subtopicDto.getDescription(), mockTopic, false);
 		mockSubtopic.setSubtopicId(1);
 
-		when(topicDao.getByName(anyString())).thenReturn(Optional.of(mockTopic));
+		when(topicDao.getByTitle(anyString())).thenReturn(Optional.of(mockTopic));
 		when(subtopicDao.save(any(Subtopic.class))).thenReturn(mockSubtopic);
 
 		Subtopic result = ss.createSubtopic(subtopicDto);
