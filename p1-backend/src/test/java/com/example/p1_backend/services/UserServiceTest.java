@@ -140,6 +140,7 @@ public class UserServiceTest {
 		when(jwtUtil.extractUserId(token)).thenReturn(1);
 		when(uDao.save(any(User.class))).thenReturn(currentUser);
 		when(uDao.findById(anyInt())).thenReturn(Optional.of(currentUser));
+		when(jwtUtil.generateToken(any(User.class))).thenReturn(token);
 
 		// Act
 		User updatedUser = new User(currentUser.getEmail(), currentUser.getPassword(), currentUser.getUsername(),
@@ -157,7 +158,7 @@ public class UserServiceTest {
 		assertEquals("ROLE_USER", updatedUser.getRoles().get(0)); // TODO: grab roles
 																	// dynamically
 		assertEquals("Spring Boot Roadmap", updatedUser.getPlans().get(0));
-		assertEquals("Profile updated successfully!", result);
+		assertEquals(token, result);
 		verify(uDao, times(1)).findById(anyInt());
 		verify(uDao, atMost(1)).getByUsername(anyString());
 		verify(uDao, atMost(1)).getByEmail(anyString());
