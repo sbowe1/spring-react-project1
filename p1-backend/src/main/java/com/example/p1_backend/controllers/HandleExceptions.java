@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 import javax.security.auth.login.AccountNotFoundException;
+import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class HandleExceptions {
@@ -23,6 +24,11 @@ public class HandleExceptions {
 	@ExceptionHandler(value = { KeyAlreadyExistsException.class })
 	protected ResponseEntity<?> keyAlreadyExistsException(Exception e) {
 		return ResponseEntity.status(401).body(e.getMessage());
+	}
+
+	@ExceptionHandler(value = { NoSuchElementException.class })
+	protected ResponseEntity<?> noSuchElementException(Exception e) {
+		return ResponseEntity.status(404).body(e.getMessage());
 	}
 
 }
