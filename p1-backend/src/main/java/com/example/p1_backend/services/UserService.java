@@ -39,7 +39,7 @@ public class UserService {
 	public List<User> findAll(String token) {
 		ArrayList<String> roles = jwtUtil.extractRoles(token.substring(7));
 
-		if(!roles.contains("ROLE_ADMIN")){
+		if (!roles.contains("ROLE_ADMIN")) {
 			log.warn("Permission denied");
 			throw new AccessDeniedException("You do not have permission to access");
 		}

@@ -32,8 +32,8 @@ public class HandleExceptions {
 		return ResponseEntity.status(404).body(e.getMessage());
 	}
 
-	@ExceptionHandler(value = {AccessDeniedException.class})
-	protected ResponseEntity<?> accessDeniedException(Exception e){
+	@ExceptionHandler(value = { AccessDeniedException.class })
+	protected ResponseEntity<?> accessDeniedException(Exception e) {
 		return ResponseEntity.status(403).body(e.getMessage());
 	}
 

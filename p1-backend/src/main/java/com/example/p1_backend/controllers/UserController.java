@@ -44,7 +44,7 @@ public class UserController {
 
 	// READ
 	@GetMapping
-	public ResponseEntity<List<User>> viewAllUsers(@RequestHeader("Authorization") String token){
+	public ResponseEntity<List<User>> viewAllUsers(@RequestHeader("Authorization") String token) {
 		List<User> users = us.findAll(token);
 		return new ResponseEntity<>(users, OK);
 	}
