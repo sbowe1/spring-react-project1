@@ -6,8 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Component
 @Slf4j
@@ -45,7 +45,7 @@ public class JwtUtil {
 			.subject(String.format("%s", user.getUserId()))
 			// Encodes username and roles in the claims of the token
 			.claim("username", user.getUsername())
-			.claim("roles", user.getRoles())
+			.claim("role", user.getRoles())
 			.issuer("project1team")
 			.issuedAt(new Date())
 			.expiration(new Date(System.currentTimeMillis() + EXPIRE_TIME))
@@ -70,8 +70,8 @@ public class JwtUtil {
 	}
 
 	// Extract roles from JWT token
-	public String[] extractRoles(String token) {
-		return Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token).getPayload().get("roles", String[].class);
+	public ArrayList extractRoles(String token) {
+		return Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token).getPayload().get("role", ArrayList.class);
 	}
 
 }

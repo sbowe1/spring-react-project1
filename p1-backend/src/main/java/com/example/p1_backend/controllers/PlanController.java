@@ -30,22 +30,23 @@ public class PlanController {
 	}
 
 	// READ PLAN
-	@GetMapping
-	public ResponseEntity<Plan> readPlan(@RequestHeader("Authorization") String token, int planId) {
+	@GetMapping("{planId}")
+	public ResponseEntity<Plan> readPlan(@RequestHeader("Authorization") String token, @PathVariable int planId) {
 		Plan plan = ps.readPlan(planId);
 		return new ResponseEntity<>(plan, OK);
 	}
 
 	// READ CONTENTS
-	@GetMapping("contents")
-	public ResponseEntity<OutPlan> readContents(@RequestHeader("Authorization") String token, int planId) {
+	@GetMapping("contents/{planId}")
+	public ResponseEntity<OutPlan> readContents(@RequestHeader("Authorization") String token,
+			@PathVariable int planId) {
 		OutPlan planWithContents = ps.readContents(planId);
 		return new ResponseEntity<>(planWithContents, OK);
 	}
 
 	// DELETE
-	@DeleteMapping
-	public ResponseEntity<String> deletePlan(@RequestHeader("Authorization") String token, int planId) {
+	@DeleteMapping("{planId}")
+	public ResponseEntity<String> deletePlan(@RequestHeader("Authorization") String token, @PathVariable int planId) {
 		String message = ps.deletePlan(planId);
 		return new ResponseEntity<>(message, OK);
 	}

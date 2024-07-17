@@ -36,4 +36,11 @@ public class Subtopic {
 		this.status = status;
 	}
 
+	public Subtopic(String title, String description, Topic topic, boolean status) {
+		this.title = title;
+		this.description = description;
+		this.topic = topic;
+		this.status = status;
+	}
+
 }

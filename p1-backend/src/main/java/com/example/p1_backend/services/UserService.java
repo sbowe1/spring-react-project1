@@ -8,6 +8,7 @@ import com.example.p1_backend.models.dtos.LoginDto;
 import com.example.p1_backend.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,20 +37,12 @@ public class UserService {
 	}
 
 	public List<User> findAll(String token) {
-		// String[] roles = jwtUtil.extractRoles(token.substring(7));
-		// boolean isAdmin = false;
-		//
-		// for(String role : roles){
-		// if(role.equals("ROLE_ADMIN")){
-		// isAdmin = true;
-		// break;
-		// }
-		// }
-		//
-		// if(!isAdmin){
-		// log.warn("User does not have permission to access this request");
-		// throw new AccessDeniedException("Unauthorized request");
-		// }
+		ArrayList<String> roles = jwtUtil.extractRoles(token.substring(7));
+
+		if (!roles.contains("ROLE_ADMIN")) {
+			log.warn("Permission denied");
+			throw new AccessDeniedException("You do not have permission to access");
+		}
 
 		return uDao.findAll();
 	}
@@ -112,17 +105,21 @@ public class UserService {
 
 		if (updatedUser.getUsername() != null && !updatedUser.getUsername().isBlank()) {
 			// Ensuring that Username is not taken
-			if (uDao.getByUsername(updatedUser.getUsername()).isPresent()) {
+			Optional<User> optUser2 = uDao.getByUsername(updatedUser.getUsername());
+			if (optUser2.isPresent() && optUser2.get().getUserId() != optUser.get().getUserId()) {
 				log.warn("Username is already taken");
 				throw new IllegalArgumentException("Username is already taken!");
 			}
+
+			optUser.get().setUsername(updatedUser.getUsername());
 		}
 		if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
 			optUser.get().setPassword(passwordEncoder.encode(updatedUser.getPassword()));
 		}
 		if (updatedUser.getEmail() != null && !updatedUser.getEmail().isEmpty()) {
 			// Ensuring that Email is not taken
-			if (uDao.getByEmail(updatedUser.getEmail()).isPresent()) {
+			Optional<User> optUser3 = uDao.getByEmail(updatedUser.getEmail());
+			if (optUser3.isPresent() && !optUser3.get().getEmail().equals(optUser.get().getEmail())) {
 				log.warn("Email is already linked to another account");
 				throw new IllegalArgumentException("Email is already linked to an account!");
 			}
@@ -138,7 +135,7 @@ public class UserService {
 
 		log.info("User with userId: {}'s information updated", optUser.get().getUserId());
 		uDao.save(optUser.get());
-		return "Profile updated successfully!";
+		return jwtUtil.generateToken(optUser.get());
 	}
 
 	// DELETE

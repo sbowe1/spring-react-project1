@@ -31,4 +31,10 @@ public class Topic {
 		this.status = status;
 	}
 
+	public Topic(String title, Plan plan, boolean status) {
+		this.title = title;
+		this.plan = plan;
+		this.status = status;
+	}
+
 }
