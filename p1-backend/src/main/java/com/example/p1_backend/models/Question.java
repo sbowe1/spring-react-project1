@@ -28,12 +28,24 @@ public class Question {
 	@JsonIgnoreProperties({ "planId", "status" })
 	private Topic topic;
 
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "userId")
+	private User user;
+
 	public Question(int questionId, String question, String answer, boolean correct, Topic topic) {
 		this.questionId = questionId;
 		this.question = question;
 		this.answer = answer;
 		this.correct = correct;
 		this.topic = topic;
+	}
+
+	public Question(String question, String answer, boolean correct, Topic topic, User user) {
+		this.question = question;
+		this.answer = answer;
+		this.correct = correct;
+		this.topic = topic;
+		this.user = user;
 	}
 
 }
