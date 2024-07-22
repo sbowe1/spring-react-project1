@@ -5,7 +5,6 @@ import com.example.p1_backend.models.dtos.InQuestionDto;
 import com.example.p1_backend.services.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.CREATED;
