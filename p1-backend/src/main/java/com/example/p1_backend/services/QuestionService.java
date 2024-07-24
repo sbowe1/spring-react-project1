@@ -4,6 +4,8 @@ import com.example.p1_backend.models.Question;
 import com.example.p1_backend.models.Topic;
 import com.example.p1_backend.models.User;
 import com.example.p1_backend.models.dtos.InQuestionDto;
+import com.example.p1_backend.models.dtos.QuestionNoTopicNoUserDto;
+import com.example.p1_backend.models.dtos.QuestionNoUserDto;
 import com.example.p1_backend.repositories.QuestionDao;
 import com.example.p1_backend.repositories.TopicDao;
 import com.example.p1_backend.repositories.UserDao;
@@ -12,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -57,6 +61,31 @@ public class QuestionService {
 		}
 
 		return optQuestion.get();
+	}
+
+	public List<QuestionNoUserDto> getQuestionsByUser(String token) {
+		int userId = jwtUtil.extractUserId(token.substring(7));
+		List<Question> questions = questionDao.findAllByUserUserId(userId);
+
+		List<QuestionNoUserDto> questionList = new ArrayList<>();
+		for (Question question : questions) {
+			QuestionNoUserDto q = new QuestionNoUserDto(question);
+			questionList.add(q);
+		}
+
+		return questionList;
+	}
+
+	public List<QuestionNoTopicNoUserDto> getQuestionsByTopic(int topicId) {
+		List<Question> questions = questionDao.findAllByTopicTopicId(topicId);
+
+		List<QuestionNoTopicNoUserDto> questionList = new ArrayList<>();
+		for (Question question : questions) {
+			QuestionNoTopicNoUserDto q = new QuestionNoTopicNoUserDto(question);
+			questionList.add(q);
+		}
+
+		return questionList;
 	}
 
 	// UPDATE

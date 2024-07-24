@@ -2,10 +2,14 @@ package com.example.p1_backend.controllers;
 
 import com.example.p1_backend.models.Question;
 import com.example.p1_backend.models.dtos.InQuestionDto;
+import com.example.p1_backend.models.dtos.QuestionNoTopicNoUserDto;
+import com.example.p1_backend.models.dtos.QuestionNoUserDto;
 import com.example.p1_backend.services.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
@@ -36,6 +40,19 @@ public class QuestionController {
 			@PathVariable int questionId) {
 		Question question = qs.readQuestion(questionId);
 		return new ResponseEntity<>(question, OK);
+	}
+
+	@GetMapping("user")
+	public ResponseEntity<List<QuestionNoUserDto>> getQuestionsByUser(@RequestHeader("Authorization") String token) {
+		List<QuestionNoUserDto> questions = qs.getQuestionsByUser(token);
+		return new ResponseEntity<>(questions, OK);
+	}
+
+	@GetMapping("/topic/{topicId}")
+	public ResponseEntity<List<QuestionNoTopicNoUserDto>> getQuestionByTopic(
+			@RequestHeader("Authorization") String token, @PathVariable int topicId) {
+		List<QuestionNoTopicNoUserDto> questions = qs.getQuestionsByTopic(topicId);
+		return new ResponseEntity<>(questions, OK);
 	}
 
 	// UPDATE

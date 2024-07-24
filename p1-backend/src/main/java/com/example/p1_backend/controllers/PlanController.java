@@ -4,11 +4,12 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 import com.example.p1_backend.models.Plan;
-import com.example.p1_backend.models.dtos.OutPlan;
 import com.example.p1_backend.services.PlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.security.auth.login.AccountNotFoundException;
 
 @RestController
 @RequestMapping("plans")
@@ -24,8 +25,9 @@ public class PlanController {
 
 	// CREATE
 	@PostMapping("create")
-	public ResponseEntity<Plan> createPlan(@RequestHeader("Authorization") String token, @RequestBody String name) {
-		Plan plan = ps.createPlan(name);
+	public ResponseEntity<Plan> createPlan(@RequestHeader("Authorization") String token, @RequestBody String name)
+			throws AccountNotFoundException {
+		Plan plan = ps.createPlan(token, name);
 		return new ResponseEntity<>(plan, CREATED);
 	}
 
@@ -37,12 +39,6 @@ public class PlanController {
 	}
 
 	// READ CONTENTS
-	@GetMapping("contents/{planId}")
-	public ResponseEntity<OutPlan> readContents(@RequestHeader("Authorization") String token,
-			@PathVariable int planId) {
-		OutPlan planWithContents = ps.readContents(planId);
-		return new ResponseEntity<>(planWithContents, OK);
-	}
 
 	// DELETE
 	@DeleteMapping("{planId}")

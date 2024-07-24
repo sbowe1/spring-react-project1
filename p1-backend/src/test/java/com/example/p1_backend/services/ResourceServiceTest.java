@@ -1,9 +1,6 @@
 package com.example.p1_backend.services;
 
-import com.example.p1_backend.models.Plan;
-import com.example.p1_backend.models.Resource;
-import com.example.p1_backend.models.Subtopic;
-import com.example.p1_backend.models.Topic;
+import com.example.p1_backend.models.*;
 import com.example.p1_backend.models.dtos.InResourceDto;
 import com.example.p1_backend.models.dtos.OutResourceDto;
 import com.example.p1_backend.repositories.ResourceDao;
@@ -37,8 +34,13 @@ public class ResourceServiceTest {
 	@InjectMocks
 	private ResourceService rs;
 
+	private User getMockUser() {
+		return new User("test-user-email@test.com", "test-user-password", "test-user-username", "ROLE_USER",
+				"Spring Boot Roadmap");
+	}
+
 	public Plan getPlan() {
-		return new Plan(1, "Spring Boot Roadmap");
+		return new Plan(1, "Spring Boot Roadmap", getMockUser());
 	}
 
 	public Topic getTopic() {
