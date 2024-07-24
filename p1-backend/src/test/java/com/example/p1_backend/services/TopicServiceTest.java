@@ -2,6 +2,7 @@ package com.example.p1_backend.services;
 
 import com.example.p1_backend.models.Plan;
 import com.example.p1_backend.models.Topic;
+import com.example.p1_backend.models.User;
 import com.example.p1_backend.models.dtos.InTopicDto;
 import com.example.p1_backend.repositories.PlanDao;
 import com.example.p1_backend.repositories.TopicDao;
@@ -29,8 +30,13 @@ public class TopicServiceTest {
 	@InjectMocks
 	private TopicService ts;
 
+	private User getMockUser() {
+		return new User("test-user-email@test.com", "test-user-password", "test-user-username", "ROLE_USER",
+				"Spring Boot Roadmap");
+	}
+
 	public Plan getPlan() {
-		return new Plan(1, "Spring Boot Roadmap");
+		return new Plan(1, "Spring Boot Roadmap", getMockUser());
 	}
 
 	public Topic getTopic() {

@@ -51,7 +51,7 @@ public class QuestionServiceTest {
 	}
 
 	public Topic getTopic() {
-		Plan plan = new Plan(1, "Spring Boot Roadmap");
+		Plan plan = new Plan(1, "Spring Boot Roadmap", getUser());
 		return new Topic(1, "Topic 1", plan, false);
 
 	}
