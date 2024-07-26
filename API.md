@@ -4,6 +4,12 @@ All Request Body inputs should be in JSON form. Outputs will also be returned in
 
 *Apart from User Registration and Login, all API requests reqire the JSON Web Token to be sent in the Authorization Header as a Bearer Token.*
 
+<style>
+    table th:nth-of-type(4) {
+        width: 25%;
+    }
+</style>
+
 | Function | URL | Request Body | Output | Notes |
 |----------|-----|--------------|--------|-------|
 | User Registration | {{baseUrl}}/users/register | <pre>{ <br> "email": "value1", <br> "password": "value2", <br> "username": "value3" <br>}</pre> | <pre>{ <br> "userId": value, <br> "email": "value1", <br> "username": "value2", <br> "roles": [<br>     "ROLE_USER" <br>  ], <br> "plans": [<br>     "Spring Boot Roadmap" <br>  ]<br>}</pre> | |
@@ -24,3 +30,10 @@ All Request Body inputs should be in JSON form. Outputs will also be returned in
 | Create a Resource (With Subtopic) | {{baseUrl}}/resources/{topicId}/{subtopicId} | <pre>{<br> "title": "value1", <br> "description": "value2", <br> "type": "value3", <br> "url": "value4" <br>}</pre> | <pre>{<br> "resourceId": value, <br> "title": "value1", <br> "description": "value2", <br> "type": "value3", <br> "url": "value4", <br> "topicName": "value5", <br> "subtopicName": "value6" <br>}</pre> | The topicId and subtopicId must be included as path variables |
 | View Resource | {{baseUrl}}/resources/{resourceId} | | <pre>{<br> "resourceId": value, <br> "title": "value1", <br> "description": "value2", <br> "type": "value3", <br> "url": "value4", <br> "topicName": "value5", <br> "subtopicName": "value6" <br>}</pre> | The resourceId must be included as a path variable |
 | Update Resource | {{baseUrl}}/resources/{resourceId} | Full or partial Resource entity, containing fields to be updated | Updated Resource entity | The resourceId must be included as a path variable |
+| Create Question | {{baseUrl}}/questions/create | <pre>{<br> "question": "value1", <br> "answer": "value2", <br> "topicName": "value3" <br>}</pre> | <pre>{<br> "questionId": value, <br> "question": "value1", <br> "answer": "value2", <br> "correct": false, <br> "topic": {<br>     "topicId": value, <br>     "title": "value1", <br>     "plan": {<br>        "planId": value, <br>        "name": "value1" <br>     }<br> }, <br> "user": {<br>      "userId": value, <br>      "email": "value1", <br>      "username": "value2", <br>      "roles": [<br>        "ROLE_USER" <br>       ], <br>      "plans": [<br>        "Spring Boot Roadmap" <br>       ]<br> } <br>}</pre> | |
+| View Question | {{baseUrl}}/questions/{questionId} | | <pre>{<br> "questionId": value, <br> "question": "value1", <br> "answer": "value2", <br> "correct": false, <br> "topic": {<br>     "topicId": value, <br>     "title": "value1", <br>     "plan": {<br>        "planId": value, <br>        "name": "value1" <br>     }<br> }, <br> "user": {<br>      "userId": value, <br>      "email": "value1", <br>      "username": "value2", <br>      "roles": [<br>        "ROLE_USER" <br>       ], <br>      "plans": [<br>        "Spring Boot Roadmap" <br>       ]<br> } <br>}</pre> | The questionId must be included as a path variable |
+| View All Questions By User | {{baseUrl}}/questions/user | | List of Question entities, minus the User information | |
+| View User's Questions Per Topic | {{baseUrl}}/questions/topic/{topicId} | | List of Question entities, minus the User and Topic information | The topicId must be included as a path variable |
+| Mark Question as Correct | {{baseUrl}}/questions/corect/{questionId} | | <pre>{<br> "questionId": value, <br> "question": "value1", <br> "answer": "value2", <br> "correct": true, <br> "topic": {<br>     "topicId": value, <br>     "title": "value1", <br>     "plan": {<br>        "planId": value, <br>        "name": "value1" <br>     }<br> }, <br> "user": {<br>      "userId": value, <br>      "email": "value1", <br>      "username": "value2", <br>      "roles": [<br>        "ROLE_USER" <br>       ], <br>      "plans": [<br>        "Spring Boot Roadmap" <br>       ]<br> } <br>}</pre> | The questionId must be included as a path variable <br> Used to track knowledge of Question content |
+| Update Question | {{baseUrl}}/questions/{questionId} | Full or partial Question entity, containing fields to be updated | Updated Question entity | The questionId must be included as a path variable <br> Intended use: correcting typos in question, answer, or URL |
+| Delete Question | {{baseUrl}}/questions/{questionId} | | <pre>Question: [question] deleted successfully</pre> | The questionId must be included as a path variable |
