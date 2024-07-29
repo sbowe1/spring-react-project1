@@ -78,6 +78,8 @@ public class UserServiceTest {
 		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "test-user-password",
 				"test-user-username");
 		User user = getMockUser();
+		// Because Users create their own plans, there should not be a default plan
+		user.setPlans(new ArrayList<>());
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 
 		// Set expected behavior
@@ -94,7 +96,7 @@ public class UserServiceTest {
 		assertTrue(passwordEncoder.matches("test-user-password", result.getPassword()));
 		assertEquals("test-user-username", result.getUsername());
 		assertEquals("ROLE_USER", result.getRoles().get(0));
-		assertEquals("Spring Boot Roadmap", result.getPlans().get(0));
+		assertEquals(new ArrayList<>(), result.getPlans());
 	}
 
 	// READ

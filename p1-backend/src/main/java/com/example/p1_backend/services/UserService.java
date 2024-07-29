@@ -73,7 +73,6 @@ public class UserService {
 		newUser.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 		newUser.setUsername(registerDto.getUsername());
 		newUser.getRoles().add("ROLE_USER");
-		newUser.getPlans().add("Spring Boot Roadmap");
 
 		// persist user to database
 		log.info("User {} created successfully", newUser.getUsername());

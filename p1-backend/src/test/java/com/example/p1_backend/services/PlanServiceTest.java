@@ -1,6 +1,9 @@
 package com.example.p1_backend.services;
 
 import com.example.p1_backend.models.*;
+import com.example.p1_backend.models.dtos.PlanContent;
+import com.example.p1_backend.models.dtos.SubtopicWResources;
+import com.example.p1_backend.models.dtos.TopicWResources;
 import com.example.p1_backend.repositories.*;
 import com.example.p1_backend.util.JwtUtil;
 import org.junit.jupiter.api.Test;
@@ -10,6 +13,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.security.auth.login.AccountNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,6 +61,8 @@ public class PlanServiceTest {
 	public void createPlan() throws AccountNotFoundException {
 		String name = "Spring Boot Roadmap";
 		User mockUser = getMockUser();
+		mockUser.setPlans(new ArrayList<>());
+		User mockUserAfter = getMockUser();
 		Plan mockPlan = new Plan(name, mockUser);
 		mockPlan.setPlanId(1);
 
@@ -63,6 +70,7 @@ public class PlanServiceTest {
 		when(jwtUtil.extractUserId(anyString())).thenReturn(mockUser.getUserId());
 		when(userDao.findById(anyInt())).thenReturn(Optional.of(mockUser));
 		when(planDao.save(any(Plan.class))).thenReturn(mockPlan);
+		when(userDao.save(any(User.class))).thenReturn(mockUserAfter);
 
 		Plan plan = ps.createPlan("Bearer " + getToken(), name);
 
@@ -88,6 +96,38 @@ public class PlanServiceTest {
 	}
 
 	// READ CONTENTS
+	@Test
+	public void readPlanContents() {
+		User mockUser = getMockUser();
+		Plan mockPlan = new Plan(1, "Spring Boot Roadmap", mockUser);
+		List<Topic> mockTopicList = new ArrayList<>();
+		Topic mockTopic = new Topic(1, "Topic 1", mockPlan, false);
+		mockTopicList.add(mockTopic);
+		List<Subtopic> mockSubtopicList = new ArrayList<>();
+		Subtopic mockSubtopic = new Subtopic(1, "Subtopic 1", "Description", mockTopic, false);
+		mockSubtopicList.add(mockSubtopic);
+		List<Resource> mockResourceList = new ArrayList<>();
+		mockResourceList.add(new Resource(1, "Resource 1", "Description", "Type", "URL", null, mockTopic));
+		mockResourceList.add(new Resource(2, "Resource 2", "Description", "Type", "URL", mockSubtopic, mockTopic));
+
+		when(jwtUtil.extractUserId(anyString())).thenReturn(mockUser.getUserId());
+		when(planDao.findById(anyInt())).thenReturn(Optional.of(mockPlan));
+		when(topicDao.findAllByPlanPlanId(anyInt())).thenReturn(mockTopicList);
+		when(resourceDao.findAllByTopicTopicId(anyInt())).thenReturn(mockResourceList);
+		when(subtopicDao.findAllByTopicTopicId(anyInt())).thenReturn(mockSubtopicList);
+
+		PlanContent result = ps.readPlanContents("Bearer " + getToken(), 1);
+
+		assertNotNull(result);
+		assertEquals(1, result.getPlanId());
+		assertEquals("Spring Boot Roadmap", result.getPlanName());
+		assertEquals(new TopicWResources(mockTopic.getTopicId(), mockTopic.getTitle(), mockTopic.isStatus(),
+				List.of(mockResourceList.get(0))), result.getContent().get(0));
+		assertEquals(
+				new SubtopicWResources(mockSubtopic.getSubtopicId(), mockSubtopic.getTitle(),
+						mockSubtopic.getDescription(), mockSubtopic.isStatus(), List.of(mockResourceList.get(1))),
+				result.getContent().get(1));
+	}
 
 	// DELETE
 	@Test
