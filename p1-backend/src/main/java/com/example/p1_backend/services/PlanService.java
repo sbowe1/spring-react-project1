@@ -1,6 +1,9 @@
 package com.example.p1_backend.services;
 
 import com.example.p1_backend.models.*;
+import com.example.p1_backend.models.dtos.PlanContent;
+import com.example.p1_backend.models.dtos.SubtopicWResources;
+import com.example.p1_backend.models.dtos.TopicWResources;
 import com.example.p1_backend.repositories.*;
 import com.example.p1_backend.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 import javax.security.auth.login.AccountNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -54,8 +59,15 @@ public class PlanService {
 			throw new AccountNotFoundException("User with userId: " + userId + " not found");
 		}
 
-		Plan newPlan = planDao.save(new Plan(name, optUser.get()));
-		return newPlan;
+		log.info("Plan: {} created successfully", name);
+		Plan plan = planDao.save(new Plan(name, optUser.get()));
+
+		// After creating plan, add it to User's profile
+		optUser.get().getPlans().add(plan.getName());
+		optUser.get().setPlans(optUser.get().getPlans());
+		userDao.save(optUser.get());
+
+		return plan;
 	}
 
 	// READ
@@ -70,6 +82,55 @@ public class PlanService {
 	}
 
 	// READ CONTENTS
+	public PlanContent readPlanContents(String token, int planId) {
+		int userId = jwtUtil.extractUserId(token.substring(7));
+		Optional<Plan> optPlan = planDao.findById(planId);
+		if (optPlan.isEmpty() || optPlan.get().getUser().getUserId() != userId) {
+			log.warn("Plan does not exist");
+			throw new NoSuchElementException("Plan does not exist");
+		}
+
+		PlanContent planContent = new PlanContent();
+		planContent.setPlanId(optPlan.get().getPlanId());
+		planContent.setPlanName(optPlan.get().getName());
+
+		List<Object> content = new ArrayList<>();
+		List<Topic> topicList = topicDao.findAllByPlanPlanId(planId);
+		for (Topic topic : topicList) {
+			List<Resource> allResources = resourceDao.findAllByTopicTopicId(topic.getTopicId());
+			// Topic with its Resources
+			TopicWResources topicWResources = new TopicWResources(topic.getTopicId(), topic.getTitle(),
+					topic.isStatus());
+
+			List<Resource> topicResources = new ArrayList<>();
+			for (Resource r : allResources) {
+				if (r.getSubtopic() == null) {
+					topicResources.add(r);
+				}
+			}
+			topicWResources.setResources(topicResources);
+			content.add(topicWResources);
+
+			// All Subtopics under specific Topic
+			List<Subtopic> subtopicList = subtopicDao.findAllByTopicTopicId(topic.getTopicId());
+			for (Subtopic subtopic : subtopicList) {
+				SubtopicWResources subtopicWResources = new SubtopicWResources(subtopic.getSubtopicId(),
+						subtopic.getTitle(), subtopic.getDescription(), subtopic.isStatus());
+
+				List<Resource> subtopicResources = new ArrayList<>();
+				for (Resource r : allResources) {
+					if (r.getSubtopic() != null && r.getSubtopic().equals(subtopic)) {
+						subtopicResources.add(r);
+					}
+				}
+				subtopicWResources.setResources(subtopicResources);
+				content.add(subtopicWResources);
+			}
+		}
+		planContent.setContent(content);
+
+		return planContent;
+	}
 
 	// DELETE
 	public String deletePlan(int planId) {

@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 import com.example.p1_backend.models.Plan;
+import com.example.p1_backend.models.dtos.PlanContent;
 import com.example.p1_backend.services.PlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,12 @@ public class PlanController {
 	}
 
 	// READ CONTENTS
+	@GetMapping("content/{planId}")
+	public ResponseEntity<PlanContent> readPlanContents(@RequestHeader("Authorization") String token,
+			@PathVariable int planId) {
+		PlanContent plan = ps.readPlanContents(token, planId);
+		return new ResponseEntity<>(plan, OK);
+	}
 
 	// DELETE
 	@DeleteMapping("{planId}")
