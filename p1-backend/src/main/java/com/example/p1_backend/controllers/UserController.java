@@ -59,7 +59,8 @@ public class UserController {
 
 	// DELETE
 	@DeleteMapping
-	public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String token) {
+	public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String token)
+			throws AccountNotFoundException {
 		String message = us.delete(token);
 		return new ResponseEntity<>(message, OK);
 	}
