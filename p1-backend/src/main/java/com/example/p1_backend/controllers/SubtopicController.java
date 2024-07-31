@@ -24,24 +24,21 @@ public class SubtopicController {
 
 	// CREATE
 	@PostMapping("create")
-	public ResponseEntity<Subtopic> createSubtopic(@RequestHeader("Authorization") String token,
-			@RequestBody InSubtopicDto subtopicDto) {
+	public ResponseEntity<Subtopic> createSubtopic(@RequestBody InSubtopicDto subtopicDto) {
 		Subtopic subtopic = ss.createSubtopic(subtopicDto);
 		return new ResponseEntity<>(subtopic, CREATED);
 	}
 
 	// READ
 	@GetMapping("{subtopicId}")
-	public ResponseEntity<Subtopic> readSubtopic(@RequestHeader("Authorization") String token,
-			@PathVariable int subtopicId) {
+	public ResponseEntity<Subtopic> readSubtopic(@PathVariable int subtopicId) {
 		Subtopic subtopic = ss.readSubtopic(subtopicId);
 		return new ResponseEntity<>(subtopic, OK);
 	}
 
 	// UPDATE
 	@PatchMapping("complete/{subtopicId}")
-	public ResponseEntity<Subtopic> updateSubtopic(@RequestHeader("Authorization") String token,
-			@PathVariable int subtopicId) {
+	public ResponseEntity<Subtopic> updateSubtopic(@PathVariable int subtopicId) {
 		Subtopic subtopic = ss.updateSubtopic(subtopicId);
 		return new ResponseEntity<>(subtopic, OK);
 	}

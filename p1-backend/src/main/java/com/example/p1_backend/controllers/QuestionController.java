@@ -36,8 +36,7 @@ public class QuestionController {
 
 	// READ
 	@GetMapping("{questionId}")
-	public ResponseEntity<Question> readQuestion(@RequestHeader("Authorization") String token,
-			@PathVariable int questionId) {
+	public ResponseEntity<Question> readQuestion(@PathVariable int questionId) {
 		Question question = qs.readQuestion(questionId);
 		return new ResponseEntity<>(question, OK);
 	}
@@ -49,31 +48,27 @@ public class QuestionController {
 	}
 
 	@GetMapping("/topic/{topicId}")
-	public ResponseEntity<List<QuestionNoTopicNoUserDto>> getQuestionByTopic(
-			@RequestHeader("Authorization") String token, @PathVariable int topicId) {
+	public ResponseEntity<List<QuestionNoTopicNoUserDto>> getQuestionByTopic(@PathVariable int topicId) {
 		List<QuestionNoTopicNoUserDto> questions = qs.getQuestionsByTopic(topicId);
 		return new ResponseEntity<>(questions, OK);
 	}
 
 	// UPDATE
 	@PatchMapping("correct/{questionId}")
-	public ResponseEntity<Question> updateQuestionCorrect(@RequestHeader("Authorization") String token,
-			@PathVariable int questionId) {
+	public ResponseEntity<Question> updateQuestionCorrect(@PathVariable int questionId) {
 		Question question = qs.updateQuestionCorrect(questionId);
 		return new ResponseEntity<>(question, OK);
 	}
 
 	@PutMapping("{questionId}")
-	public ResponseEntity<Question> updateQuestionContent(@RequestHeader("Authorization") String token,
-			@PathVariable int questionId, @RequestBody InQuestionDto questionDto) {
+	public ResponseEntity<Question> updateQuestionContent(@PathVariable int questionId, @RequestBody InQuestionDto questionDto) {
 		Question question = qs.updateQuestionContent(questionId, questionDto);
 		return new ResponseEntity<>(question, OK);
 	}
 
 	// DELETE
 	@DeleteMapping("{questionId}")
-	public ResponseEntity<String> deleteQuestion(@RequestHeader("Authorization") String token,
-			@PathVariable int questionId) {
+	public ResponseEntity<String> deleteQuestion(@PathVariable int questionId) {
 		String message = qs.deleteQuestion(questionId);
 		return new ResponseEntity<>(message, OK);
 	}
