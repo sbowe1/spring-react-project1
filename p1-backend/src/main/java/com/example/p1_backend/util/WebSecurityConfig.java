@@ -31,8 +31,8 @@ public class WebSecurityConfig {
 			.headers(httpSecurityHeadersConfigurer -> {
 				httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
 			})
-			.authorizeHttpRequests(auths -> auths
-				.requestMatchers("/h2-console/**").permitAll()
+			.authorizeHttpRequests(auths -> auths.requestMatchers("/h2-console/**")
+				.permitAll()
 				// Permits all requests to /users/login and /users/register
 
 				.requestMatchers("/users/login")
