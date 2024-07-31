@@ -61,7 +61,8 @@ public class QuestionController {
 	}
 
 	@PutMapping("{questionId}")
-	public ResponseEntity<Question> updateQuestionContent(@PathVariable int questionId, @RequestBody InQuestionDto questionDto) {
+	public ResponseEntity<Question> updateQuestionContent(@PathVariable int questionId,
+			@RequestBody InQuestionDto questionDto) {
 		Question question = qs.updateQuestionContent(questionId, questionDto);
 		return new ResponseEntity<>(question, OK);
 	}

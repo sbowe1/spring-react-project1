@@ -49,7 +49,7 @@ public class PlanController {
 
 	// DELETE
 	@DeleteMapping("{planId}")
-	public ResponseEntity<String> deletePlan(@PathVariable int planId) {
+	public ResponseEntity<String> deletePlan(@PathVariable int planId) throws AccountNotFoundException {
 		String message = ps.deletePlan(planId);
 		return new ResponseEntity<>(message, OK);
 	}
