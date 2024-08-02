@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -26,8 +27,14 @@ public class WebSecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf(AbstractHttpConfigurer::disable)
-			.authorizeHttpRequests(auths -> auths
+			// Allows us to view the content of H2 Console instead of blank boxes
+			.headers(httpSecurityHeadersConfigurer -> {
+				httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
+			})
+			.authorizeHttpRequests(auths -> auths.requestMatchers("/h2-console/**")
+				.permitAll()
 				// Permits all requests to /users/login and /users/register
+
 				.requestMatchers("/users/login")
 				.permitAll()
 				.requestMatchers("/users/register")

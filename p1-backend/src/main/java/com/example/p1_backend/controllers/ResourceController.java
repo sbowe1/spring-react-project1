@@ -24,31 +24,30 @@ public class ResourceController {
 
 	// CREATE
 	@PostMapping("{topicId}")
-	public ResponseEntity<OutResourceDto> createNoSubtopic(@RequestHeader("Authorization") String token,
-			@PathVariable int topicId, @RequestBody InResourceDto resourceDto) {
+	public ResponseEntity<OutResourceDto> createNoSubtopic(@PathVariable int topicId,
+			@RequestBody InResourceDto resourceDto) {
 		OutResourceDto resource = rs.createResourceNoSubtopic(topicId, resourceDto);
 		return new ResponseEntity<>(resource, CREATED);
 	}
 
 	@PostMapping("{topicId}/{subtopicId}")
-	public ResponseEntity<OutResourceDto> createWithSubtopic(@RequestHeader("Authorization") String token,
-			@PathVariable int topicId, @PathVariable int subtopicId, @RequestBody InResourceDto resourceDto) {
+	public ResponseEntity<OutResourceDto> createWithSubtopic(@PathVariable int topicId, @PathVariable int subtopicId,
+			@RequestBody InResourceDto resourceDto) {
 		OutResourceDto resource = rs.createResourceSubtopic(topicId, subtopicId, resourceDto);
 		return new ResponseEntity<>(resource, CREATED);
 	}
 
 	// READ
 	@GetMapping("{resourceId}")
-	public ResponseEntity<OutResourceDto> readResource(@RequestHeader("Authorization") String token,
-			@PathVariable int resourceId) {
+	public ResponseEntity<OutResourceDto> readResource(@PathVariable int resourceId) {
 		OutResourceDto resource = rs.readResource(resourceId);
 		return new ResponseEntity<>(resource, OK);
 	}
 
 	// UPDATE
 	@PatchMapping("{resourceId}")
-	public ResponseEntity<OutResourceDto> updateResoure(@RequestHeader("Authorization") String token,
-			@PathVariable int resourceId, @RequestBody InResourceDto inResourceDto) {
+	public ResponseEntity<OutResourceDto> updateResoure(@PathVariable int resourceId,
+			@RequestBody InResourceDto inResourceDto) {
 		OutResourceDto resource = rs.updateResource(resourceId, inResourceDto);
 		return new ResponseEntity<>(resource, OK);
 	}

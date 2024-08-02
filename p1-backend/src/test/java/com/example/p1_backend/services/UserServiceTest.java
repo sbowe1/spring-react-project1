@@ -168,10 +168,11 @@ public class UserServiceTest {
 
 	// DELETE
 	@Test
-	void delete() {
+	void delete() throws AccountNotFoundException {
 		String token = getToken();
 
 		when(jwtUtil.extractUserId(token)).thenReturn(1);
+		when(uDao.findById(anyInt())).thenReturn(Optional.of(getMockUser())).thenReturn(Optional.empty());
 		doNothing().when(uDao).deleteById(1);
 
 		String message = us.delete("Bearer " + token);
@@ -179,7 +180,7 @@ public class UserServiceTest {
 		assertEquals("Account deleted successfully!", message);
 		verify(jwtUtil, times(1)).extractUserId(token);
 		verify(uDao, times(1)).deleteById(1);
-		verify(uDao, times(1)).findById(1);
+		verify(uDao, atMost(2)).findById(1);
 	}
 
 	// LOGIN

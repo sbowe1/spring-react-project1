@@ -3,6 +3,8 @@ package com.example.p1_backend.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.stereotype.Component;
 
 @Entity
@@ -20,6 +22,7 @@ public class Plan {
 	private String name;
 
 	@ManyToOne(fetch = FetchType.EAGER)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "userId")
 	@JsonIgnore
 	private User user;

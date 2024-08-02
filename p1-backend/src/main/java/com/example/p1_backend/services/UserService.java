@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.p1_backend.models.dtos.LoginDto;
+import com.example.p1_backend.repositories.PlanDao;
 import com.example.p1_backend.util.JwtUtil;
+import jakarta.transaction.InvalidTransactionException;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -137,8 +140,15 @@ public class UserService {
 	}
 
 	// DELETE
-	public String delete(String token) {
+	@Transactional
+	public String delete(String token) throws AccountNotFoundException {
 		int userId = jwtUtil.extractUserId(token.substring(7));
+
+		Optional<User> optUser = uDao.findById(userId);
+		if (optUser.isEmpty()) {
+			log.warn("User does not exist");
+			throw new AccountNotFoundException("User does not exist");
+		}
 
 		uDao.deleteById(userId);
 

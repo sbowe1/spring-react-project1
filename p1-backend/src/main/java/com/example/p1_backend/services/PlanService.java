@@ -133,7 +133,7 @@ public class PlanService {
 	}
 
 	// DELETE
-	public String deletePlan(int planId) {
+	public String deletePlan(int planId) throws AccountNotFoundException {
 		Optional<Plan> optPlan = planDao.findById(planId);
 		if (optPlan.isEmpty()) {
 			log.warn("Plan does not exist");
@@ -146,6 +146,16 @@ public class PlanService {
 			return "Plan cannot be deleted";
 		}
 		log.info("Plan: {} was successfully deleted", optPlan.get().getName());
+
+		Optional<User> optUser = userDao.findById(optPlan.get().getUser().getUserId());
+		if (optUser.isEmpty()) {
+			throw new AccountNotFoundException("User with userId: " + optUser.get().getUserId() + " not found");
+		}
+		List<String> plans = optUser.get().getPlans();
+		plans.remove(optPlan.get().getName());
+		optUser.get().setPlans(plans);
+		userDao.save(optUser.get());
+
 		return "Plan successfully deleted";
 	}
 

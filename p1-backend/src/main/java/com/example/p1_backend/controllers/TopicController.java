@@ -24,23 +24,21 @@ public class TopicController {
 
 	// CREATE
 	@PostMapping("create")
-	public ResponseEntity<Topic> createTopic(@RequestHeader("Authorization") String token,
-			@RequestBody InTopicDto topicDto) {
+	public ResponseEntity<Topic> createTopic(@RequestBody InTopicDto topicDto) {
 		Topic topic = ts.createTopic(topicDto);
 		return new ResponseEntity<>(topic, CREATED);
 	}
 
 	// READ
 	@GetMapping("{topicId}")
-	public ResponseEntity<Topic> readTopic(@RequestHeader("Authorization") String token, @PathVariable int topicId) {
+	public ResponseEntity<Topic> readTopic(@PathVariable int topicId) {
 		Topic topic = ts.readTopic(topicId);
 		return new ResponseEntity<>(topic, OK);
 	}
 
 	// UPDATE
 	@PatchMapping("complete/{topicId}")
-	public ResponseEntity<Topic> completeTopic(@RequestHeader("Authorization") String token,
-			@PathVariable int topicId) {
+	public ResponseEntity<Topic> completeTopic(@PathVariable int topicId) {
 		Topic topic = ts.updateTopic(topicId);
 		return new ResponseEntity<>(topic, OK);
 	}

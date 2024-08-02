@@ -34,7 +34,7 @@ public class PlanController {
 
 	// READ PLAN
 	@GetMapping("{planId}")
-	public ResponseEntity<Plan> readPlan(@RequestHeader("Authorization") String token, @PathVariable int planId) {
+	public ResponseEntity<Plan> readPlan(@PathVariable int planId) {
 		Plan plan = ps.readPlan(planId);
 		return new ResponseEntity<>(plan, OK);
 	}
@@ -49,7 +49,7 @@ public class PlanController {
 
 	// DELETE
 	@DeleteMapping("{planId}")
-	public ResponseEntity<String> deletePlan(@RequestHeader("Authorization") String token, @PathVariable int planId) {
+	public ResponseEntity<String> deletePlan(@PathVariable int planId) throws AccountNotFoundException {
 		String message = ps.deletePlan(planId);
 		return new ResponseEntity<>(message, OK);
 	}

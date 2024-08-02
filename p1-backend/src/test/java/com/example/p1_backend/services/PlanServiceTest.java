@@ -131,13 +131,16 @@ public class PlanServiceTest {
 
 	// DELETE
 	@Test
-	public void deletePlan() {
+	public void deletePlan() throws AccountNotFoundException {
 		User mockUser = getMockUser();
 		Plan mockPlan = new Plan(1, "Spring Boot Roadmap", mockUser);
 
 		// Returns mockPlan the first time, and an empty Optional the second time
 		when(planDao.findById(anyInt())).thenReturn(Optional.of(mockPlan)).thenReturn(Optional.empty());
 		doNothing().when(planDao).deleteById(1);
+		when(userDao.findById(anyInt())).thenReturn(Optional.of(mockUser));
+		mockUser.setPlans(new ArrayList<>());
+		when(userDao.save(any(User.class))).thenReturn(mockUser);
 
 		String message = ps.deletePlan(1);
 

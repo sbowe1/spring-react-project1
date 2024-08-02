@@ -3,6 +3,8 @@ package com.example.p1_backend.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.stereotype.Component;
 
 @Entity
@@ -22,6 +24,7 @@ public class Subtopic {
 	private String description;
 
 	@ManyToOne(fetch = FetchType.EAGER)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "topicId")
 	@JsonIgnoreProperties({ "planId", "status" })
 	private Topic topic;
