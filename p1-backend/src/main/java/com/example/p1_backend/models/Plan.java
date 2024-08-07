@@ -24,7 +24,6 @@ public class Plan {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "userId")
-	@JsonIgnore
 	private User user;
 
 	public Plan(int planId, String name, User user) {

@@ -1,5 +1,6 @@
 package com.example.p1_backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,6 +35,7 @@ public class Question {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "userId")
+	@JsonIgnore
 	private User user;
 
 	public Question(int questionId, String question, String answer, boolean correct, Topic topic) {
