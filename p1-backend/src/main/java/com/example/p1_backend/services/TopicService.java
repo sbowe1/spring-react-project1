@@ -57,8 +57,8 @@ public class TopicService {
 			throw new NoSuchElementException("Topic does not exist");
 		}
 
-		optTopic.get().setStatus(true);
-		log.info("Topic: {} status updated to complete", optTopic.get().getTitle());
+		optTopic.get().setStatus(!optTopic.get().isStatus());
+		log.info("Topic: {} status updated", optTopic.get().getTitle());
 		return topicDao.save(optTopic.get());
 	}
 

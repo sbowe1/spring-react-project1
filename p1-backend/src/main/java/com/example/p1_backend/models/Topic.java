@@ -1,5 +1,6 @@
 package com.example.p1_backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -25,6 +26,7 @@ public class Topic {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "planId")
+	@JsonIgnore
 	private Plan plan;
 
 	private boolean status;
