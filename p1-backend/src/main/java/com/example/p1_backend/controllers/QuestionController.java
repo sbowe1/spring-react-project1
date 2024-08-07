@@ -53,6 +53,12 @@ public class QuestionController {
 		return new ResponseEntity<>(questions, OK);
 	}
 
+	@GetMapping("plan/{planId}")
+	public ResponseEntity<List<QuestionNoUserDto>> getQuestionByPlan(@PathVariable int planId) {
+		List<QuestionNoUserDto> questions = qs.getQuestionsByPlan(planId);
+		return new ResponseEntity<>(questions, OK);
+	}
+
 	// UPDATE
 	@PatchMapping("correct/{questionId}")
 	public ResponseEntity<Question> updateQuestionCorrect(@PathVariable int questionId) {

@@ -144,6 +144,23 @@ public class QuestionServiceTest {
 		assertEquals(new QuestionNoTopicNoUserDto(getQuestion()), result.get(0));
 	}
 
+	@Test
+	public void getQuestionsByPlan() {
+		List<Question> mockQuestionList = getQuestionList();
+		List<QuestionNoUserDto> actualQuestionList = new ArrayList<>();
+		for (Question q : getQuestionList()) {
+			actualQuestionList.add(new QuestionNoUserDto(q));
+		}
+
+		when(topicDao.findAllByPlanPlanId(anyInt())).thenReturn(List.of(getTopic()));
+		when(questionDao.findAllByTopicTopicId(anyInt())).thenReturn(mockQuestionList);
+
+		List<QuestionNoUserDto> result = qs.getQuestionsByPlan(1);
+
+		assertNotNull(result);
+		assertEquals(actualQuestionList, result);
+	}
+
 	// UPDATE
 	@Test
 	public void updateQuestionCorrect() {

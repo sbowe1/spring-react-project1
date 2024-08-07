@@ -88,6 +88,20 @@ public class QuestionService {
 		return questionList;
 	}
 
+	public List<QuestionNoUserDto> getQuestionsByPlan(int planId) {
+		List<QuestionNoUserDto> questions = new ArrayList<>();
+
+		List<Topic> topicList = topicDao.findAllByPlanPlanId(planId);
+		for (Topic topic : topicList) {
+			List<Question> tempQuestionList = questionDao.findAllByTopicTopicId(topic.getTopicId());
+			for (Question q : tempQuestionList) {
+				questions.add(new QuestionNoUserDto(q));
+			}
+		}
+
+		return questions;
+	}
+
 	// UPDATE
 	public Question updateQuestionCorrect(int questionId) {
 		Optional<Question> optQuestion = questionDao.findById(questionId);
