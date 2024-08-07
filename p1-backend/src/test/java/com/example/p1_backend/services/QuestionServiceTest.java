@@ -77,14 +77,14 @@ public class QuestionServiceTest {
 		User mockUser = getUser();
 		Question mockQuestion = getQuestion();
 		Topic mockTopic = getTopic();
-		InQuestionDto questionDto = new InQuestionDto("question", "answer", "Topic 1");
+		InQuestionDto questionDto = new InQuestionDto("question", "answer");
 
 		when(jwtUtil.extractUserId(anyString())).thenReturn(mockUser.getUserId());
 		when(userDao.findById(anyInt())).thenReturn(Optional.of(mockUser));
-		when(topicDao.getByTitle(anyString())).thenReturn(Optional.of(mockTopic));
+		when(topicDao.findById(anyInt())).thenReturn(Optional.of(mockTopic));
 		when(questionDao.save(any(Question.class))).thenReturn(mockQuestion);
 
-		Question result = qs.createQuestion(mockToken, questionDto);
+		Question result = qs.createQuestion(mockToken, 1, questionDto);
 
 		assertNotNull(result);
 		assertEquals(1, result.getQuestionId());

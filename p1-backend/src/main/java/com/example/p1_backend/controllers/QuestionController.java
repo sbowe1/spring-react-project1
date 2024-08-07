@@ -27,10 +27,10 @@ public class QuestionController {
 	}
 
 	// CREATE
-	@PostMapping("create")
+	@PostMapping("create/{topicId}")
 	public ResponseEntity<Question> createQuestion(@RequestHeader("Authorization") String token,
-			@RequestBody InQuestionDto questionDto) {
-		Question question = qs.createQuestion(token, questionDto);
+			@PathVariable int topicId, @RequestBody InQuestionDto questionDto) {
+		Question question = qs.createQuestion(token, topicId, questionDto);
 		return new ResponseEntity<>(question, CREATED);
 	}
 

@@ -11,12 +11,9 @@ public class InQuestionDto {
 
 	private String answer;
 
-	private String topicName;
-
-	public InQuestionDto(String question, String answer, String topicName) {
+	public InQuestionDto(String question, String answer) {
 		this.question = question;
 		this.answer = answer;
-		this.topicName = topicName;
 	}
 
 }
