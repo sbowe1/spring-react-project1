@@ -11,14 +11,6 @@ public class InSubtopicDto {
 
 	private String description;
 
-	private String topicTitle;
-
-	public InSubtopicDto(String title, String description, String topicTitle) {
-		this.title = title;
-		this.description = description;
-		this.topicTitle = topicTitle;
-	}
-
 	public InSubtopicDto(String title, String description) {
 		this.title = title;
 		this.description = description;

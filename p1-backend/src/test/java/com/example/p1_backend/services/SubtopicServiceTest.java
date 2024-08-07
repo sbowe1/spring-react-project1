@@ -53,15 +53,15 @@ public class SubtopicServiceTest {
 	// CREATE
 	@Test
 	public void createSubtopic() {
-		InSubtopicDto subtopicDto = new InSubtopicDto("Subtopic 1", "Description", "Spring Boot Roadmap");
+		InSubtopicDto subtopicDto = new InSubtopicDto("Subtopic 1", "Description");
 		Topic mockTopic = getTopic();
 		Subtopic mockSubtopic = new Subtopic(subtopicDto.getTitle(), subtopicDto.getDescription(), mockTopic, false);
 		mockSubtopic.setSubtopicId(1);
 
-		when(topicDao.getByTitle(anyString())).thenReturn(Optional.of(mockTopic));
+		when(topicDao.findById(anyInt())).thenReturn(Optional.of(mockTopic));
 		when(subtopicDao.save(any(Subtopic.class))).thenReturn(mockSubtopic);
 
-		Subtopic result = ss.createSubtopic(subtopicDto);
+		Subtopic result = ss.createSubtopic(1, subtopicDto);
 
 		assertNotNull(result);
 		assertEquals(1, result.getSubtopicId());

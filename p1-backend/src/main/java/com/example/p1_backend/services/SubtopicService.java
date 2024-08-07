@@ -27,8 +27,8 @@ public class SubtopicService {
 	}
 
 	// CREATE
-	public Subtopic createSubtopic(InSubtopicDto subtopicDto) {
-		Optional<Topic> optTopic = topicDao.getByTitle(subtopicDto.getTopicTitle());
+	public Subtopic createSubtopic(int topicId, InSubtopicDto subtopicDto) {
+		Optional<Topic> optTopic = topicDao.findById(topicId);
 
 		Subtopic subtopic = new Subtopic(subtopicDto.getTitle(), subtopicDto.getDescription(), optTopic.get(), false);
 
@@ -55,8 +55,8 @@ public class SubtopicService {
 			throw new NoSuchElementException("Subtopic does not exist");
 		}
 
-		optSubtopic.get().setStatus(true);
-		log.info("Subtopic: {} status updated to complete", optSubtopic.get().getTitle());
+		optSubtopic.get().setStatus(!optSubtopic.get().isStatus());
+		log.info("Subtopic: {} status updated", optSubtopic.get().getTitle());
 		return subtopicDao.save(optSubtopic.get());
 	}
 
