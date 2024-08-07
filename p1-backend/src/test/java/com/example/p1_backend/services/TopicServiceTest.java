@@ -41,7 +41,7 @@ public class TopicServiceTest {
 
 	public Topic getTopic() {
 		Plan plan = getPlan();
-		Topic topic = new Topic("Topic 1", plan, false);
+		Topic topic = new Topic("Topic 1", "Description", plan, false);
 		topic.setTopicId(1);
 		return topic;
 	}
@@ -49,19 +49,20 @@ public class TopicServiceTest {
 	// CREATE
 	@Test
 	public void createTopic() {
-		InTopicDto topicDto = new InTopicDto("Spring Boot Roadmap", "Topic 1");
+		InTopicDto topicDto = new InTopicDto("Topic 1", "Description");
 		Plan mockPlan = getPlan();
-		Topic mockTopic = new Topic(topicDto.getTopicName(), mockPlan, false);
+		Topic mockTopic = new Topic(topicDto.getTopicName(), topicDto.getDescription(), mockPlan, false);
 		mockTopic.setTopicId(1);
 
-		when(planDao.getByName(anyString())).thenReturn(Optional.of(mockPlan));
+		when(planDao.findById(anyInt())).thenReturn(Optional.of(mockPlan));
 		when(topicDao.save(any(Topic.class))).thenReturn(mockTopic);
 
-		Topic result = ts.createTopic(topicDto);
+		Topic result = ts.createTopic(1, topicDto);
 
 		assertNotNull(result);
 		assertEquals(1, result.getTopicId());
 		assertEquals("Topic 1", result.getTitle());
+		assertEquals("Description", result.getDescription());
 		assertEquals(mockPlan, result.getPlan());
 		assertFalse(result.isStatus());
 	}

@@ -101,7 +101,7 @@ public class PlanServiceTest {
 		User mockUser = getMockUser();
 		Plan mockPlan = new Plan(1, "Spring Boot Roadmap", mockUser);
 		List<Topic> mockTopicList = new ArrayList<>();
-		Topic mockTopic = new Topic(1, "Topic 1", mockPlan, false);
+		Topic mockTopic = new Topic(1, "Topic 1", "Description", mockPlan, false);
 		mockTopicList.add(mockTopic);
 		List<Subtopic> mockSubtopicList = new ArrayList<>();
 		Subtopic mockSubtopic = new Subtopic(1, "Subtopic 1", "Description", mockTopic, false);

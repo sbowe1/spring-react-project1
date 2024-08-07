@@ -20,6 +20,8 @@ public class Topic {
 
 	private String title;
 
+	private String description;
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "planId")
@@ -27,15 +29,17 @@ public class Topic {
 
 	private boolean status;
 
-	public Topic(int topicId, String title, Plan plan, boolean status) {
+	public Topic(int topicId, String title, String description, Plan plan, boolean status) {
 		this.topicId = topicId;
 		this.title = title;
+		this.description = description;
 		this.plan = plan;
 		this.status = status;
 	}
 
-	public Topic(String title, Plan plan, boolean status) {
+	public Topic(String title, String description, Plan plan, boolean status) {
 		this.title = title;
+		this.description = description;
 		this.plan = plan;
 		this.status = status;
 	}

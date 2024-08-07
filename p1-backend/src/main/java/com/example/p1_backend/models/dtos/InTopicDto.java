@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class InTopicDto {
 
-	private String planName;
-
 	private String topicName;
 
-	public InTopicDto(String planName, String topicName) {
-		this.planName = planName;
+	private String description;
+
+	public InTopicDto(String topicName, String description) {
 		this.topicName = topicName;
+		this.description = description;
 	}
 
 }

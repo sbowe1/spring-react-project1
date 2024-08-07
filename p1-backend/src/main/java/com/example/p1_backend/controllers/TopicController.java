@@ -23,9 +23,9 @@ public class TopicController {
 	}
 
 	// CREATE
-	@PostMapping("create")
-	public ResponseEntity<Topic> createTopic(@RequestBody InTopicDto topicDto) {
-		Topic topic = ts.createTopic(topicDto);
+	@PostMapping("create/{planId}")
+	public ResponseEntity<Topic> createTopic(@PathVariable int planId, @RequestBody InTopicDto topicDto) {
+		Topic topic = ts.createTopic(planId, topicDto);
 		return new ResponseEntity<>(topic, CREATED);
 	}
 

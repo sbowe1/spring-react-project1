@@ -45,7 +45,7 @@ public class ResourceServiceTest {
 
 	public Topic getTopic() {
 		Plan plan = getPlan();
-		return new Topic(1, "Topic 1", plan, false);
+		return new Topic(1, "Topic 1", "Description", plan, false);
 	}
 
 	public Subtopic getSubtopic() {
