@@ -27,10 +27,10 @@ public class QuestionController {
 	}
 
 	// CREATE
-	@PostMapping("create")
+	@PostMapping("create/{topicId}")
 	public ResponseEntity<Question> createQuestion(@RequestHeader("Authorization") String token,
-			@RequestBody InQuestionDto questionDto) {
-		Question question = qs.createQuestion(token, questionDto);
+			@PathVariable int topicId, @RequestBody InQuestionDto questionDto) {
+		Question question = qs.createQuestion(token, topicId, questionDto);
 		return new ResponseEntity<>(question, CREATED);
 	}
 
@@ -50,6 +50,12 @@ public class QuestionController {
 	@GetMapping("/topic/{topicId}")
 	public ResponseEntity<List<QuestionNoTopicNoUserDto>> getQuestionByTopic(@PathVariable int topicId) {
 		List<QuestionNoTopicNoUserDto> questions = qs.getQuestionsByTopic(topicId);
+		return new ResponseEntity<>(questions, OK);
+	}
+
+	@GetMapping("plan/{planId}")
+	public ResponseEntity<List<QuestionNoUserDto>> getQuestionByPlan(@PathVariable int planId) {
+		List<QuestionNoUserDto> questions = qs.getQuestionsByPlan(planId);
 		return new ResponseEntity<>(questions, OK);
 	}
 

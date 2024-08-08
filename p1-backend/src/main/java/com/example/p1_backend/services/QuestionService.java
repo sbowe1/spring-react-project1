@@ -40,10 +40,10 @@ public class QuestionService {
 	}
 
 	// CREATE
-	public Question createQuestion(String token, InQuestionDto questionDto) {
+	public Question createQuestion(String token, int topicId, InQuestionDto questionDto) {
 		int userId = jwtUtil.extractUserId(token.substring(7));
 		Optional<User> optUser = userDao.findById(userId);
-		Optional<Topic> optTopic = topicDao.getByTitle(questionDto.getTopicName());
+		Optional<Topic> optTopic = topicDao.findById(topicId);
 
 		Question question = new Question(questionDto.getQuestion(), questionDto.getAnswer(), false,
 				optTopic.orElse(null), optUser.orElse(null));
@@ -86,6 +86,20 @@ public class QuestionService {
 		}
 
 		return questionList;
+	}
+
+	public List<QuestionNoUserDto> getQuestionsByPlan(int planId) {
+		List<QuestionNoUserDto> questions = new ArrayList<>();
+
+		List<Topic> topicList = topicDao.findAllByPlanPlanId(planId);
+		for (Topic topic : topicList) {
+			List<Question> tempQuestionList = questionDao.findAllByTopicTopicId(topic.getTopicId());
+			for (Question q : tempQuestionList) {
+				questions.add(new QuestionNoUserDto(q));
+			}
+		}
+
+		return questions;
 	}
 
 	// UPDATE

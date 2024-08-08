@@ -27,15 +27,15 @@ public class TopicService {
 	}
 
 	// CREATE
-	public Topic createTopic(InTopicDto topicDto) {
-		Optional<Plan> optPlan = planDao.getByName(topicDto.getPlanName());
+	public Topic createTopic(int planId, InTopicDto topicDto) {
+		Optional<Plan> optPlan = planDao.findById(planId);
 		if (optPlan.isEmpty()) {
 			log.warn("Plan does not exist");
 			throw new NoSuchElementException("Plan does not exist");
 		}
 
 		log.info("Topic: {} created successfully", topicDto.getTopicName());
-		return topicDao.save(new Topic(topicDto.getTopicName(), optPlan.get(), false));
+		return topicDao.save(new Topic(topicDto.getTopicName(), topicDto.getDescription(), optPlan.get(), false));
 	}
 
 	// READ
@@ -57,8 +57,8 @@ public class TopicService {
 			throw new NoSuchElementException("Topic does not exist");
 		}
 
-		optTopic.get().setStatus(true);
-		log.info("Topic: {} status updated to complete", optTopic.get().getTitle());
+		optTopic.get().setStatus(!optTopic.get().isStatus());
+		log.info("Topic: {} status updated", optTopic.get().getTitle());
 		return topicDao.save(optTopic.get());
 	}
 
