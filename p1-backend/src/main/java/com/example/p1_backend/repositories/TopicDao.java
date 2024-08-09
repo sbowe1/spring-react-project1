@@ -10,8 +10,6 @@ import java.util.Optional;
 @Repository
 public interface TopicDao extends JpaRepository<Topic, Integer> {
 
-	Optional<Topic> getByTitle(String topicName);
-
 	List<Topic> findAllByPlanPlanId(int planId);
 
 }
