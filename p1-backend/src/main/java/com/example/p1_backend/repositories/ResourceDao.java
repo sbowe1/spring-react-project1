@@ -11,6 +11,4 @@ public interface ResourceDao extends JpaRepository<Resource, Integer> {
 
 	List<Resource> findAllByTopicTopicId(int topicId);
 
-	List<Resource> findAllByTopicTopicIdAndSubtopicSubtopicId(int topicId, int subtopicId);
-
 }
