@@ -27,7 +27,9 @@ export async function createUser(
     username: z.string().min(1),
   });
   const parse = schema.safeParse({
-    user: formData.get("user"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    username: formData.get("username")
   });
 
   if (!parse.success) {
@@ -49,7 +51,7 @@ export async function createUser(
   }
 }
 
-export async function deleteTodo(
+export async function deleteUser(
   prevState: {
     message: string;
   },
