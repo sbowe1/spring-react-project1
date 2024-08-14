@@ -51,8 +51,7 @@ public class UserService {
 	// CREATE
 	// TODO: add JavaDoc
 	/*
-	 * @return User
-	 * registerDto
+	 * @return User registerDto
 	 */
 	public User register(RegisterDto registerDto) {
 		// validate username is unique
@@ -75,13 +74,13 @@ public class UserService {
 		}
 
 		// Password must contain:
-			// at least 1 digit (?=.*[0-9])
-			// at least 1 upper case letter (?=.*[A-Z])
-			// at least one special character (?=.*[!@#$%^&+=])
-			// no white space (?=\S+$)
-			// length 8-16 char .{8,16}
+		// at least 1 digit (?=.*[0-9])
+		// at least 1 upper case letter (?=.*[A-Z])
+		// at least one special character (?=.*[!@#$%^&+=])
+		// no white space (?=\S+$)
+		// length 8-16 char .{8,16}
 		String passwordRegex = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&+=])(?=\\S+$).{8,16}$";
-		if(registerDto.getPassword().isBlank() || !(registerDto.getPassword()).matches(passwordRegex)){
+		if (registerDto.getPassword().isBlank() || !(registerDto.getPassword()).matches(passwordRegex)) {
 			log.warn("Password does not meet requirements");
 			throw new IllegalArgumentException("Password does not meet requirements");
 		}
@@ -136,7 +135,7 @@ public class UserService {
 		}
 		String passwordRegex = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&+=])(?=\\S+$).{8,16}$";
 		if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
-			if(!updatedUser.getPassword().matches(passwordRegex)){
+			if (!updatedUser.getPassword().matches(passwordRegex)) {
 				log.warn("Password does not meet requirements");
 				throw new IllegalArgumentException("Password does not meet the requirements");
 			}

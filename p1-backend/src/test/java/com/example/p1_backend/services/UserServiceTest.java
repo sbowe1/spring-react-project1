@@ -54,8 +54,8 @@ public class UserServiceTest {
 	}
 
 	private User getMockUser() {
-		return new User("test-user-email@test.com", passwordEncoder.encode("TestPassword1!"), "test-user-username", "ROLE_USER",
-				"Spring Boot Roadmap");
+		return new User("test-user-email@test.com", passwordEncoder.encode("TestPassword1!"), "test-user-username",
+				"ROLE_USER", "Spring Boot Roadmap");
 	}
 
 	private String getToken() {
@@ -77,13 +77,13 @@ public class UserServiceTest {
 		assertEquals(5, users.size());
 	}
 
-	// TODO: Review JUnit docs to include a descriptive string; let the tests be the documentation!
+	// TODO: Review JUnit docs to include a descriptive string; let the tests be the
+	// documentation!
 	// CREATE
 	@Test
 	void register() {
 		// TODO: call password encode here to remove it below! -Lauren
-		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!",
-				"test-user-username");
+		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!", "test-user-username");
 		User user = getMockUser();
 		// Because Users create their own plans, there should not be a default plan
 		user.setPlans(new ArrayList<>());
@@ -110,9 +110,8 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void registerUsernameTaken(){
-		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!",
-				"test-user-username");
+	public void registerUsernameTaken() {
+		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!", "test-user-username");
 		User mockUser = getMockUser();
 
 		when(uDao.getByUsername(anyString())).thenReturn(Optional.of(mockUser));
@@ -122,17 +121,15 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void registerInvalidEmail(){
-		RegisterDto registerDto = new RegisterDto("test-user-emailtest.com", "TestPassword1!",
-				"test-user-username");
+	public void registerInvalidEmail() {
+		RegisterDto registerDto = new RegisterDto("test-user-emailtest.com", "TestPassword1!", "test-user-username");
 
 		assertThrows(IllegalArgumentException.class, () -> us.register(registerDto));
 	}
 
 	@Test
-	public void registerEmailTaken(){
-		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!",
-				"test-user-username");
+	public void registerEmailTaken() {
+		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!", "test-user-username");
 		User mockUser = getMockUser();
 
 		when(uDao.getByEmail(anyString())).thenReturn(Optional.of(mockUser));
@@ -142,9 +139,8 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void registerInvalidPassword(){
-		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1",
-				"test-user-username");
+	public void registerInvalidPassword() {
+		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1", "test-user-username");
 
 		assertThrows(IllegalArgumentException.class, () -> us.register(registerDto));
 	}
@@ -177,7 +173,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void findByUserIdAccountNotFound(){
+	public void findByUserIdAccountNotFound() {
 		String token = getToken();
 
 		when(jwtUtil.extractUserId(token)).thenReturn(1);
@@ -225,7 +221,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void updateAccountNotFound(){
+	public void updateAccountNotFound() {
 		String token = getToken();
 		User mockUser = new User();
 		mockUser.setPassword("TestPassword2!");
@@ -239,7 +235,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void updateUsernameTaken(){
+	public void updateUsernameTaken() {
 		String token = getToken();
 		User mockUser = getMockUser();
 		User updatedUser = new User();
@@ -256,7 +252,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void updateInvalidPassword(){
+	public void updateInvalidPassword() {
 		String token = getToken();
 		User mockUser = getMockUser();
 		User updatedUser = new User();
@@ -271,7 +267,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void updateEmailTaken(){
+	public void updateEmailTaken() {
 		String token = getToken();
 		User mockUser = getMockUser();
 		User updatedUser = new User();
@@ -295,7 +291,7 @@ public class UserServiceTest {
 		when(jwtUtil.extractUserId(token)).thenReturn(1);
 		when(uDao.findById(anyInt())).thenReturn(Optional.of(getMockUser())).thenReturn(Optional.empty());
 		// TODO: investigate if below is necessary?
-		//doNothing().when(uDao).deleteById(1);
+		// doNothing().when(uDao).deleteById(1);
 
 		String message = us.delete("Bearer " + token);
 
@@ -306,7 +302,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void deleteAccountNotFound(){
+	public void deleteAccountNotFound() {
 		String token = getToken();
 
 		when(jwtUtil.extractUserId(token)).thenReturn(1);
@@ -367,7 +363,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void loginAccountNotFound(){
+	public void loginAccountNotFound() {
 		User mockUser = getMockUser();
 		LoginDto loginDto = new LoginDto(mockUser.getUsername(), "TestPassword1!");
 
