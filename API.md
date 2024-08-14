@@ -53,7 +53,7 @@ All Request Body inputs should be in JSON form. Outputs will also be returned in
             <td>
             </td>
             <td>
-                <pre>{ <br> "userId": value, <br> "email": "value1", <br> "username": "value2", <br> "roles": [<br>     "ROLE_USER" <br> ], <br> "plans": [<br>     "Spring Boot Roadmap" <br> ]<br>}</pre>
+                <pre>{ <br> "userId": value, <br> "email": "value1", <br> "username": "value2", <br> "roles": [<br>     "ROLE_USER" <br> ], <br> "plans": []<br>}</pre>
             </td>
             <td></td>
         </tr>
