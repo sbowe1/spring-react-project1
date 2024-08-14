@@ -1,29 +1,36 @@
 package com.example.p1_backend.services;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atMost;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.p1_backend.models.dtos.LoginDto;
-import com.example.p1_backend.util.JwtUtil;
+import javax.security.auth.login.AccountNotFoundException;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import com.example.p1_backend.models.User;
-import com.example.p1_backend.models.dtos.RegisterDto;
-import com.example.p1_backend.repositories.UserDao;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.security.auth.login.AccountNotFoundException;
+import com.example.p1_backend.models.User;
+import com.example.p1_backend.models.dtos.LoginDto;
+import com.example.p1_backend.models.dtos.RegisterDto;
+import com.example.p1_backend.repositories.UserDao;
+import com.example.p1_backend.util.JwtUtil;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -72,9 +79,11 @@ public class UserServiceTest {
 		return "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
 	}
 
+	// TODO: Review JUnit docs to include a descriptive string; let the tests be the documentation!
 	// CREATE
 	@Test
 	void register() {
+		// TODO: call password encode here to remove it below! -Lauren
 		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "test-user-password",
 				"test-user-username");
 		User user = getMockUser();
@@ -83,8 +92,11 @@ public class UserServiceTest {
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 
 		// Set expected behavior
+		// check unique username
 		when(uDao.getByUsername(registerDto.getUsername())).thenReturn(Optional.empty());
+		// check unique email
 		when(uDao.getByEmail(registerDto.getEmail())).thenReturn(Optional.empty());
+
 		when(uDao.save(any(User.class))).thenReturn(user);
 
 		// Act
@@ -95,6 +107,7 @@ public class UserServiceTest {
 		assertEquals("test-user-email@test.com", result.getEmail());
 		assertTrue(passwordEncoder.matches("test-user-password", result.getPassword()));
 		assertEquals("test-user-username", result.getUsername());
+		// TODO: add another assert to ensure getRoles is not null
 		assertEquals("ROLE_USER", result.getRoles().get(0));
 		assertEquals(new ArrayList<>(), result.getPlans());
 	}
@@ -127,6 +140,8 @@ public class UserServiceTest {
 																// dynamically
 		assertEquals("Spring Boot Roadmap", result.getPlans().get(0));
 	}
+
+	// TODO: Add method, findByUserIdAccountNotFoundException
 
 	// UPDATE
 	@Test
@@ -166,6 +181,9 @@ public class UserServiceTest {
 		verify(uDao, atMost(1)).getByEmail(anyString());
 	}
 
+	// TODO: add test for validations: email unique, etc.
+	// TODO: Add method, updateAccountNotFoundException
+
 	// DELETE
 	@Test
 	void delete() throws AccountNotFoundException {
@@ -173,7 +191,8 @@ public class UserServiceTest {
 
 		when(jwtUtil.extractUserId(token)).thenReturn(1);
 		when(uDao.findById(anyInt())).thenReturn(Optional.of(getMockUser())).thenReturn(Optional.empty());
-		doNothing().when(uDao).deleteById(1);
+		// TODO: investigate if below is necessary?
+		//doNothing().when(uDao).deleteById(1);
 
 		String message = us.delete("Bearer " + token);
 
@@ -182,6 +201,8 @@ public class UserServiceTest {
 		verify(uDao, times(1)).deleteById(1);
 		verify(uDao, atMost(2)).findById(1);
 	}
+
+	// TODO: Add method, deleteAccountNotFoundException
 
 	// LOGIN
 	@Test
