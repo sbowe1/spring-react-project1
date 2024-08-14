@@ -154,7 +154,6 @@ public class UserServiceTest {
 	public void findByUserId() throws AccountNotFoundException {
 		// Arrange
 		String token = getToken();
-
 		User mockUser = getMockUser();
 		mockUser.setUserId(1);
 
@@ -177,14 +176,23 @@ public class UserServiceTest {
 		assertEquals("Spring Boot Roadmap", result.getPlans().get(0));
 	}
 
-	// TODO: Add method, findByUserIdAccountNotFoundException
+	@Test
+	public void findByUserIdAccountNotFound(){
+		String token = getToken();
+
+		when(jwtUtil.extractUserId(token)).thenReturn(1);
+		when(uDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(AccountNotFoundException.class, () -> us.findByUserId("Bearer " + token));
+		verify(jwtUtil, times(1)).extractUserId(token);
+		verify(uDao, times(1)).findById(1);
+	}
 
 	// UPDATE
 	@Test
 	void update() throws AccountNotFoundException {
 		// Arrange
 		String token = getToken();
-
 		User currentUser = getMockUser();
 		currentUser.setUserId(1);
 
@@ -195,7 +203,7 @@ public class UserServiceTest {
 		when(jwtUtil.generateToken(any(User.class))).thenReturn(token);
 
 		// Act
-		User updatedUser = new User(currentUser.getEmail(), currentUser.getPassword(), currentUser.getUsername(),
+		User updatedUser = new User(currentUser.getEmail(), "TestPassword1!", currentUser.getUsername(),
 				currentUser.getRoles(), currentUser.getPlans());
 		updatedUser.setUserId(currentUser.getUserId());
 
@@ -205,7 +213,7 @@ public class UserServiceTest {
 		assertNotNull(result);
 		assertEquals(currentUser.getUserId(), updatedUser.getUserId());
 		assertEquals("test-user-email@test.com", updatedUser.getEmail());
-		assertTrue(passwordEncoder.matches("TestPassword1!", updatedUser.getPassword()));
+		assertTrue(passwordEncoder.matches(updatedUser.getPassword(), currentUser.getPassword()));
 		assertEquals("test-user-username", updatedUser.getUsername());
 		assertEquals("ROLE_USER", updatedUser.getRoles().get(0)); // TODO: grab roles
 																	// dynamically
@@ -216,8 +224,68 @@ public class UserServiceTest {
 		verify(uDao, atMost(1)).getByEmail(anyString());
 	}
 
-	// TODO: add test for validations: email unique, etc.
-	// TODO: Add method, updateAccountNotFoundException
+	@Test
+	public void updateAccountNotFound(){
+		String token = getToken();
+		User mockUser = new User();
+		mockUser.setPassword("TestPassword2!");
+
+		when(jwtUtil.extractUserId(anyString())).thenReturn(1);
+		when(uDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(AccountNotFoundException.class, () -> us.update("Bearer " + token, mockUser));
+		verify(jwtUtil, times(1)).extractUserId(token);
+		verify(uDao, times(1)).findById(1);
+	}
+
+	@Test
+	public void updateUsernameTaken(){
+		String token = getToken();
+		User mockUser = getMockUser();
+		User updatedUser = new User();
+		updatedUser.setUsername(mockUser.getUsername());
+
+		when(jwtUtil.extractUserId(anyString())).thenReturn(1);
+		when(uDao.findById(anyInt())).thenReturn(Optional.of(mockUser));
+		when(uDao.getByUsername(anyString())).thenReturn(Optional.of(mockUser));
+
+		assertThrows(IllegalArgumentException.class, () -> us.update("Bearer " + token, updatedUser));
+		verify(jwtUtil, times(1)).extractUserId(token);
+		verify(uDao, times(1)).findById(1);
+		verify(uDao, times(1)).getByUsername("test-user-username");
+	}
+
+	@Test
+	public void updateInvalidPassword(){
+		String token = getToken();
+		User mockUser = getMockUser();
+		User updatedUser = new User();
+		updatedUser.setPassword("TestPassword1");
+
+		when(jwtUtil.extractUserId(anyString())).thenReturn(1);
+		when(uDao.findById(anyInt())).thenReturn(Optional.of(mockUser));
+
+		assertThrows(IllegalArgumentException.class, () -> us.update("Bearer " + token, updatedUser));
+		verify(jwtUtil, times(1)).extractUserId(token);
+		verify(uDao, times(1)).findById(1);
+	}
+
+	@Test
+	public void updateEmailTaken(){
+		String token = getToken();
+		User mockUser = getMockUser();
+		User updatedUser = new User();
+		updatedUser.setEmail(mockUser.getEmail());
+
+		when(jwtUtil.extractUserId(anyString())).thenReturn(1);
+		when(uDao.findById(anyInt())).thenReturn(Optional.of(mockUser));
+		when(uDao.getByEmail(anyString())).thenReturn(Optional.of(mockUser));
+
+		assertThrows(IllegalArgumentException.class, () -> us.update("Bearer " + token, updatedUser));
+		verify(jwtUtil, times(1)).extractUserId(token);
+		verify(uDao, times(1)).findById(1);
+		verify(uDao, times(1)).getByEmail("test-user-email@test.com");
+	}
 
 	// DELETE
 	@Test
@@ -237,18 +305,44 @@ public class UserServiceTest {
 		verify(uDao, atMost(2)).findById(1);
 	}
 
-	// TODO: Add method, deleteAccountNotFoundException
+	@Test
+	public void deleteAccountNotFound(){
+		String token = getToken();
+
+		when(jwtUtil.extractUserId(token)).thenReturn(1);
+		when(uDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(AccountNotFoundException.class, () -> us.delete("Bearer " + token));
+		verify(jwtUtil, times(1)).extractUserId(token);
+		verify(uDao, times(1)).findById(1);
+
+	}
+
+	@Test
+	public void deleteIncompleteAction() throws AccountNotFoundException {
+		String token = getToken();
+		User mockUser = getMockUser();
+
+		when(jwtUtil.extractUserId(anyString())).thenReturn(1);
+		when(uDao.findById(anyInt())).thenReturn(Optional.of(mockUser)).thenReturn(Optional.of(mockUser));
+
+		String result = us.delete("Bearer " + token);
+
+		assertNotNull(result);
+		assertEquals("Could not delete account", result);
+		verify(jwtUtil, times(1)).extractUserId(token);
+		verify(uDao, times(1)).deleteById(1);
+		verify(uDao, times(2)).findById(1);
+	}
 
 	// LOGIN
 	@Test
 	public void login() throws AccountNotFoundException {
 		User mockUser = getMockUser();
 		mockUser.setUserId(1);
-
 		String token = getToken();
 
 		LoginDto loginDto = new LoginDto(mockUser.getUsername(), "TestPassword1!");
-
 
 		when(uDao.getByUsername(loginDto.getUsername())).thenReturn(Optional.of(mockUser));
 		when(jwtUtil.generateToken(mockUser)).thenReturn(token);
@@ -257,6 +351,30 @@ public class UserServiceTest {
 
 		assertNotNull(result);
 		assertEquals(token, result);
+	}
+
+	@Test
+	public void loginIncorrectPassword() throws AccountNotFoundException {
+		User mockUser = getMockUser();
+		LoginDto loginDto = new LoginDto(mockUser.getUsername(), "TestPassword2!");
+
+		when(uDao.getByUsername(loginDto.getUsername())).thenReturn(Optional.of(mockUser));
+
+		String result = us.login(loginDto);
+
+		assertNull(result);
+		verify(uDao, times(1)).getByUsername("test-user-username");
+	}
+
+	@Test
+	public void loginAccountNotFound(){
+		User mockUser = getMockUser();
+		LoginDto loginDto = new LoginDto(mockUser.getUsername(), "TestPassword1!");
+
+		when(uDao.getByUsername(loginDto.getUsername())).thenReturn(Optional.empty());
+
+		assertThrows(AccountNotFoundException.class, () -> us.login(loginDto));
+		verify(uDao, times(1)).getByUsername("test-user-username");
 	}
 
 }
