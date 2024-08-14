@@ -1,8 +1,6 @@
 package com.example.p1_backend.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -46,6 +44,25 @@ public class UserServiceTest {
 	@InjectMocks
 	private UserService us;
 
+	private Iterable<User> getMockUsers(int size) {
+		List<User> users = new ArrayList<>(size);
+		for (int i = 0; i < size; i++) {
+			users.add(new User("test-email" + i + "@test.com", "TestPassword1!", "test-username" + i, "ROLE_USER",
+					"test-plan-" + i));
+		}
+		return users;
+	}
+
+	private User getMockUser() {
+		return new User("test-user-email@test.com", passwordEncoder.encode("TestPassword1!"), "test-user-username", "ROLE_USER",
+				"Spring Boot Roadmap");
+	}
+
+	private String getToken() {
+		// This function broke???? so here's an example token I got from postman
+		return "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
+	}
+
 	@Test
 	public void findAll() {
 		String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlIjpbIlJPTEVfVVNFUiIsIlJPTEVfQURNSU4iXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIxMTkzOTY2LCJleHAiOjE3MjEyODAzNjZ9.UEVBOz2smZknOVjQmRcKgcF1DiR8osedb2kYgV7XxGA";
@@ -60,36 +77,16 @@ public class UserServiceTest {
 		assertEquals(5, users.size());
 	}
 
-	private Iterable<User> getMockUsers(int size) {
-		List<User> users = new ArrayList<>(size);
-		for (int i = 0; i < size; i++) {
-			users.add(new User("test-email" + i + "@test.com", "test-password", "test-username" + i, "ROLE_USER",
-					"test-plan-" + i));
-		}
-		return users;
-	}
-
-	private User getMockUser() {
-		return new User("test-user-email@test.com", "test-user-password", "test-user-username", "ROLE_USER",
-				"Spring Boot Roadmap");
-	}
-
-	private String getToken() {
-		// This function broke???? so here's an example token I got from postman
-		return "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
-	}
-
 	// TODO: Review JUnit docs to include a descriptive string; let the tests be the documentation!
 	// CREATE
 	@Test
 	void register() {
 		// TODO: call password encode here to remove it below! -Lauren
-		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "test-user-password",
+		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!",
 				"test-user-username");
 		User user = getMockUser();
 		// Because Users create their own plans, there should not be a default plan
 		user.setPlans(new ArrayList<>());
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
 
 		// Set expected behavior
 		// check unique username
@@ -105,11 +102,51 @@ public class UserServiceTest {
 		// Assert
 		assertNotNull(result);
 		assertEquals("test-user-email@test.com", result.getEmail());
-		assertTrue(passwordEncoder.matches("test-user-password", result.getPassword()));
+		assertTrue(passwordEncoder.matches("TestPassword1!", result.getPassword()));
 		assertEquals("test-user-username", result.getUsername());
 		// TODO: add another assert to ensure getRoles is not null
 		assertEquals("ROLE_USER", result.getRoles().get(0));
 		assertEquals(new ArrayList<>(), result.getPlans());
+	}
+
+	@Test
+	public void registerUsernameTaken(){
+		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!",
+				"test-user-username");
+		User mockUser = getMockUser();
+
+		when(uDao.getByUsername(anyString())).thenReturn(Optional.of(mockUser));
+
+		assertThrows(IllegalArgumentException.class, () -> us.register(registerDto));
+		verify(uDao, times(1)).getByUsername("test-user-username");
+	}
+
+	@Test
+	public void registerInvalidEmail(){
+		RegisterDto registerDto = new RegisterDto("test-user-emailtest.com", "TestPassword1!",
+				"test-user-username");
+
+		assertThrows(IllegalArgumentException.class, () -> us.register(registerDto));
+	}
+
+	@Test
+	public void registerEmailTaken(){
+		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!",
+				"test-user-username");
+		User mockUser = getMockUser();
+
+		when(uDao.getByEmail(anyString())).thenReturn(Optional.of(mockUser));
+
+		assertThrows(IllegalArgumentException.class, () -> us.register(registerDto));
+		verify(uDao, times(1)).getByEmail("test-user-email@test.com");
+	}
+
+	@Test
+	public void registerInvalidPassword(){
+		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1",
+				"test-user-username");
+
+		assertThrows(IllegalArgumentException.class, () -> us.register(registerDto));
 	}
 
 	// READ
@@ -119,7 +156,6 @@ public class UserServiceTest {
 		String token = getToken();
 
 		User mockUser = getMockUser();
-		mockUser.setPassword(passwordEncoder.encode(mockUser.getPassword()));
 		mockUser.setUserId(1);
 
 		// Mock the behavior of the repository to return the mock user
@@ -134,7 +170,7 @@ public class UserServiceTest {
 		assertNotNull(result);
 		assertEquals(mockUser.getUserId(), result.getUserId());
 		assertEquals("test-user-email@test.com", result.getEmail());
-		assertTrue(passwordEncoder.matches("test-user-password", result.getPassword()));
+		assertTrue(passwordEncoder.matches("TestPassword1!", result.getPassword()));
 		assertEquals("test-user-username", result.getUsername());
 		assertEquals("ROLE_USER", result.getRoles().get(0)); // TODO: grab roles
 																// dynamically
@@ -150,7 +186,6 @@ public class UserServiceTest {
 		String token = getToken();
 
 		User currentUser = getMockUser();
-		currentUser.setPassword(passwordEncoder.encode(currentUser.getPassword()));
 		currentUser.setUserId(1);
 
 		// Set expected behavior
@@ -170,7 +205,7 @@ public class UserServiceTest {
 		assertNotNull(result);
 		assertEquals(currentUser.getUserId(), updatedUser.getUserId());
 		assertEquals("test-user-email@test.com", updatedUser.getEmail());
-		assertTrue(passwordEncoder.matches("test-user-password", updatedUser.getPassword()));
+		assertTrue(passwordEncoder.matches("TestPassword1!", updatedUser.getPassword()));
 		assertEquals("test-user-username", updatedUser.getUsername());
 		assertEquals("ROLE_USER", updatedUser.getRoles().get(0)); // TODO: grab roles
 																	// dynamically
@@ -212,9 +247,8 @@ public class UserServiceTest {
 
 		String token = getToken();
 
-		LoginDto loginDto = new LoginDto(mockUser.getUsername(), mockUser.getPassword());
+		LoginDto loginDto = new LoginDto(mockUser.getUsername(), "TestPassword1!");
 
-		mockUser.setPassword(passwordEncoder.encode(mockUser.getPassword()));
 
 		when(uDao.getByUsername(loginDto.getUsername())).thenReturn(Optional.of(mockUser));
 		when(jwtUtil.generateToken(mockUser)).thenReturn(token);
