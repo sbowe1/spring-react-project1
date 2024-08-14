@@ -4,12 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.p1_backend.models.dtos.LoginDto;
-import com.example.p1_backend.repositories.PlanDao;
-import com.example.p1_backend.util.JwtUtil;
-import jakarta.transaction.InvalidTransactionException;
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
+import javax.security.auth.login.AccountNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,10 +13,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.p1_backend.models.User;
+import com.example.p1_backend.models.dtos.LoginDto;
 import com.example.p1_backend.models.dtos.RegisterDto;
 import com.example.p1_backend.repositories.UserDao;
+import com.example.p1_backend.util.JwtUtil;
 
-import javax.security.auth.login.AccountNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -50,6 +49,11 @@ public class UserService {
 	}
 
 	// CREATE
+	// TODO: add JavaDoc
+	/*
+	 * @return User
+	 * registerDto
+	 */
 	public User register(RegisterDto registerDto) {
 		// validate username is unique
 		Optional<User> username = uDao.getByUsername(registerDto.getUsername());
@@ -83,6 +87,8 @@ public class UserService {
 	}
 
 	// READ
+	// TODO: add JavaDoc
+	// utilize helper method to pass in id param
 	public User findByUserId(String token) throws AccountNotFoundException {
 		// Substring to remove "Bearer " from the token String
 		int userId = jwtUtil.extractUserId(token.substring(7));
@@ -94,6 +100,8 @@ public class UserService {
 		}
 		return uDao.findById(userId).get();
 	}
+
+	// TODO: add helper method to extract userId from token
 
 	// UPDATE
 	public String update(String token, User updatedUser) throws AccountNotFoundException {
