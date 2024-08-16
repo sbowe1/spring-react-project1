@@ -19,7 +19,7 @@ export function RegisterForm() {
                 body: JSON.stringify({
                     email: formData.get("email"),
                     password: formData.get("password"),
-                    name: formData.get("name")
+                    username: formData.get("name")
                 })
             }).then(response => {
                 // SECURITY: return 200 regardless of user fields' validities from the server
