@@ -1,11 +1,19 @@
 "use client";
+import { Button, Checkbox, FormControlLabel, FormGroup, TextField } from '@mui/material';
 import { useState } from "react";
+
+const label = { inputProps: { 'aria-label': 'Checkbox' } };
 
 export function RegisterForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
     const [message, setMessage] = useState("");
+    const [checked, setChecked] = useState(false);
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setChecked(event.target.checked);
+    };
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -42,18 +50,22 @@ export function RegisterForm() {
 
     return (
         <form onSubmit={handleSubmit}>
-            <label htmlFor="email">Email</label><br/>
-            <input id="email" name="email" type="text" placeholder="email" value={email} onChange={({ target }) => setEmail(target.value)}/><br/><br/>
+            <FormGroup >
+                <TextField id="name" name="name" placeholder="Miranda Hobbes" label="Name" variant="filled" value={name} onChange={({ target }) => setName(target.value)}/><br/><br/>
 
-            <label htmlFor="password">Password</label><br/>
-            <input id="password" name="password" type="password" placeholder="password" value={password} onChange={({ target }) => setPassword(target.value)}/><br/><br/>
+                <TextField id="email" name="email" placeholder="mirmir@gmail.com" label="Email" variant="filled"  value={email} onChange={({ target }) => setEmail(target.value)}/><br/><br/>
 
-            <label htmlFor="name">Name</label><br/>
-            <input id="name" name="name" type="text" placeholder="name" value={name} onChange={({ target }) => setName(target.value)}/><br/><br/>
-            <button type="submit">
-                Register
-            </button><br/><br/>
-            {message != "" ? message : null}
+                <TextField id="password" name="password" type="password" placeholder="Password_" label="Password" variant="filled"  value={password} onChange={({ target }) => setPassword(target.value)}/><br/><br/>
+                Requirements<br/>
+
+                <FormControlLabel control={<Checkbox checked={checked} onChange={handleChange} disabled={true}/>} label="8-16 characters" />
+                <FormControlLabel control={<Checkbox checked={checked} onChange={handleChange} disabled={true}/>} label={"At least one special character" + "\n" + "! # $ ^ & * - _"} />
+                <FormControlLabel control={<Checkbox checked={checked} onChange={handleChange} disabled={true}/>} label="At least one capital letter" />
+
+                <Button type="submit" variant="contained" >Create</Button><br/> {/* // disabled={true} */}
+                <Button type="submit" variant="contained">Cancel</Button><br/><br/>
+                {message != "" ? message : null}
+            </FormGroup>
         </form>
     )
 }
