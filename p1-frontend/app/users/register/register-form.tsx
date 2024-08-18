@@ -2,59 +2,55 @@
 import { Button, Checkbox, FormControlLabel, FormGroup, TextField } from '@mui/material';
 import { useState } from "react";
 
-const label = { inputProps: { 'aria-label': 'Checkbox' } };
-
-// validations
-
-// - email:
-    // not ""
-    // is not only whitespaces
-    // valid email regex
-    // "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
-    // unique
-
-// - password:
-    // 8-16 characters
-    // at least one special character ! # $ ^ & * - _
-    // at least one capital letter
-
-// - username: unique
-
 const specialChars = ["!", "#", "$", "^", "&", "*", "-", "_"];
+const emailRegex = new RegExp("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
 
 export function RegisterForm() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [name, setName] = useState("");
     const [message, setMessage] = useState("");
-    const [passwordChecks, setPasswordChecks] = useState({
+    const [registerFormFields, setRegisterFormFields] = useState({
+        email: "",
+        password: "",
+        name: ""
+    });
+    const [emailValidations, setEmailValidations] = useState({
+        notEmptyString: false,
+        notOnlyWhitespaces: false,
+        matchesEmailReqex: false,
+        // unique: false,
+    });
+    const [passwordValidations, setPasswordValidations] = useState({
         length: false,
         specialChar: false,
         capitalLetter: false
     });
-    const [createDisabled, setCreateDisabled] = useState(true);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //   setChecked(event.target.checked); // Checkbox
+        setRegisterFormFields({
+            ...registerFormFields,
+            [event.target.id]: event.target.value
+        })
         if (event.target.id === "name") {
             // query backend for username uniqueness
-            setName(event.target.value)
         };
-
         if (event.target.id === "email") {
-            setEmail(event.target.value)
+            setRegisterFormFields((prevFields) => {
+                setEmailValidations({
+                    notEmptyString: event.target.value !== "",
+                    notOnlyWhitespaces: event.target.value.trim() !== "",
+                    matchesEmailReqex: emailRegex.test(event.target.value),
+                    // unique: // query backend for email uniqueness
+                })
+                return prevFields
+            })
         };
-
         if (event.target.id === "password") {
-            setPassword(event.target.value)
-            // invoke setPassword again to have the password set above available for evaluation
-            setPassword((prevPassword) => {
-                setPasswordChecks({
+            setRegisterFormFields((prevFields) => {
+                setPasswordValidations({
                     capitalLetter: event.target.value !== event.target.value.toLowerCase(),
                     specialChar: specialChars.some((char) => event.target.value.includes(char)),
                     length: event.target.value.length >= 8 && event.target.value.length <= 16
                 })
-                return prevPassword
+                return prevFields
             })
         };
     }
@@ -86,14 +82,17 @@ export function RegisterForm() {
         } catch (error) {
             console.error("Failed to create user", error);
         }
-        setEmail("")
-        setPassword("")
-        setName("")
+        setRegisterFormFields({
+            email: "",
+            password: "",
+            name: ""
+        })
         setMessage("")
     }
 
     return (
         <form onSubmit={handleSubmit}>
+            
             <FormGroup>
                 <TextField
                     style={{backgroundColor: "#E6E0E9"}}
@@ -102,7 +101,7 @@ export function RegisterForm() {
                     placeholder="Miranda Hobbes"
                     label="Name"
                     variant="filled"
-                    value={name}
+                    value={registerFormFields.name}
                     required
                     onChange={handleChange}
                 /><br/><br/>
@@ -114,7 +113,7 @@ export function RegisterForm() {
                     placeholder="mirmir@gmail.com"
                     label="Email"
                     variant="filled"
-                    value={email}
+                    value={registerFormFields.email}
                     required
                     onChange={handleChange}
                 /><br/><br/>
@@ -127,7 +126,7 @@ export function RegisterForm() {
                     label="Password"
                     placeholder="Password_"
                     variant="filled"
-                    value={password}
+                    value={registerFormFields.password}
                     required
                     onChange={handleChange}
                 /><br/><br/>
@@ -136,24 +135,34 @@ export function RegisterForm() {
 
                 <FormControlLabel
                     control={
-                        <Checkbox checked={passwordChecks.length} disabled={true}
+                        <Checkbox checked={passwordValidations.length} disabled={true}
                     />}
                     label="8-16 characters"
                 />
                 <FormControlLabel
                     control={
-                        <Checkbox checked={passwordChecks.specialChar} disabled={true}
+                        <Checkbox checked={passwordValidations.specialChar} disabled={true}
                     />}
                     label={"At least one special character" + "\n" + "! # $ ^ & * - _"}
                 />
                 <FormControlLabel
                     control={
-                        <Checkbox checked={passwordChecks.capitalLetter} disabled={true}
+                        <Checkbox checked={passwordValidations.capitalLetter} disabled={true}
                     />}
                     label="At least one capital letter"
                 />
 
-                <Button type="submit" variant="contained" disabled={createDisabled}>Create</Button><br/> 
+                <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={
+                        Object.values(emailValidations).every((field) => field === true) 
+                        && Object.values(passwordValidations).every((field) => field === true)
+                        ? false : true
+                    }
+                >
+                    Create
+                </Button><br/> 
                 <Button variant="contained">Cancel</Button><br/><br/>
                 {message != "" ? message : null}
             </FormGroup>
