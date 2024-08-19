@@ -44,6 +44,8 @@ public class UserServiceTest {
 	@InjectMocks
 	private UserService us;
 
+	String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
+
 	private Iterable<User> getMockUsers(int size) {
 		List<User> users = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
@@ -56,11 +58,6 @@ public class UserServiceTest {
 	private User getMockUser() {
 		return new User("test-user-email@test.com", passwordEncoder.encode("TestPassword1!"), "test-user-username",
 				"ROLE_USER", "Spring Boot Roadmap");
-	}
-
-	private String getToken() {
-		// This function broke???? so here's an example token I got from postman
-		return "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
 	}
 
 	@Test
@@ -149,7 +146,6 @@ public class UserServiceTest {
 	@Test
 	public void findByUserId() throws AccountNotFoundException {
 		// Arrange
-		String token = getToken();
 		User mockUser = getMockUser();
 		mockUser.setUserId(1);
 
@@ -174,8 +170,6 @@ public class UserServiceTest {
 
 	@Test
 	public void findByUserIdAccountNotFound() {
-		String token = getToken();
-
 		when(jwtUtil.extractUserId(token)).thenReturn(1);
 		when(uDao.findById(anyInt())).thenReturn(Optional.empty());
 
@@ -188,7 +182,6 @@ public class UserServiceTest {
 	@Test
 	void update() throws AccountNotFoundException {
 		// Arrange
-		String token = getToken();
 		User currentUser = getMockUser();
 		currentUser.setUserId(1);
 
@@ -214,7 +207,7 @@ public class UserServiceTest {
 		assertEquals("ROLE_USER", updatedUser.getRoles().get(0)); // TODO: grab roles
 																	// dynamically
 		assertEquals("Spring Boot Roadmap", updatedUser.getPlans().get(0));
-		assertEquals(getToken(), result);
+		assertEquals(token, result);
 		verify(uDao, times(1)).findById(anyInt());
 		verify(uDao, atMost(1)).getByUsername(anyString());
 		verify(uDao, atMost(1)).getByEmail(anyString());
@@ -222,7 +215,6 @@ public class UserServiceTest {
 
 	@Test
 	public void updateAccountNotFound() {
-		String token = getToken();
 		User mockUser = new User();
 		mockUser.setPassword("TestPassword2!");
 
@@ -236,7 +228,6 @@ public class UserServiceTest {
 
 	@Test
 	public void updateUsernameTaken() {
-		String token = getToken();
 		User mockUser = getMockUser();
 		User updatedUser = new User();
 		updatedUser.setUsername(mockUser.getUsername());
@@ -253,7 +244,6 @@ public class UserServiceTest {
 
 	@Test
 	public void updateInvalidPassword() {
-		String token = getToken();
 		User mockUser = getMockUser();
 		User updatedUser = new User();
 		updatedUser.setPassword("TestPassword1");
@@ -268,7 +258,6 @@ public class UserServiceTest {
 
 	@Test
 	public void updateEmailTaken() {
-		String token = getToken();
 		User mockUser = getMockUser();
 		User updatedUser = new User();
 		updatedUser.setEmail(mockUser.getEmail());
@@ -286,12 +275,9 @@ public class UserServiceTest {
 	// DELETE
 	@Test
 	void delete() throws AccountNotFoundException {
-		String token = getToken();
 
 		when(jwtUtil.extractUserId(token)).thenReturn(1);
 		when(uDao.findById(anyInt())).thenReturn(Optional.of(getMockUser())).thenReturn(Optional.empty());
-		// TODO: investigate if below is necessary?
-		// doNothing().when(uDao).deleteById(1);
 
 		String message = us.delete("Bearer " + token);
 
@@ -303,8 +289,6 @@ public class UserServiceTest {
 
 	@Test
 	public void deleteAccountNotFound() {
-		String token = getToken();
-
 		when(jwtUtil.extractUserId(token)).thenReturn(1);
 		when(uDao.findById(anyInt())).thenReturn(Optional.empty());
 
@@ -316,7 +300,6 @@ public class UserServiceTest {
 
 	@Test
 	public void deleteIncompleteAction() throws AccountNotFoundException {
-		String token = getToken();
 		User mockUser = getMockUser();
 
 		when(jwtUtil.extractUserId(anyString())).thenReturn(1);
@@ -336,7 +319,6 @@ public class UserServiceTest {
 	public void login() throws AccountNotFoundException {
 		User mockUser = getMockUser();
 		mockUser.setUserId(1);
-		String token = getToken();
 
 		LoginDto loginDto = new LoginDto(mockUser.getUsername(), "TestPassword1!");
 
