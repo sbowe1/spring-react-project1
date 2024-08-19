@@ -51,8 +51,7 @@ public class UserService {
 	// CREATE
 	// TODO: add JavaDoc
 	/*
-	 * @return User
-	 * registerDto
+	 * @return User registerDto
 	 */
 	public User register(RegisterDto registerDto) {
 		// validate username is unique
@@ -72,6 +71,18 @@ public class UserService {
 		if (email.isPresent()) {
 			log.warn("Email already in use");
 			throw new IllegalArgumentException("Email: " + registerDto.getEmail() + " was already taken");
+		}
+
+		// Password must contain:
+		// at least 1 digit (?=.*[0-9])
+		// at least 1 upper case letter (?=.*[A-Z])
+		// at least one special character (?=.*[!@#$%^&+=])
+		// no white space (?=\S+$)
+		// length 8-16 char .{8,16}
+		String passwordRegex = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&+=])(?=\\S+$).{8,16}$";
+		if (registerDto.getPassword().isBlank() || !(registerDto.getPassword()).matches(passwordRegex)) {
+			log.warn("Password does not meet requirements");
+			throw new IllegalArgumentException("Password does not meet requirements");
 		}
 
 		// create new user if username and email are unique
@@ -115,20 +126,25 @@ public class UserService {
 		if (updatedUser.getUsername() != null && !updatedUser.getUsername().isBlank()) {
 			// Ensuring that Username is not taken
 			Optional<User> optUser2 = uDao.getByUsername(updatedUser.getUsername());
-			if (optUser2.isPresent() && optUser2.get().getUserId() != optUser.get().getUserId()) {
+			if (optUser2.isPresent() && optUser2.get().getUserId() != userId) {
 				log.warn("Username is already taken");
 				throw new IllegalArgumentException("Username is already taken!");
 			}
 
 			optUser.get().setUsername(updatedUser.getUsername());
 		}
+		String passwordRegex = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&+=])(?=\\S+$).{8,16}$";
 		if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
+			if (!updatedUser.getPassword().matches(passwordRegex)) {
+				log.warn("Password does not meet requirements");
+				throw new IllegalArgumentException("Password does not meet the requirements");
+			}
 			optUser.get().setPassword(passwordEncoder.encode(updatedUser.getPassword()));
 		}
 		if (updatedUser.getEmail() != null && !updatedUser.getEmail().isEmpty()) {
 			// Ensuring that Email is not taken
 			Optional<User> optUser3 = uDao.getByEmail(updatedUser.getEmail());
-			if (optUser3.isPresent() && !optUser3.get().getEmail().equals(optUser.get().getEmail())) {
+			if (optUser3.isPresent() && optUser3.get().getUserId() != userId) {
 				log.warn("Email is already linked to another account");
 				throw new IllegalArgumentException("Email is already linked to an account!");
 			}
