@@ -1,5 +1,6 @@
 "use client";
-import { Button, Checkbox, FormControlLabel, FormGroup, TextField } from '@mui/material';
+import { Checkbox, FormControlLabel, FormGroup, TextField } from '@mui/material';
+import Button from '@mui/material/Button';
 import { useState } from "react";
 
 const specialChars = ["!", "#", "$", "^", "&", "*", "-", "_"];
@@ -163,7 +164,7 @@ export function RegisterForm() {
                 >
                     Create
                 </Button><br/> 
-                <Button variant="contained">Cancel</Button><br/><br/>
+                <Button variant="outlined">Cancel</Button><br/><br/>
                 {message != "" ? message : null}
             </FormGroup>
         </form>
