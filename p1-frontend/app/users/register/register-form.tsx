@@ -1,6 +1,11 @@
 "use client";
-import { Checkbox, FormControlLabel, FormGroup, TextField } from '@mui/material';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { useState } from "react";
 
 const specialChars = ["!", "#", "$", "^", "&", "*", "-", "_"];
@@ -8,17 +13,20 @@ const emailRegex = new RegExp("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
 
 export function RegisterForm() {
     const [message, setMessage] = useState("");
+
     const [registerFormFields, setRegisterFormFields] = useState({
         email: "",
         password: "",
         name: ""
     });
+
     const [emailValidations, setEmailValidations] = useState({
         notEmptyString: false,
         notOnlyWhitespaces: false,
         matchesEmailReqex: false,
         // unique: false,
     });
+
     const [passwordValidations, setPasswordValidations] = useState({
         length: false,
         specialChar: false,
@@ -93,8 +101,8 @@ export function RegisterForm() {
 
     return (
         <form onSubmit={handleSubmit}>
-            
-            <FormGroup>
+            <Typography>Account Creation</Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <TextField
                     style={{backgroundColor: "#E6E0E9"}}
                     id="name"
@@ -105,7 +113,7 @@ export function RegisterForm() {
                     value={registerFormFields.name}
                     required
                     onChange={handleChange}
-                /><br/><br/>
+                />
 
                 <TextField
                     style={{backgroundColor: "#E6E0E9"}}
@@ -117,7 +125,7 @@ export function RegisterForm() {
                     value={registerFormFields.email}
                     required
                     onChange={handleChange}
-                /><br/><br/>
+                />
 
                 <TextField
                     style={{backgroundColor: "#E6E0E9"}}
@@ -130,29 +138,34 @@ export function RegisterForm() {
                     value={registerFormFields.password}
                     required
                     onChange={handleChange}
-                /><br/><br/>
-
-                Requirements<br/>
-
-                <FormControlLabel
-                    control={
-                        <Checkbox checked={passwordValidations.length} disabled={true}
-                    />}
-                    label="8-16 characters"
                 />
-                <FormControlLabel
-                    control={
-                        <Checkbox checked={passwordValidations.specialChar} disabled={true}
-                    />}
-                    label={"At least one special character" + "\n" + "! # $ ^ & * - _"}
-                />
-                <FormControlLabel
-                    control={
-                        <Checkbox checked={passwordValidations.capitalLetter} disabled={true}
-                    />}
-                    label="At least one capital letter"
-                />
+            </Box>
 
+            <div>
+                <Typography>Requirements</Typography>
+                <FormGroup>
+                    <FormControlLabel
+                        control={
+                            <Checkbox checked={passwordValidations.length} disabled={true}
+                        />}
+                        label="8-16 characters"
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox checked={passwordValidations.specialChar} disabled={true}
+                        />}
+                        label={"At least one special character\n! # $ ^ & * - _"}
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox checked={passwordValidations.capitalLetter} disabled={true}
+                        />}
+                        label="At least one capital letter"
+                    />
+                </FormGroup>
+            </div>
+
+            <Box sx={{ display: 'flex', gap: '10px' }}>
                 <Button
                     type="submit"
                     variant="contained"
@@ -162,11 +175,15 @@ export function RegisterForm() {
                         ? false : true
                     }
                 >
-                    Create
-                </Button><br/> 
-                <Button variant="outlined">Cancel</Button><br/><br/>
+                    <Typography>Create</Typography>
+                </Button>
+
+                <Button variant="outlined"><Typography>Cancel</Typography></Button>
+            </Box>
+
+            <div>
                 {message != "" ? message : null}
-            </FormGroup>
+            </div>
         </form>
     )
 }

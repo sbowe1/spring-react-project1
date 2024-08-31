@@ -12,30 +12,40 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+import Image from 'next/image';
 import { useState } from 'react';
-import tempLogo from './temp/logo-placeholder.jpg';
+import logoPlaceholder from './temp/logo-placeholder.jpg';
 
 export default function MenuBar() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => setAnchorEl(null);
+
   return (
-    <>
+    <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center', justifyContent: 'space-between' }}>
+
+      <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center', gap: '8px', width: '249px', height: '75px'}}>
+        <Image src={logoPlaceholder} alt="Logo Placeholder" width={75} height={75} />
+        <Typography>Site Name</Typography>
+      </Box>
+
+      <Button variant="contained" sx={{backgroundColor: '#65558F', width: '149px', height: '40px'}}><Typography>Resume Course</Typography></Button>
+
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        <img src={tempLogo} alt="Logo Placeholder" />
-        <Typography sx={{ minWidth: 100 }}>Site Name</Typography>
-        <Button variant="contained"><Typography>Resume Course</Typography></Button>
-        <Button startIcon={<Speed/>}><Typography>Dashboard</Typography></Button>
-        <Button startIcon={<ContactSupportOutlined/>}><Typography>Quick Quiz</Typography></Button>
-        <Button startIcon={<Add/>}><Typography>Builder</Typography></Button>
+        <Button size='large' startIcon={<Speed/>}><Typography>Dashboard</Typography></Button>
+        <Button size='large' startIcon={<ContactSupportOutlined/>}><Typography>Quick Quiz</Typography></Button>
+        <Button size='large' startIcon={<Add/>}><Typography>Builder</Typography></Button>
         <Tooltip title="Account settings">
           <Button
             startIcon={<Person/>}
             onClick={handleClick}
-            size="small"
+            size="large"
             aria-controls={open ? 'account-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
@@ -44,6 +54,7 @@ export default function MenuBar() {
           </Button>
         </Tooltip>
       </Box>
+
       <Menu
         anchorEl={anchorEl}
         id="account-menu"
@@ -57,15 +68,18 @@ export default function MenuBar() {
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
-          Settings
+          <Typography>Settings</Typography>
         </MenuItem>
+
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
-          Logout
+          <Typography>Logout</Typography>
         </MenuItem>
+
       </Menu>
-    </>
+
+    </Box>
   );
 }
