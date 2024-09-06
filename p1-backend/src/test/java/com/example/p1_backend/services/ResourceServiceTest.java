@@ -12,12 +12,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ResourceServiceTest {
@@ -87,6 +88,16 @@ public class ResourceServiceTest {
 	}
 
 	@Test
+	public void createResourceNSTopicNotFound() {
+		InResourceDto resourceDto = getResourceDto();
+
+		when(topicDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(NoSuchElementException.class, () -> rs.createResourceNoSubtopic(1, resourceDto));
+		verify(topicDao, times(1)).findById(1);
+	}
+
+	@Test
 	public void createResourceSubtopic() {
 		InResourceDto mockResourceDto = getResourceDto();
 		Resource mockResource = getResource();
@@ -108,6 +119,30 @@ public class ResourceServiceTest {
 		assertEquals(getTopic().getTitle(), result.getTopicName());
 	}
 
+	@Test
+	public void createResourceSubtopicTopicNotFound() {
+		InResourceDto resourceDto = getResourceDto();
+
+		when(topicDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(NoSuchElementException.class, () -> rs.createResourceSubtopic(1, 1, resourceDto));
+		verify(topicDao, times(1)).findById(1);
+		verify(subtopicDao, times(0)).findById(1);
+	}
+
+	@Test
+	public void createResourceSubtopicSubtopicNotFound() {
+		Topic mockTopic = getTopic();
+		InResourceDto resourceDto = getResourceDto();
+
+		when(topicDao.findById(anyInt())).thenReturn(Optional.of(mockTopic));
+		when(subtopicDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(NoSuchElementException.class, () -> rs.createResourceSubtopic(1, 1, resourceDto));
+		verify(topicDao, times(1)).findById(1);
+		verify(subtopicDao, times(1)).findById(1);
+	}
+
 	// READ
 	@Test
 	public void readResource() {
@@ -125,6 +160,14 @@ public class ResourceServiceTest {
 		assertEquals("Resource URL", result.getUrl());
 		assertEquals(getSubtopic().getTitle(), result.getSubtopicName());
 		assertEquals(getTopic().getTitle(), result.getTopicName());
+	}
+
+	@Test
+	public void readResourceResourceNotFound() {
+		when(resourceDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(NoSuchElementException.class, () -> rs.readResource(1));
+		verify(resourceDao, times(1)).findById(1);
 	}
 
 	// UPDATE
@@ -149,6 +192,17 @@ public class ResourceServiceTest {
 		assertEquals("Resource URL", result.getUrl());
 		assertEquals(getSubtopic().getTitle(), result.getSubtopicName());
 		assertEquals(getTopic().getTitle(), result.getTopicName());
+	}
+
+	@Test
+	public void updateResourceResourceNotFound() {
+		InResourceDto inResourceDto = new InResourceDto();
+		inResourceDto.setTitle("New Title");
+
+		when(resourceDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(NoSuchElementException.class, () -> rs.updateResource(1, inResourceDto));
+		verify(resourceDao, times(1)).findById(1);
 	}
 
 }
