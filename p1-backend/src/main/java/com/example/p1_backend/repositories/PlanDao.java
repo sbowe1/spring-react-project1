@@ -9,10 +9,11 @@ import com.example.p1_backend.models.Plan;
 
 @Repository
 public interface PlanDao extends JpaRepository<Plan, Integer> {
+
 	/**
 	 * Finds a plan by name.
-	 * @param	name
-	 * @return	Optional<Plan>
+	 * @param name
+	 * @return Optional<Plan>
 	 */
 	Optional<Plan> getByName(String name);
 

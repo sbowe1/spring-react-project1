@@ -30,9 +30,9 @@ public class SubtopicService {
 
 	/**
 	 * Creates a new subtopic.
-	 * @param	topicId
-	 * @param	subtopicDto
-	 * @return	Subtopic
+	 * @param topicId
+	 * @param subtopicDto
+	 * @return Subtopic
 	 */
 	public Subtopic createSubtopic(int topicId, InSubtopicDto subtopicDto) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
@@ -49,8 +49,8 @@ public class SubtopicService {
 
 	/**
 	 * Reads a subtopic by id.
-	 * @param	subtopicId
-	 * @return	Subtopic
+	 * @param subtopicId
+	 * @return Subtopic
 	 */
 	public Subtopic readSubtopic(int subtopicId) {
 		Optional<Subtopic> optSubtopic = subtopicDao.findById(subtopicId);
@@ -64,8 +64,8 @@ public class SubtopicService {
 
 	/**
 	 * Updates a subtopic's status.
-	 * @param	subtopicId
-	 * @return	Subtopic
+	 * @param subtopicId
+	 * @return Subtopic
 	 */
 	public Subtopic updateSubtopic(int subtopicId) {
 		Optional<Subtopic> optSubtopic = subtopicDao.findById(subtopicId);

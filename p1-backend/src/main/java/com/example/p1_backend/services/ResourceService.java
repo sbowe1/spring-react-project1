@@ -36,9 +36,9 @@ public class ResourceService {
 
 	/**
 	 * Creates a new resource with no subtopic.
-	 * @param	topicId
-	 * @param	resourceDto
-	 * @return	OutResourceDto
+	 * @param topicId
+	 * @param resourceDto
+	 * @return OutResourceDto
 	 */
 	public OutResourceDto createResourceNoSubtopic(int topicId, InResourceDto resourceDto) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
@@ -65,10 +65,10 @@ public class ResourceService {
 
 	/**
 	 * Creates a new resource with a subtopic.
-	 * @param	topicId
-	 * @param	subtopicId
-	 * @param	resourceDto
-	 * @return	OutResourceDto
+	 * @param topicId
+	 * @param subtopicId
+	 * @param resourceDto
+	 * @return OutResourceDto
 	 */
 	public OutResourceDto createResourceSubtopic(int topicId, int subtopicId, InResourceDto resourceDto) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
@@ -103,8 +103,8 @@ public class ResourceService {
 
 	/**
 	 * Reads a resource by id.
-	 * @param	resourceId
-	 * @return	OutResourceDto
+	 * @param resourceId
+	 * @return OutResourceDto
 	 */
 	public OutResourceDto readResource(int resourceId) {
 		Optional<Resource> optResource = resourceDao.findById(resourceId);
@@ -128,9 +128,9 @@ public class ResourceService {
 
 	/**
 	 * Updates a resource.
-	 * @param	resourceId
-	 * @param	resourceDto
-	 * @return	OutResourceDto
+	 * @param resourceId
+	 * @param resourceDto
+	 * @return OutResourceDto
 	 */
 	public OutResourceDto updateResource(int resourceId, InResourceDto resourceDto) {
 		Optional<Resource> optResource = resourceDao.findById(resourceId);

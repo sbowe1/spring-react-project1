@@ -57,10 +57,10 @@ public class PlanService {
 
 	/**
 	 * Creates a new plan.
-	 * @param	token
-	 * @param	name
-	 * @return	Plan
-	 * @throws	AccountNotFoundException
+	 * @param token
+	 * @param name
+	 * @return Plan
+	 * @throws AccountNotFoundException
 	 */
 	public Plan createPlan(String token, String name) throws AccountNotFoundException {
 		Optional<Plan> optPlan = planDao.getByName(name);
@@ -89,8 +89,8 @@ public class PlanService {
 
 	/**
 	 * Reads a plan by id.
-	 * @param	planId
-	 * @return	Plan
+	 * @param planId
+	 * @return Plan
 	 */
 	public Plan readPlan(int planId) {
 		Optional<Plan> optPlan = planDao.findById(planId);
@@ -104,7 +104,7 @@ public class PlanService {
 
 	/**
 	 * Reads a plan's contents.
-	 * @return	PlanContent - Plan with List of its Topics and Subtopics
+	 * @return PlanContent - Plan with List of its Topics and Subtopics
 	 */
 	public PlanContent readPlanContents(String token, int planId) {
 		int userId = jwtUtil.extractUserId(token.substring(7));
@@ -158,9 +158,9 @@ public class PlanService {
 
 	/**
 	 * Deletes a plan by id.
-	 * @param	planId
-	 * @return	String
-	 * @throws	AccountNotFoundException
+	 * @param planId
+	 * @return String
+	 * @throws AccountNotFoundException
 	 */
 	public String deletePlan(int planId) throws AccountNotFoundException {
 		Optional<Plan> optPlan = planDao.findById(planId);

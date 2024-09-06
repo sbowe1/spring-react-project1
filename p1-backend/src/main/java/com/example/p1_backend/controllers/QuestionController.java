@@ -41,11 +41,11 @@ public class QuestionController {
 
 	/**
 	 * Creates a new question.
-	 * @param	token
-	 * @param	topicId
-	 * @param	questionDto
-	 * @return	Question
-	 * @throws	AccountNotFoundException
+	 * @param token
+	 * @param topicId
+	 * @param questionDto
+	 * @return Question
+	 * @throws AccountNotFoundException
 	 */
 	@PostMapping("create/{topicId}")
 	public ResponseEntity<Question> createQuestion(@RequestHeader("Authorization") String token,
@@ -56,8 +56,8 @@ public class QuestionController {
 
 	/**
 	 * Reads a question.
-	 * @param	questionId
-	 * @return	Question
+	 * @param questionId
+	 * @return Question
 	 */
 	@GetMapping("{questionId}")
 	public ResponseEntity<Question> readQuestion(@PathVariable int questionId) {
@@ -67,7 +67,7 @@ public class QuestionController {
 
 	/**
 	 * Reads all questions.
-	 * @return	List<QuestionNoUserDto>
+	 * @return List<QuestionNoUserDto>
 	 */
 	@GetMapping("user")
 	public ResponseEntity<List<QuestionNoUserDto>> getQuestionsByUser(@RequestHeader("Authorization") String token)
@@ -78,8 +78,8 @@ public class QuestionController {
 
 	/**
 	 * Reads all questions by topic.
-	 * @param	topicId
-	 * @return	List<QuestionNoTopicNoUserDto>
+	 * @param topicId
+	 * @return List<QuestionNoTopicNoUserDto>
 	 */
 	@GetMapping("/topic/{topicId}")
 	public ResponseEntity<List<QuestionNoTopicNoUserDto>> getQuestionByTopic(@PathVariable int topicId) {
@@ -89,8 +89,8 @@ public class QuestionController {
 
 	/**
 	 * Reads all questions by plan.
-	 * @param	planId
-	 * @return	List<QuestionNoUserDto>
+	 * @param planId
+	 * @return List<QuestionNoUserDto>
 	 */
 	@GetMapping("plan/{planId}")
 	public ResponseEntity<List<QuestionNoUserDto>> getQuestionByPlan(@PathVariable int planId) {
@@ -100,8 +100,8 @@ public class QuestionController {
 
 	/**
 	 * Updates a question to be correct.
-	 * @param	questionId
-	 * @return	Question
+	 * @param questionId
+	 * @return Question
 	 */
 	@PatchMapping("correct/{questionId}")
 	public ResponseEntity<Question> updateQuestionCorrect(@PathVariable int questionId) {
@@ -110,9 +110,9 @@ public class QuestionController {
 	}
 
 	/**
-	 * Updates a question to be incorrect.
-	 * @param	questionId
-	 * @return	Question
+	 * Toggles a question's correct status.
+	 * @param questionId
+	 * @return Question
 	 */
 	@PutMapping("{questionId}")
 	public ResponseEntity<Question> updateQuestionContent(@PathVariable int questionId,
@@ -123,8 +123,8 @@ public class QuestionController {
 
 	/**
 	 * Deletes a question.
-	 * @param	questionId
-	 * @return	String
+	 * @param questionId
+	 * @return String
 	 */
 	@DeleteMapping("{questionId}")
 	public ResponseEntity<String> deleteQuestion(@PathVariable int questionId) {
