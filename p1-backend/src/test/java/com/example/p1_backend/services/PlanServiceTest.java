@@ -78,7 +78,7 @@ public class PlanServiceTest {
 	}
 
 	@Test
-	public void createPlanAlreadyExists(){
+	public void createPlanAlreadyExists() {
 		String name = "Spring Boot Roadmap";
 		User mockUser = getMockUser();
 		Plan mockPlan = new Plan(name, mockUser);
@@ -90,7 +90,7 @@ public class PlanServiceTest {
 	}
 
 	@Test
-	public void createPlanAccountNotFound(){
+	public void createPlanAccountNotFound() {
 		String name = "Spring Boot Roadmap";
 		User mockUser = getMockUser();
 		mockUser.setUserId(1);
@@ -123,7 +123,7 @@ public class PlanServiceTest {
 	}
 
 	@Test
-	public void readPlanPlanNotFound(){
+	public void readPlanPlanNotFound() {
 		when(planDao.findById(anyInt())).thenReturn(Optional.empty());
 
 		assertThrows(NoSuchElementException.class, () -> ps.readPlan(1));
@@ -165,7 +165,7 @@ public class PlanServiceTest {
 	}
 
 	@Test
-	public void readPlanContentsPlanNotFound(){
+	public void readPlanContentsPlanNotFound() {
 		User mockUser = getMockUser();
 		mockUser.setUserId(1);
 
@@ -198,7 +198,7 @@ public class PlanServiceTest {
 	}
 
 	@Test
-	public void deletePlanPlanNotFound(){
+	public void deletePlanPlanNotFound() {
 		when(planDao.findById(anyInt())).thenReturn(Optional.empty());
 
 		assertThrows(NoSuchElementException.class, () -> ps.deletePlan(1));
