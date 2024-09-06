@@ -1,16 +1,18 @@
 package com.example.p1_backend.services;
 
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.example.p1_backend.models.Subtopic;
 import com.example.p1_backend.models.Topic;
 import com.example.p1_backend.models.dtos.InSubtopicDto;
 import com.example.p1_backend.repositories.SubtopicDao;
 import com.example.p1_backend.repositories.TopicDao;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -26,7 +28,12 @@ public class SubtopicService {
 		this.topicDao = topicDao;
 	}
 
-	// CREATE
+	/**
+	 * Creates a new subtopic.
+	 * @param	topicId
+	 * @param	subtopicDto
+	 * @return	Subtopic
+	 */
 	public Subtopic createSubtopic(int topicId, InSubtopicDto subtopicDto) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
 		if (optTopic.isEmpty()) {
@@ -40,7 +47,11 @@ public class SubtopicService {
 		return subtopicDao.save(subtopic);
 	}
 
-	// READ
+	/**
+	 * Reads a subtopic by id.
+	 * @param	subtopicId
+	 * @return	Subtopic
+	 */
 	public Subtopic readSubtopic(int subtopicId) {
 		Optional<Subtopic> optSubtopic = subtopicDao.findById(subtopicId);
 		if (optSubtopic.isEmpty()) {
@@ -51,7 +62,11 @@ public class SubtopicService {
 		return optSubtopic.get();
 	}
 
-	// UPDATE
+	/**
+	 * Updates a subtopic's status.
+	 * @param	subtopicId
+	 * @return	Subtopic
+	 */
 	public Subtopic updateSubtopic(int subtopicId) {
 		Optional<Subtopic> optSubtopic = subtopicDao.findById(subtopicId);
 		if (optSubtopic.isEmpty()) {

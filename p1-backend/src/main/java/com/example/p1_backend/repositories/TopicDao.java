@@ -1,15 +1,19 @@
 package com.example.p1_backend.repositories;
 
-import com.example.p1_backend.models.Topic;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import com.example.p1_backend.models.Topic;
 
 @Repository
 public interface TopicDao extends JpaRepository<Topic, Integer> {
-
+	/**
+	 * Finds all topics by plan id.
+	 * @param	planId
+	 * @return	List<Topic>
+	 */
 	List<Topic> findAllByPlanPlanId(int planId);
 
 }
