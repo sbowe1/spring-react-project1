@@ -32,9 +32,9 @@ public class ResourceController {
 
 	/**
 	 * Creates a new resource without a subtopic.
-	 * @param	topicId
-	 * @param	resourceDto
-	 * @return	OutResourceDto
+	 * @param topicId
+	 * @param resourceDto
+	 * @return OutResourceDto
 	 */
 	@PostMapping("{topicId}")
 	public ResponseEntity<OutResourceDto> createNoSubtopic(@PathVariable int topicId,
@@ -45,10 +45,10 @@ public class ResourceController {
 
 	/**
 	 * Creates a new resource with a subtopic.
-	 * @param	topicId
-	 * @param	subtopicId
-	 * @param	resourceDto
-	 * @return	OutResourceDto
+	 * @param topicId
+	 * @param subtopicId
+	 * @param resourceDto
+	 * @return OutResourceDto
 	 */
 	@PostMapping("{topicId}/{subtopicId}")
 	public ResponseEntity<OutResourceDto> createWithSubtopic(@PathVariable int topicId, @PathVariable int subtopicId,
@@ -59,8 +59,8 @@ public class ResourceController {
 
 	/**
 	 * Reads a resource by id.
-	 * @param	resourceId
-	 * @return	OutResourceDto
+	 * @param resourceId
+	 * @return OutResourceDto
 	 */
 	@GetMapping("{resourceId}")
 	public ResponseEntity<OutResourceDto> readResource(@PathVariable int resourceId) {
@@ -70,9 +70,9 @@ public class ResourceController {
 
 	/**
 	 * Updates a resource.
-	 * @param	resourceId
-	 * @param	inResourceDto
-	 * @return	OutResourceDto
+	 * @param resourceId
+	 * @param inResourceDto
+	 * @return OutResourceDto
 	 */
 	@PatchMapping("{resourceId}")
 	public ResponseEntity<OutResourceDto> updateResoure(@PathVariable int resourceId,

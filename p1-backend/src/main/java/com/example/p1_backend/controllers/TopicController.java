@@ -32,9 +32,9 @@ public class TopicController {
 
 	/**
 	 * Creates a new topic.
-	 * @param	planId
-	 * @param	topicDto
-	 * @return	Topic
+	 * @param planId
+	 * @param topicDto
+	 * @return Topic
 	 */
 	@PostMapping("create/{planId}")
 	public ResponseEntity<Topic> createTopic(@PathVariable int planId, @RequestBody InTopicDto topicDto) {
@@ -44,8 +44,8 @@ public class TopicController {
 
 	/**
 	 * Reads a topic by id.
-	 * @param	topicId
-	 * @return	Topic
+	 * @param topicId
+	 * @return Topic
 	 */
 	@GetMapping("{topicId}")
 	public ResponseEntity<Topic> readTopic(@PathVariable int topicId) {
@@ -55,8 +55,8 @@ public class TopicController {
 
 	/**
 	 * Completes a topic.
-	 * @param	topicId
-	 * @return	Topic
+	 * @param topicId
+	 * @return Topic
 	 */
 	@PatchMapping("complete/{topicId}")
 	public ResponseEntity<Topic> completeTopic(@PathVariable int topicId) {

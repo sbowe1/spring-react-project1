@@ -37,12 +37,11 @@ public class UserController {
 	}
 
 	/**
-	 * Registers a new user.
-	 * First checks that username is unique. 
-	 * Then checks that email is a valid email address and unique.
-	 * Finally, checks that password meets requirements.
-	 * @param	registerDto email, password, username
-	 * @return	String
+	 * Registers a new user. First checks that username is unique. Then checks that email
+	 * is a valid email address and unique. Finally, checks that password meets
+	 * requirements.
+	 * @param registerDto email, password, username
+	 * @return String
 	 */
 	@PostMapping("register")
 	public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
@@ -52,9 +51,9 @@ public class UserController {
 
 	/**
 	 * Views the profile of the user.
-	 * @param	token
-	 * @return	User
-	 * @throws	AccountNotFoundException
+	 * @param token
+	 * @return User
+	 * @throws AccountNotFoundException
 	 */
 	@GetMapping("profile")
 	public ResponseEntity<User> viewProfile(@RequestHeader("Authorization") String token)
@@ -65,8 +64,8 @@ public class UserController {
 
 	/**
 	 * Views all users in the database.
-	 * @param	token
-	 * @return	String
+	 * @param token
+	 * @return String
 	 */
 	@GetMapping
 	public ResponseEntity<List<User>> viewAllUsers(@RequestHeader("Authorization") String token) {
@@ -76,10 +75,10 @@ public class UserController {
 
 	/**
 	 * Updates the user's profile.
-	 * @param	token
-	 * @param	updateUser
-	 * @return	String
-	 * @throws	AccountNotFoundException
+	 * @param token
+	 * @param updateUser
+	 * @return String
+	 * @throws AccountNotFoundException
 	 */
 	@PutMapping("update")
 	public ResponseEntity<String> update(@RequestHeader("Authorization") String token, @RequestBody User updateUser)
@@ -90,9 +89,9 @@ public class UserController {
 
 	/**
 	 * Deletes the user's account.
-	 * @param	token
-	 * @return	String
-	 * @throws	AccountNotFoundException
+	 * @param token
+	 * @return String
+	 * @throws AccountNotFoundException
 	 */
 	@DeleteMapping
 	public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String token)
@@ -103,9 +102,9 @@ public class UserController {
 
 	/**
 	 * Logs in the user.
-	 * @param	loginDto email, password
-	 * @return	String
-	 * @throws	AccountNotFoundException
+	 * @param loginDto email, password
+	 * @return String
+	 * @throws AccountNotFoundException
 	 */
 	@PostMapping("login")
 	public ResponseEntity<String> login(@RequestBody LoginDto loginDto) throws AccountNotFoundException {

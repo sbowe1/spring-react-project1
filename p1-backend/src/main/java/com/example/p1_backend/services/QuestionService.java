@@ -50,11 +50,11 @@ public class QuestionService {
 
 	/**
 	 * Creates a new question.
-	 * @param	token
-	 * @param	topicId
-	 * @param	questionDto
-	 * @return	Question
-	 * @throws	AccountNotFoundException
+	 * @param token
+	 * @param topicId
+	 * @param questionDto
+	 * @return Question
+	 * @throws AccountNotFoundException
 	 */
 	public Question createQuestion(String token, int topicId, InQuestionDto questionDto)
 			throws AccountNotFoundException {
@@ -79,8 +79,8 @@ public class QuestionService {
 
 	/**
 	 * Reads a question by id.
-	 * @param	questionId
-	 * @return	Question
+	 * @param questionId
+	 * @return Question
 	 */
 	public Question readQuestion(int questionId) {
 		Optional<Question> optQuestion = questionDao.findById(questionId);
@@ -94,9 +94,9 @@ public class QuestionService {
 
 	/**
 	 * Reads all questions made by a user.
-	 * @param	token
-	 * @return	List<QuestionNoUserDto>
-	 * @throws	AccountNotFoundException
+	 * @param token
+	 * @return List<QuestionNoUserDto>
+	 * @throws AccountNotFoundException
 	 */
 	public List<QuestionNoUserDto> getQuestionsByUser(String token) throws AccountNotFoundException {
 		int userId = jwtUtil.extractUserId(token.substring(7));
@@ -117,8 +117,8 @@ public class QuestionService {
 
 	/**
 	 * Reads all questions by a topicId.
-	 * @param	topicId
-	 * @return	List<QuestionNoTopicNoUserDto>
+	 * @param topicId
+	 * @return List<QuestionNoTopicNoUserDto>
 	 */
 	public List<QuestionNoTopicNoUserDto> getQuestionsByTopic(int topicId) {
 		if (topicDao.findById(topicId).isEmpty()) {
@@ -138,8 +138,8 @@ public class QuestionService {
 
 	/**
 	 * Reads all questions by a planId.
-	 * @param	planId
-	 * @return	List<QuestionNoUserDto>
+	 * @param planId
+	 * @return List<QuestionNoUserDto>
 	 */
 	public List<QuestionNoUserDto> getQuestionsByPlan(int planId) {
 		if (planDao.findById(planId).isEmpty()) {
@@ -161,8 +161,8 @@ public class QuestionService {
 
 	/**
 	 * Toggles a question's correct status.
-	 * @param	questionId
-	 * @return	Question
+	 * @param questionId
+	 * @return Question
 	 */
 	public Question updateQuestionCorrect(int questionId) {
 		Optional<Question> optQuestion = questionDao.findById(questionId);
@@ -178,9 +178,9 @@ public class QuestionService {
 
 	/**
 	 * Updates a question's content.
-	 * @param	questionId
-	 * @param	questionDto
-	 * @return	Question
+	 * @param questionId
+	 * @param questionDto
+	 * @return Question
 	 */
 	public Question updateQuestionContent(int questionId, InQuestionDto questionDto) {
 		Optional<Question> optQuestion = questionDao.findById(questionId);
@@ -202,8 +202,8 @@ public class QuestionService {
 
 	/**
 	 * Deletes a question by id.
-	 * @param	questionId
-	 * @return	String
+	 * @param questionId
+	 * @return String
 	 */
 	public String deleteQuestion(int questionId) {
 		Optional<Question> optQuestion = questionDao.findById(questionId);

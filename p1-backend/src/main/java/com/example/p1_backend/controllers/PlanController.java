@@ -35,10 +35,10 @@ public class PlanController {
 
 	/**
 	 * Creates a new plan.
-	 * @param	token
-	 * @param	name
-	 * @return	Plan
-	 * @throws	AccountNotFoundException
+	 * @param token
+	 * @param name
+	 * @return Plan
+	 * @throws AccountNotFoundException
 	 */
 	@PostMapping("create")
 	public ResponseEntity<Plan> createPlan(@RequestHeader("Authorization") String token, @RequestBody String name)
@@ -49,8 +49,8 @@ public class PlanController {
 
 	/**
 	 * Reads a plan.
-	 * @param	planId
-	 * @return	Plan
+	 * @param planId
+	 * @return Plan
 	 */
 	@GetMapping("{planId}")
 	public ResponseEntity<Plan> readPlan(@PathVariable int planId) {
@@ -60,7 +60,7 @@ public class PlanController {
 
 	/**
 	 * Reads a plan's contents.
-	 * @return	PlanContent - Plan with List of its Topics and Subtopics
+	 * @return PlanContent - Plan with List of its Topics and Subtopics
 	 */
 	@GetMapping("content/{planId}")
 	public ResponseEntity<PlanContent> readPlanContents(@RequestHeader("Authorization") String token,
@@ -71,9 +71,9 @@ public class PlanController {
 
 	/**
 	 * Deletes a plan.
-	 * @param	planId
-	 * @return	String
-	 * @throws	AccountNotFoundException
+	 * @param planId
+	 * @return String
+	 * @throws AccountNotFoundException
 	 */
 	@DeleteMapping("{planId}")
 	public ResponseEntity<String> deletePlan(@PathVariable int planId) throws AccountNotFoundException {

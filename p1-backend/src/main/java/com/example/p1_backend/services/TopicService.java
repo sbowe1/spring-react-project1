@@ -30,9 +30,9 @@ public class TopicService {
 
 	/**
 	 * Creates a new topic.
-	 * @param	planId
-	 * @param	topicDto
-	 * @return	Topic
+	 * @param planId
+	 * @param topicDto
+	 * @return Topic
 	 */
 	public Topic createTopic(int planId, InTopicDto topicDto) {
 		Optional<Plan> optPlan = planDao.findById(planId);
@@ -47,8 +47,8 @@ public class TopicService {
 
 	/**
 	 * Reads a topic by id.
-	 * @param	topicId
-	 * @return	Topic
+	 * @param topicId
+	 * @return Topic
 	 */
 	public Topic readTopic(int topicId) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
@@ -62,8 +62,8 @@ public class TopicService {
 
 	/**
 	 * Updates a topic's status.
-	 * @param	topicId
-	 * @return	Topic
+	 * @param topicId
+	 * @return Topic
 	 */
 	public Topic updateTopic(int topicId) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
