@@ -29,6 +29,10 @@ public class SubtopicService {
 	// CREATE
 	public Subtopic createSubtopic(int topicId, InSubtopicDto subtopicDto) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
+		if (optTopic.isEmpty()) {
+			log.warn("Topic does not exist");
+			throw new NoSuchElementException("Topic does not exist");
+		}
 
 		Subtopic subtopic = new Subtopic(subtopicDto.getTitle(), subtopicDto.getDescription(), optTopic.get(), false);
 

@@ -6,6 +6,7 @@ import com.example.p1_backend.models.User;
 import com.example.p1_backend.models.dtos.InQuestionDto;
 import com.example.p1_backend.models.dtos.QuestionNoTopicNoUserDto;
 import com.example.p1_backend.models.dtos.QuestionNoUserDto;
+import com.example.p1_backend.repositories.PlanDao;
 import com.example.p1_backend.repositories.QuestionDao;
 import com.example.p1_backend.repositories.TopicDao;
 import com.example.p1_backend.repositories.UserDao;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.login.AccountNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -27,23 +29,36 @@ public class QuestionService {
 
 	private final UserDao userDao;
 
+	private final PlanDao planDao;
+
 	private final TopicDao topicDao;
 
 	private final JwtUtil jwtUtil;
 
 	@Autowired
-	public QuestionService(QuestionDao questionDao, UserDao userDao, TopicDao topicDao, JwtUtil jwtUtil) {
+	public QuestionService(QuestionDao questionDao, UserDao userDao, PlanDao planDao, TopicDao topicDao,
+			JwtUtil jwtUtil) {
 		this.questionDao = questionDao;
 		this.userDao = userDao;
+		this.planDao = planDao;
 		this.topicDao = topicDao;
 		this.jwtUtil = jwtUtil;
 	}
 
 	// CREATE
-	public Question createQuestion(String token, int topicId, InQuestionDto questionDto) {
+	public Question createQuestion(String token, int topicId, InQuestionDto questionDto)
+			throws AccountNotFoundException {
 		int userId = jwtUtil.extractUserId(token.substring(7));
 		Optional<User> optUser = userDao.findById(userId);
+		if (optUser.isEmpty()) {
+			log.warn("User does not exist");
+			throw new AccountNotFoundException("User does not exist");
+		}
 		Optional<Topic> optTopic = topicDao.findById(topicId);
+		if (optTopic.isEmpty()) {
+			log.warn("Topic does not exist");
+			throw new NoSuchElementException("Topic does not exist");
+		}
 
 		Question question = new Question(questionDto.getQuestion(), questionDto.getAnswer(), false,
 				optTopic.orElse(null), optUser.orElse(null));
@@ -63,8 +78,12 @@ public class QuestionService {
 		return optQuestion.get();
 	}
 
-	public List<QuestionNoUserDto> getQuestionsByUser(String token) {
+	public List<QuestionNoUserDto> getQuestionsByUser(String token) throws AccountNotFoundException {
 		int userId = jwtUtil.extractUserId(token.substring(7));
+		if (userDao.findById(userId).isEmpty()) {
+			log.warn("User does not exist");
+			throw new AccountNotFoundException("User does not exist");
+		}
 		List<Question> questions = questionDao.findAllByUserUserId(userId);
 
 		List<QuestionNoUserDto> questionList = new ArrayList<>();
@@ -77,6 +96,10 @@ public class QuestionService {
 	}
 
 	public List<QuestionNoTopicNoUserDto> getQuestionsByTopic(int topicId) {
+		if (topicDao.findById(topicId).isEmpty()) {
+			log.warn("Topic does not exist");
+			throw new NoSuchElementException("Topic does not exist");
+		}
 		List<Question> questions = questionDao.findAllByTopicTopicId(topicId);
 
 		List<QuestionNoTopicNoUserDto> questionList = new ArrayList<>();
@@ -89,6 +112,10 @@ public class QuestionService {
 	}
 
 	public List<QuestionNoUserDto> getQuestionsByPlan(int planId) {
+		if (planDao.findById(planId).isEmpty()) {
+			log.warn("Plan does not exist");
+			throw new NoSuchElementException("Plan does not exist");
+		}
 		List<QuestionNoUserDto> questions = new ArrayList<>();
 
 		List<Topic> topicList = topicDao.findAllByPlanPlanId(planId);

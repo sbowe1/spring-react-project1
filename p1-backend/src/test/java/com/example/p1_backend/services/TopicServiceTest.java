@@ -12,11 +12,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TopicServiceTest {
@@ -67,6 +68,16 @@ public class TopicServiceTest {
 		assertFalse(result.isStatus());
 	}
 
+	@Test
+	public void createTopicPlanNotFound() {
+		InTopicDto topicDto = new InTopicDto("Topic 1", "Description");
+
+		when(planDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(NoSuchElementException.class, () -> ts.createTopic(1, topicDto));
+		verify(planDao, times(1)).findById(1);
+	}
+
 	// READ
 	@Test
 	public void readTopic() {
@@ -81,6 +92,14 @@ public class TopicServiceTest {
 		assertEquals("Topic 1", result.getTitle());
 		assertEquals(mockTopic.getPlan(), result.getPlan());
 		assertFalse(result.isStatus());
+	}
+
+	@Test
+	public void readTopicTopicNotFound() {
+		when(topicDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(NoSuchElementException.class, () -> ts.readTopic(1));
+		verify(topicDao, times(1)).findById(1);
 	}
 
 	// UPDATE
@@ -100,6 +119,14 @@ public class TopicServiceTest {
 		assertEquals("Topic 1", result.getTitle());
 		assertEquals(mockTopic.getPlan(), result.getPlan());
 		assertTrue(result.isStatus());
+	}
+
+	@Test
+	public void updateTopicTopicNotFound() {
+		when(topicDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(NoSuchElementException.class, () -> ts.updateTopic(1));
+		verify(topicDao, times(1)).findById(1);
 	}
 
 }
