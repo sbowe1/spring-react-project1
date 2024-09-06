@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.AccountNotFoundException;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -29,7 +30,7 @@ public class QuestionController {
 	// CREATE
 	@PostMapping("create/{topicId}")
 	public ResponseEntity<Question> createQuestion(@RequestHeader("Authorization") String token,
-			@PathVariable int topicId, @RequestBody InQuestionDto questionDto) {
+			@PathVariable int topicId, @RequestBody InQuestionDto questionDto) throws AccountNotFoundException {
 		Question question = qs.createQuestion(token, topicId, questionDto);
 		return new ResponseEntity<>(question, CREATED);
 	}
@@ -42,7 +43,8 @@ public class QuestionController {
 	}
 
 	@GetMapping("user")
-	public ResponseEntity<List<QuestionNoUserDto>> getQuestionsByUser(@RequestHeader("Authorization") String token) {
+	public ResponseEntity<List<QuestionNoUserDto>> getQuestionsByUser(@RequestHeader("Authorization") String token)
+			throws AccountNotFoundException {
 		List<QuestionNoUserDto> questions = qs.getQuestionsByUser(token);
 		return new ResponseEntity<>(questions, OK);
 	}
