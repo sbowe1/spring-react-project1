@@ -37,6 +37,11 @@ public class UserService {
 		this.jwtUtil = jwtUtil;
 	}
 
+	/** 
+	* Finds all users in the database. Only users with the role "ROLE_ADMIN" are allowed to access this method.
+	* @param	token	Authorization token
+	* @return	List<User>
+	*/
 	public List<User> findAll(String token) {
 		ArrayList<String> roles = jwtUtil.extractRoles(token.substring(7));
 
@@ -48,12 +53,12 @@ public class UserService {
 		return uDao.findAll();
 	}
 
-	// CREATE
-	// TODO: add JavaDoc
-	/*
-	 * @return User registerDto
-	 */
-	public User register(RegisterDto registerDto) {
+	/** 
+	* Registers a new user. First checks that username is unique. Then checks that email is a valid email address and unique. Finally, checks that password meets requirements.
+	* @param registerDto	email, password, username
+	* @return	String 
+	*/
+	public String register(RegisterDto registerDto) {
 		// validate username is unique
 		Optional<User> username = uDao.getByUsername(registerDto.getUsername());
 		if (username.isPresent()) {
@@ -93,13 +98,17 @@ public class UserService {
 		newUser.getRoles().add("ROLE_USER");
 
 		// persist user to database
+		uDao.save(newUser);
+		
 		log.info("User {} created successfully", newUser.getUsername());
-		return uDao.save(newUser); // TODO: return webDto? (no password, id, etc.)
+		return "User " + newUser.getUsername() + " created successfully";
 	}
 
-	// READ
-	// TODO: add JavaDoc
-	// utilize helper method to pass in id param
+	/**
+	 * Finds a user by userId. Only the user with the role "ROLE_ADMIN" or the user with the userId in the token is allowed to access this method.
+	 * @param	token	Authorization token
+	 * @return	User object
+	 */
 	public User findByUserId(String token) throws AccountNotFoundException {
 		// Substring to remove "Bearer " from the token String
 		int userId = jwtUtil.extractUserId(token.substring(7));
@@ -112,9 +121,13 @@ public class UserService {
 		return uDao.findById(userId).get();
 	}
 
-	// TODO: add helper method to extract userId from token
-
-	// UPDATE
+	/**
+	 * Updates a user's information. Only the user with the userId in the token is allowed to access this method.
+	 * @param	token
+	 * @param	updatedUser
+	 * @return	String
+	 * @throws	AccountNotFoundException
+	 */
 	public String update(String token, User updatedUser) throws AccountNotFoundException {
 		int userId = jwtUtil.extractUserId(token.substring(7));
 
@@ -163,7 +176,12 @@ public class UserService {
 		return jwtUtil.generateToken(optUser.get());
 	}
 
-	// DELETE
+	/**
+	 * Deletes a user's account. Only the user with the userId in the token is allowed to access this method.
+	 * @param	token
+	 * @return	String
+	 * @throws	AccountNotFoundException
+	 */
 	@Transactional
 	public String delete(String token) throws AccountNotFoundException {
 		int userId = jwtUtil.extractUserId(token.substring(7));
@@ -185,6 +203,12 @@ public class UserService {
 		return "Account deleted successfully!";
 	}
 
+	/**
+	 * Logs in a user. If the user is found and the password matches, a token is generated.
+	 * @param	loginDto
+	 * @return	String
+	 * @throws	AccountNotFoundException
+	 */
 	public String login(LoginDto loginDto) throws AccountNotFoundException {
 		Optional<User> optUser = uDao.getByUsername(loginDto.getUsername());
 
