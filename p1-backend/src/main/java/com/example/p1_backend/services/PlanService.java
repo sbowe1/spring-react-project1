@@ -1,21 +1,32 @@
 package com.example.p1_backend.services;
 
-import com.example.p1_backend.models.*;
-import com.example.p1_backend.models.dtos.PlanContent;
-import com.example.p1_backend.models.dtos.SubtopicWResources;
-import com.example.p1_backend.models.dtos.TopicWResources;
-import com.example.p1_backend.repositories.*;
-import com.example.p1_backend.util.JwtUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.management.openmbean.KeyAlreadyExistsException;
-import javax.security.auth.login.AccountNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import javax.management.openmbean.KeyAlreadyExistsException;
+import javax.security.auth.login.AccountNotFoundException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.p1_backend.models.Plan;
+import com.example.p1_backend.models.Resource;
+import com.example.p1_backend.models.Subtopic;
+import com.example.p1_backend.models.Topic;
+import com.example.p1_backend.models.User;
+import com.example.p1_backend.models.dtos.PlanContent;
+import com.example.p1_backend.models.dtos.SubtopicWResources;
+import com.example.p1_backend.models.dtos.TopicWResources;
+import com.example.p1_backend.repositories.PlanDao;
+import com.example.p1_backend.repositories.ResourceDao;
+import com.example.p1_backend.repositories.SubtopicDao;
+import com.example.p1_backend.repositories.TopicDao;
+import com.example.p1_backend.repositories.UserDao;
+import com.example.p1_backend.util.JwtUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -44,7 +55,13 @@ public class PlanService {
 		this.resourceDao = resourceDao;
 	}
 
-	// CREATE
+	/**
+	 * Creates a new plan.
+	 * @param	token
+	 * @param	name
+	 * @return	Plan
+	 * @throws	AccountNotFoundException
+	 */
 	public Plan createPlan(String token, String name) throws AccountNotFoundException {
 		Optional<Plan> optPlan = planDao.getByName(name);
 		if (optPlan.isPresent()) {
@@ -70,7 +87,11 @@ public class PlanService {
 		return plan;
 	}
 
-	// READ
+	/**
+	 * Reads a plan by id.
+	 * @param	planId
+	 * @return	Plan
+	 */
 	public Plan readPlan(int planId) {
 		Optional<Plan> optPlan = planDao.findById(planId);
 		if (optPlan.isEmpty()) {
@@ -81,7 +102,10 @@ public class PlanService {
 		return optPlan.get();
 	}
 
-	// READ CONTENTS
+	/**
+	 * Reads a plan's contents.
+	 * @return	PlanContent - Plan with List of its Topics and Subtopics
+	 */
 	public PlanContent readPlanContents(String token, int planId) {
 		int userId = jwtUtil.extractUserId(token.substring(7));
 		Optional<Plan> optPlan = planDao.findById(planId);
@@ -132,7 +156,12 @@ public class PlanService {
 		return planContent;
 	}
 
-	// DELETE
+	/**
+	 * Deletes a plan by id.
+	 * @param	planId
+	 * @return	String
+	 * @throws	AccountNotFoundException
+	 */
 	public String deletePlan(int planId) throws AccountNotFoundException {
 		Optional<Plan> optPlan = planDao.findById(planId);
 		if (optPlan.isEmpty()) {
