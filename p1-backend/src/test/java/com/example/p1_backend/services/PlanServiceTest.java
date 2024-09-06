@@ -12,13 +12,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.management.openmbean.KeyAlreadyExistsException;
 import javax.security.auth.login.AccountNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
@@ -47,13 +48,11 @@ public class PlanServiceTest {
 	@InjectMocks
 	private PlanService ps;
 
+	String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
+
 	private User getMockUser() {
 		return new User("test-user-email@test.com", "test-user-password", "test-user-username", "ROLE_USER",
 				"Spring Boot Roadmap");
-	}
-
-	private String getToken() {
-		return "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
 	}
 
 	// CREATE
@@ -72,10 +71,38 @@ public class PlanServiceTest {
 		when(planDao.save(any(Plan.class))).thenReturn(mockPlan);
 		when(userDao.save(any(User.class))).thenReturn(mockUserAfter);
 
-		Plan plan = ps.createPlan("Bearer " + getToken(), name);
+		Plan plan = ps.createPlan("Bearer " + token, name);
 
 		assertNotNull(plan);
 		assertEquals("Spring Boot Roadmap", plan.getName());
+	}
+
+	@Test
+	public void createPlanAlreadyExists(){
+		String name = "Spring Boot Roadmap";
+		User mockUser = getMockUser();
+		Plan mockPlan = new Plan(name, mockUser);
+
+		when(planDao.getByName(name)).thenReturn(Optional.of(mockPlan));
+
+		assertThrows(KeyAlreadyExistsException.class, () -> ps.createPlan("Bearer " + token, name));
+		verify(planDao, times(1)).getByName(name);
+	}
+
+	@Test
+	public void createPlanAccountNotFound(){
+		String name = "Spring Boot Roadmap";
+		User mockUser = getMockUser();
+		mockUser.setUserId(1);
+
+		when(planDao.getByName(name)).thenReturn(Optional.empty());
+		when(jwtUtil.extractUserId(anyString())).thenReturn(mockUser.getUserId());
+		when(userDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(AccountNotFoundException.class, () -> ps.createPlan("Bearer " + token, name));
+		verify(planDao, times(1)).getByName(name);
+		verify(jwtUtil, times(1)).extractUserId(token);
+		verify(userDao, times(1)).findById(1);
 	}
 
 	// READ
@@ -92,6 +119,14 @@ public class PlanServiceTest {
 		assertEquals(1, result.getPlanId());
 		assertEquals("Spring Boot Roadmap", result.getName());
 		assertEquals(mockUser, result.getUser());
+		verify(planDao, times(1)).findById(anyInt());
+	}
+
+	@Test
+	public void readPlanPlanNotFound(){
+		when(planDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(NoSuchElementException.class, () -> ps.readPlan(1));
 		verify(planDao, times(1)).findById(anyInt());
 	}
 
@@ -116,7 +151,7 @@ public class PlanServiceTest {
 		when(resourceDao.findAllByTopicTopicId(anyInt())).thenReturn(mockResourceList);
 		when(subtopicDao.findAllByTopicTopicId(anyInt())).thenReturn(mockSubtopicList);
 
-		PlanContent result = ps.readPlanContents("Bearer " + getToken(), 1);
+		PlanContent result = ps.readPlanContents("Bearer " + token, 1);
 
 		assertNotNull(result);
 		assertEquals(1, result.getPlanId());
@@ -127,6 +162,19 @@ public class PlanServiceTest {
 				new SubtopicWResources(mockSubtopic.getSubtopicId(), mockSubtopic.getTitle(),
 						mockSubtopic.getDescription(), mockSubtopic.isStatus(), List.of(mockResourceList.get(1))),
 				result.getContent().get(1));
+	}
+
+	@Test
+	public void readPlanContentsPlanNotFound(){
+		User mockUser = getMockUser();
+		mockUser.setUserId(1);
+
+		when(jwtUtil.extractUserId(anyString())).thenReturn(mockUser.getUserId());
+		when(planDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(NoSuchElementException.class, () -> ps.readPlanContents("Bearer " + token, 1));
+		verify(jwtUtil, times(1)).extractUserId(token);
+		verify(planDao, times(1)).findById(1);
 	}
 
 	// DELETE
@@ -147,6 +195,28 @@ public class PlanServiceTest {
 		assertEquals("Plan successfully deleted", message);
 		verify(planDao, atMost(1)).deleteById(1);
 		verify(planDao, atMost(2)).findById(1);
+	}
+
+	@Test
+	public void deletePlanPlanNotFound(){
+		when(planDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(NoSuchElementException.class, () -> ps.deletePlan(1));
+		verify(planDao, times(1)).findById(anyInt());
+	}
+
+	@Test
+	public void deletePlanFailedToDelete() throws AccountNotFoundException {
+		User mockUser = getMockUser();
+		Plan mockPlan = new Plan(1, "Spring Boot Roadmap", mockUser);
+
+		when(planDao.findById(anyInt())).thenReturn(Optional.of(mockPlan)).thenReturn(Optional.of(mockPlan));
+
+		String result = ps.deletePlan(1);
+
+		assertEquals("Plan cannot be deleted", result);
+		verify(planDao, times(2)).findById(1);
+		verify(planDao).deleteById(1);
 	}
 
 }
