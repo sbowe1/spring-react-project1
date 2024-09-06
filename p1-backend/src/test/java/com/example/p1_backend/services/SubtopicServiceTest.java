@@ -13,11 +13,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class SubtopicServiceTest {
@@ -71,6 +72,16 @@ public class SubtopicServiceTest {
 		assertFalse(result.isStatus());
 	}
 
+	@Test
+	public void createSubtopicTopicNotFound() {
+		InSubtopicDto subtopicDto = new InSubtopicDto("Subtopic 1", "Description");
+
+		when(topicDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(NoSuchElementException.class, () -> ss.createSubtopic(1, subtopicDto));
+		verify(topicDao, times(1)).findById(1);
+	}
+
 	// READ
 	@Test
 	public void readSubtopic() {
@@ -87,6 +98,14 @@ public class SubtopicServiceTest {
 		assertEquals("Description", result.getDescription());
 		assertEquals(getTopic(), result.getTopic());
 		assertFalse(result.isStatus());
+	}
+
+	@Test
+	public void readSubtopicSubtopicNotFound() {
+		when(subtopicDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(NoSuchElementException.class, () -> ss.readSubtopic(1));
+		verify(subtopicDao, times(1)).findById(1);
 	}
 
 	// UPDATE
@@ -109,6 +128,14 @@ public class SubtopicServiceTest {
 		assertEquals("Description", result.getDescription());
 		assertEquals(getTopic(), result.getTopic());
 		assertTrue(result.isStatus());
+	}
+
+	@Test
+	public void updateSubtopicSubtopicNotFound() {
+		when(subtopicDao.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThrows(NoSuchElementException.class, () -> ss.updateSubtopic(1));
+		verify(subtopicDao, times(1)).findById(1);
 	}
 
 }
