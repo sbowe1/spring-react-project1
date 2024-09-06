@@ -3,14 +3,23 @@ package com.example.p1_backend.controllers;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
+import javax.security.auth.login.AccountNotFoundException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.p1_backend.models.Plan;
 import com.example.p1_backend.models.dtos.PlanContent;
 import com.example.p1_backend.services.PlanService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.security.auth.login.AccountNotFoundException;
 
 @RestController
 @RequestMapping("plans")
@@ -24,7 +33,13 @@ public class PlanController {
 		this.ps = ps;
 	}
 
-	// CREATE
+	/**
+	 * Creates a new plan.
+	 * @param	token
+	 * @param	name
+	 * @return	Plan
+	 * @throws	AccountNotFoundException
+	 */
 	@PostMapping("create")
 	public ResponseEntity<Plan> createPlan(@RequestHeader("Authorization") String token, @RequestBody String name)
 			throws AccountNotFoundException {
@@ -32,14 +47,21 @@ public class PlanController {
 		return new ResponseEntity<>(plan, CREATED);
 	}
 
-	// READ PLAN
+	/**
+	 * Reads a plan.
+	 * @param	planId
+	 * @return	Plan
+	 */
 	@GetMapping("{planId}")
 	public ResponseEntity<Plan> readPlan(@PathVariable int planId) {
 		Plan plan = ps.readPlan(planId);
 		return new ResponseEntity<>(plan, OK);
 	}
 
-	// READ CONTENTS
+	/**
+	 * Reads a plan's contents.
+	 * @return	PlanContent - Plan with List of its Topics and Subtopics
+	 */
 	@GetMapping("content/{planId}")
 	public ResponseEntity<PlanContent> readPlanContents(@RequestHeader("Authorization") String token,
 			@PathVariable int planId) {
@@ -47,7 +69,12 @@ public class PlanController {
 		return new ResponseEntity<>(plan, OK);
 	}
 
-	// DELETE
+	/**
+	 * Deletes a plan.
+	 * @param	planId
+	 * @return	String
+	 * @throws	AccountNotFoundException
+	 */
 	@DeleteMapping("{planId}")
 	public ResponseEntity<String> deletePlan(@PathVariable int planId) throws AccountNotFoundException {
 		String message = ps.deletePlan(planId);

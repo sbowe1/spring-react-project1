@@ -1,16 +1,18 @@
 package com.example.p1_backend.services;
 
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.example.p1_backend.models.Plan;
 import com.example.p1_backend.models.Topic;
 import com.example.p1_backend.models.dtos.InTopicDto;
 import com.example.p1_backend.repositories.PlanDao;
 import com.example.p1_backend.repositories.TopicDao;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -26,7 +28,12 @@ public class TopicService {
 		this.planDao = planDao;
 	}
 
-	// CREATE
+	/**
+	 * Creates a new topic.
+	 * @param	planId
+	 * @param	topicDto
+	 * @return	Topic
+	 */
 	public Topic createTopic(int planId, InTopicDto topicDto) {
 		Optional<Plan> optPlan = planDao.findById(planId);
 		if (optPlan.isEmpty()) {
@@ -38,7 +45,11 @@ public class TopicService {
 		return topicDao.save(new Topic(topicDto.getTopicName(), topicDto.getDescription(), optPlan.get(), false));
 	}
 
-	// READ
+	/**
+	 * Reads a topic by id.
+	 * @param	topicId
+	 * @return	Topic
+	 */
 	public Topic readTopic(int topicId) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
 		if (optTopic.isEmpty()) {
@@ -49,7 +60,11 @@ public class TopicService {
 		return optTopic.get();
 	}
 
-	// UPDATE
+	/**
+	 * Updates a topic's status.
+	 * @param	topicId
+	 * @return	Topic
+	 */
 	public Topic updateTopic(int topicId) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
 		if (optTopic.isEmpty()) {

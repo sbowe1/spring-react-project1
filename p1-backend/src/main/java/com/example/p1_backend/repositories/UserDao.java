@@ -9,9 +9,18 @@ import com.example.p1_backend.models.User;
 
 @Repository
 public interface UserDao extends JpaRepository<User, Integer> {
-
+	/**
+	 * Finds a user by username.
+	 * @param	username
+	 * @return	Optional<User>
+	 */
 	Optional<User> getByUsername(String username);
 
+	/**
+	 * Finds a user by email.
+	 * @param	email
+	 * @return	Optional<User>
+	 */
 	Optional<User> getByEmail(String email);
 
 }

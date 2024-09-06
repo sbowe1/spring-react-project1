@@ -1,5 +1,11 @@
 package com.example.p1_backend.services;
 
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.example.p1_backend.models.Resource;
 import com.example.p1_backend.models.Subtopic;
 import com.example.p1_backend.models.Topic;
@@ -8,12 +14,8 @@ import com.example.p1_backend.models.dtos.OutResourceDto;
 import com.example.p1_backend.repositories.ResourceDao;
 import com.example.p1_backend.repositories.SubtopicDao;
 import com.example.p1_backend.repositories.TopicDao;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -32,7 +34,12 @@ public class ResourceService {
 		this.subtopicDao = subtopicDao;
 	}
 
-	// CREATE
+	/**
+	 * Creates a new resource with no subtopic.
+	 * @param	topicId
+	 * @param	resourceDto
+	 * @return	OutResourceDto
+	 */
 	public OutResourceDto createResourceNoSubtopic(int topicId, InResourceDto resourceDto) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
 		if (optTopic.isEmpty()) {
@@ -56,6 +63,13 @@ public class ResourceService {
 				resource.getType(), resource.getUrl(), resource.getTopic().getTitle(), null);
 	}
 
+	/**
+	 * Creates a new resource with a subtopic.
+	 * @param	topicId
+	 * @param	subtopicId
+	 * @param	resourceDto
+	 * @return	OutResourceDto
+	 */
 	public OutResourceDto createResourceSubtopic(int topicId, int subtopicId, InResourceDto resourceDto) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
 		if (optTopic.isEmpty()) {
@@ -87,7 +101,11 @@ public class ResourceService {
 				resource.getSubtopic().getTitle());
 	}
 
-	// READ
+	/**
+	 * Reads a resource by id.
+	 * @param	resourceId
+	 * @return	OutResourceDto
+	 */
 	public OutResourceDto readResource(int resourceId) {
 		Optional<Resource> optResource = resourceDao.findById(resourceId);
 		if (optResource.isEmpty()) {
@@ -108,7 +126,12 @@ public class ResourceService {
 		return outResourceDto;
 	}
 
-	// UPDATE
+	/**
+	 * Updates a resource.
+	 * @param	resourceId
+	 * @param	resourceDto
+	 * @return	OutResourceDto
+	 */
 	public OutResourceDto updateResource(int resourceId, InResourceDto resourceDto) {
 		Optional<Resource> optResource = resourceDao.findById(resourceId);
 		if (optResource.isEmpty()) {
