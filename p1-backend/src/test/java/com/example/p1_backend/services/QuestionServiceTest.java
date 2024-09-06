@@ -244,7 +244,7 @@ public class QuestionServiceTest {
 		User mockUser = getUser();
 		Topic mockTopic = getTopic();
 		Question updatedQuestion = getQuestion();
-		updatedQuestion.setCorrect(true);
+		updatedQuestion.setCorrect(!getQuestion().isCorrect());
 
 		when(questionDao.findById(anyInt())).thenReturn(Optional.of(mockQuestion));
 		when(questionDao.save(any(Question.class))).thenReturn(updatedQuestion);
@@ -255,7 +255,7 @@ public class QuestionServiceTest {
 		assertEquals(1, result.getQuestionId());
 		assertEquals("question", result.getQuestion());
 		assertEquals("answer", result.getAnswer());
-		assertTrue(result.isCorrect());
+		assertEquals(!getQuestion().isCorrect(), result.isCorrect());
 		assertEquals(mockTopic, result.getTopic());
 		assertEquals(mockUser, result.getUser());
 	}

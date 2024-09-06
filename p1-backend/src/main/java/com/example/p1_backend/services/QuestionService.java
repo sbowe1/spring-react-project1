@@ -160,7 +160,7 @@ public class QuestionService {
 	}
 
 	/**
-	 * Updates a question's status to correct.
+	 * Toggles a question's correct status.
 	 * @param	questionId
 	 * @return	Question
 	 */
@@ -171,8 +171,8 @@ public class QuestionService {
 			throw new NoSuchElementException("Question does not exist");
 		}
 
-		optQuestion.get().setCorrect(true);
-		log.info("Status set to true");
+		optQuestion.get().setCorrect(!optQuestion.get().isCorrect());
+		log.info("Status set to " + optQuestion.get().isCorrect());
 		return questionDao.save(optQuestion.get());
 	}
 

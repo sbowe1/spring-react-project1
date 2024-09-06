@@ -110,7 +110,7 @@ public class QuestionController {
 	}
 
 	/**
-	 * Updates a question to be incorrect.
+	 * Toggles a question's correct status.
 	 * @param	questionId
 	 * @return	Question
 	 */
