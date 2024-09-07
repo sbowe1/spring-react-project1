@@ -1,24 +1,35 @@
 package com.example.p1_backend.services;
 
-import com.example.p1_backend.models.*;
-import com.example.p1_backend.models.dtos.InResourceDto;
-import com.example.p1_backend.models.dtos.OutResourceDto;
-import com.example.p1_backend.repositories.ResourceDao;
-import com.example.p1_backend.repositories.SubtopicDao;
-import com.example.p1_backend.repositories.TopicDao;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.*;
+import com.example.p1_backend.models.Plan;
+import com.example.p1_backend.models.Resource;
+import com.example.p1_backend.models.Subtopic;
+import com.example.p1_backend.models.Topic;
+import com.example.p1_backend.models.User;
+import com.example.p1_backend.models.dtos.InResourceDto;
+import com.example.p1_backend.models.dtos.OutResourceDto;
+import com.example.p1_backend.repositories.ResourceDao;
+import com.example.p1_backend.repositories.SubtopicDao;
+import com.example.p1_backend.repositories.TopicDao;
 
 @ExtendWith(MockitoExtension.class)
 public class ResourceServiceTest {
@@ -35,29 +46,53 @@ public class ResourceServiceTest {
 	@InjectMocks
 	private ResourceService rs;
 
+	/**
+	 * Creates a mock user
+	 * @return User
+	 */
 	private User getMockUser() {
 		return new User("test-user-email@test.com", "test-user-password", "test-user-username", "ROLE_USER",
 				"Spring Boot Roadmap");
 	}
 
+	/**
+	 * Creates a mock plan
+	 * @return Plan
+	 */
 	public Plan getPlan() {
 		return new Plan(1, "Spring Boot Roadmap", getMockUser());
 	}
 
+	/**
+	 * Creates a mock topic
+	 * @return Topic
+	 */
 	public Topic getTopic() {
 		Plan plan = getPlan();
 		return new Topic(1, "Topic 1", "Description", plan, false);
 	}
 
+	/**
+	 * Creates a mock subtopic
+	 * @return Subtopic
+	 */
 	public Subtopic getSubtopic() {
 		Topic topic = getTopic();
 		return new Subtopic(1, "Subtopic 1", "Description", topic, false);
 	}
 
+	/**
+	 * Creates a mock resource DTO
+	 * @return InResourceDto
+	 */
 	public InResourceDto getResourceDto() {
 		return new InResourceDto("Resource Title", "Resource Description", "Resource Type", "Resource URL");
 	}
 
+	/**
+	 * Creates a mock resource
+	 * @return Resource
+	 */
 	public Resource getResource() {
 		Topic topic = getTopic();
 		Subtopic subtopic = getSubtopic();
@@ -65,7 +100,7 @@ public class ResourceServiceTest {
 				topic);
 	}
 
-	// CREATE
+	@DisplayName("Create Resource with no Subtopic")
 	@Test
 	public void createResourceNoSubtopic() {
 		InResourceDto mockResourceDto = getResourceDto();
@@ -87,6 +122,7 @@ public class ResourceServiceTest {
 		assertEquals(getTopic().getTitle(), result.getTopicName());
 	}
 
+	@DisplayName("Throw NoSuchElementException if Topic does not exist")
 	@Test
 	public void createResourceNSTopicNotFound() {
 		InResourceDto resourceDto = getResourceDto();
@@ -97,6 +133,7 @@ public class ResourceServiceTest {
 		verify(topicDao, times(1)).findById(1);
 	}
 
+	@DisplayName("Create Resource with Subtopic if topic and subtopic exist")
 	@Test
 	public void createResourceSubtopic() {
 		InResourceDto mockResourceDto = getResourceDto();
@@ -119,6 +156,7 @@ public class ResourceServiceTest {
 		assertEquals(getTopic().getTitle(), result.getTopicName());
 	}
 
+	@DisplayName("Throw NoSuchElementException if Topic does not exist")
 	@Test
 	public void createResourceSubtopicTopicNotFound() {
 		InResourceDto resourceDto = getResourceDto();
@@ -130,6 +168,7 @@ public class ResourceServiceTest {
 		verify(subtopicDao, times(0)).findById(1);
 	}
 
+	@DisplayName("Throw NoSuchElementException if Subtopic does not exist")
 	@Test
 	public void createResourceSubtopicSubtopicNotFound() {
 		Topic mockTopic = getTopic();
@@ -143,7 +182,7 @@ public class ResourceServiceTest {
 		verify(subtopicDao, times(1)).findById(1);
 	}
 
-	// READ
+	@DisplayName("Return Resource if exists")
 	@Test
 	public void readResource() {
 		Resource mockResource = getResource();
@@ -162,6 +201,7 @@ public class ResourceServiceTest {
 		assertEquals(getTopic().getTitle(), result.getTopicName());
 	}
 
+	@DisplayName("Throw NoSuchElementException if Resource does not exist")
 	@Test
 	public void readResourceResourceNotFound() {
 		when(resourceDao.findById(anyInt())).thenReturn(Optional.empty());
@@ -170,7 +210,7 @@ public class ResourceServiceTest {
 		verify(resourceDao, times(1)).findById(1);
 	}
 
-	// UPDATE
+	@DisplayName("Update Resource if exists")
 	@Test
 	public void updateResource() {
 		InResourceDto inResourceDto = new InResourceDto();
@@ -194,6 +234,7 @@ public class ResourceServiceTest {
 		assertEquals(getTopic().getTitle(), result.getTopicName());
 	}
 
+	@DisplayName("Throw NoSuchElementException if Resource does not exist")
 	@Test
 	public void updateResourceResourceNotFound() {
 		InResourceDto inResourceDto = new InResourceDto();
