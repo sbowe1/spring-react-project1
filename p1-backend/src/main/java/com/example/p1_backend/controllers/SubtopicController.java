@@ -37,8 +37,8 @@ public class SubtopicController {
 	 * @return Subtopic
 	 */
 	@PostMapping("create/{topicId}")
-	public ResponseEntity<Subtopic> createSubtopic(@PathVariable int topicId, @RequestBody InSubtopicDto subtopicDto) {
-		Subtopic subtopic = ss.createSubtopic(topicId, subtopicDto);
+	public ResponseEntity<Subtopic> create(@PathVariable int topicId, @RequestBody InSubtopicDto subtopicDto) {
+		Subtopic subtopic = ss.create(topicId, subtopicDto);
 		return new ResponseEntity<>(subtopic, CREATED);
 	}
 
