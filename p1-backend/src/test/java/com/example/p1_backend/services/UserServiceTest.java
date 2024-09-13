@@ -195,7 +195,7 @@ public class UserServiceTest {
 		verify(uDao, times(1)).findById(1);
 	}
 
-	@DisplayName("Return updated user if exists")
+	@DisplayName("Return updated token if user exists")
 	@Test
 	void update() throws AccountNotFoundException {
 		// Arrange

@@ -306,7 +306,7 @@ public class QuestionServiceTest {
 		verify(questionDao, times(1)).findById(1);
 	}
 
-	@DisplayName("Update question status to incorrect")
+	@DisplayName("Update content of question")
 	@Test
 	public void updateQuestionContent() {
 		Question mockQuestion = getQuestion();
