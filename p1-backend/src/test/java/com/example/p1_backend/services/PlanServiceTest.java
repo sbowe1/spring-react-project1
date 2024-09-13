@@ -1,28 +1,46 @@
 package com.example.p1_backend.services;
 
-import com.example.p1_backend.models.*;
-import com.example.p1_backend.models.dtos.PlanContent;
-import com.example.p1_backend.models.dtos.SubtopicWResources;
-import com.example.p1_backend.models.dtos.TopicWResources;
-import com.example.p1_backend.repositories.*;
-import com.example.p1_backend.util.JwtUtil;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atMost;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import javax.management.openmbean.KeyAlreadyExistsException;
+import javax.security.auth.login.AccountNotFoundException;
+
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.management.openmbean.KeyAlreadyExistsException;
-import javax.security.auth.login.AccountNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.*;
+import com.example.p1_backend.models.Plan;
+import com.example.p1_backend.models.Resource;
+import com.example.p1_backend.models.Subtopic;
+import com.example.p1_backend.models.Topic;
+import com.example.p1_backend.models.User;
+import com.example.p1_backend.models.dtos.PlanContent;
+import com.example.p1_backend.models.dtos.SubtopicWResources;
+import com.example.p1_backend.models.dtos.TopicWResources;
+import com.example.p1_backend.repositories.PlanDao;
+import com.example.p1_backend.repositories.ResourceDao;
+import com.example.p1_backend.repositories.SubtopicDao;
+import com.example.p1_backend.repositories.TopicDao;
+import com.example.p1_backend.repositories.UserDao;
+import com.example.p1_backend.util.JwtUtil;
 
 @ExtendWith(MockitoExtension.class)
 public class PlanServiceTest {
@@ -50,12 +68,16 @@ public class PlanServiceTest {
 
 	String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
 
+	/**
+	 * Creates a mock user
+	 * @return User
+	 */
 	private User getMockUser() {
 		return new User("test-user-email@test.com", "test-user-password", "test-user-username", "ROLE_USER",
 				"Spring Boot Roadmap");
 	}
 
-	// CREATE
+	@DisplayName("Create Plan")
 	@Test
 	public void createPlan() throws AccountNotFoundException {
 		String name = "Spring Boot Roadmap";
@@ -77,6 +99,7 @@ public class PlanServiceTest {
 		assertEquals("Spring Boot Roadmap", plan.getName());
 	}
 
+	@DisplayName("Throws KeyAlreadyExistsException when creating a plan that already exists")
 	@Test
 	public void createPlanAlreadyExists() {
 		String name = "Spring Boot Roadmap";
@@ -89,6 +112,7 @@ public class PlanServiceTest {
 		verify(planDao, times(1)).getByName(name);
 	}
 
+	@DisplayName("Throws AccountNotFoundException when creating a plan for a user that does not exist")
 	@Test
 	public void createPlanAccountNotFound() {
 		String name = "Spring Boot Roadmap";
@@ -105,7 +129,7 @@ public class PlanServiceTest {
 		verify(userDao, times(1)).findById(1);
 	}
 
-	// READ
+	@DisplayName("Return plan if exists")
 	@Test
 	public void readPlan() {
 		User mockUser = getMockUser();
@@ -122,6 +146,7 @@ public class PlanServiceTest {
 		verify(planDao, times(1)).findById(anyInt());
 	}
 
+	@DisplayName("Throw NoSuchElementException if Plan does not exist")
 	@Test
 	public void readPlanPlanNotFound() {
 		when(planDao.findById(anyInt())).thenReturn(Optional.empty());
@@ -130,7 +155,7 @@ public class PlanServiceTest {
 		verify(planDao, times(1)).findById(anyInt());
 	}
 
-	// READ CONTENTS
+	@DisplayName("Return Plan if exists")
 	@Test
 	public void readPlanContents() {
 		User mockUser = getMockUser();
@@ -164,6 +189,7 @@ public class PlanServiceTest {
 				result.getContent().get(1));
 	}
 
+	@DisplayName("Throw NoSuchElementException if Plan does not exist")
 	@Test
 	public void readPlanContentsPlanNotFound() {
 		User mockUser = getMockUser();
@@ -177,7 +203,7 @@ public class PlanServiceTest {
 		verify(planDao, times(1)).findById(1);
 	}
 
-	// DELETE
+	@DisplayName("Delete plan")
 	@Test
 	public void deletePlan() throws AccountNotFoundException {
 		User mockUser = getMockUser();
@@ -197,6 +223,7 @@ public class PlanServiceTest {
 		verify(planDao, atMost(2)).findById(1);
 	}
 
+	@DisplayName("Throw NoSuchElementException if Plan does not exist")
 	@Test
 	public void deletePlanPlanNotFound() {
 		when(planDao.findById(anyInt())).thenReturn(Optional.empty());
@@ -205,6 +232,7 @@ public class PlanServiceTest {
 		verify(planDao, times(1)).findById(anyInt());
 	}
 
+	@DisplayName("Failed to delete plan")
 	@Test
 	public void deletePlanFailedToDelete() throws AccountNotFoundException {
 		User mockUser = getMockUser();

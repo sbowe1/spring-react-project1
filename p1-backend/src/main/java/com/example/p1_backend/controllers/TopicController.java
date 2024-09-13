@@ -49,7 +49,7 @@ public class TopicController {
 	 */
 	@GetMapping("{topicId}")
 	public ResponseEntity<Topic> readTopic(@PathVariable int topicId) {
-		Topic topic = ts.readTopic(topicId);
+		Topic topic = ts.findByTopicId(topicId);
 		return new ResponseEntity<>(topic, OK);
 	}
 
@@ -60,7 +60,7 @@ public class TopicController {
 	 */
 	@PatchMapping("complete/{topicId}")
 	public ResponseEntity<Topic> completeTopic(@PathVariable int topicId) {
-		Topic topic = ts.updateTopic(topicId);
+		Topic topic = ts.update(topicId);
 		return new ResponseEntity<>(topic, OK);
 	}
 

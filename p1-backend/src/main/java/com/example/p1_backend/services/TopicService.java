@@ -50,7 +50,7 @@ public class TopicService {
 	 * @param topicId
 	 * @return Topic
 	 */
-	public Topic readTopic(int topicId) {
+	public Topic findByTopicId(int topicId) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
 		if (optTopic.isEmpty()) {
 			log.warn("Topic does not exist");
@@ -65,7 +65,7 @@ public class TopicService {
 	 * @param topicId
 	 * @return Topic
 	 */
-	public Topic updateTopic(int topicId) {
+	public Topic update(int topicId) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
 		if (optTopic.isEmpty()) {
 			log.warn("Topic does not exist");

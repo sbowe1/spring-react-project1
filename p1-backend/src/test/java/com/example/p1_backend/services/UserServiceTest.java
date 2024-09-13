@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import javax.security.auth.login.AccountNotFoundException;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -53,6 +54,11 @@ public class UserServiceTest {
 
 	String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
 
+	/**
+	 * Creates a list of mock users
+	 * @param size
+	 * @return List<User>
+	 */
 	private Iterable<User> getMockUsers(int size) {
 		List<User> users = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
@@ -62,11 +68,16 @@ public class UserServiceTest {
 		return users;
 	}
 
+	/**
+	 * Creates a mock user
+	 * @return User
+	 */
 	private User getMockUser() {
 		return new User("test-user-email@test.com", passwordEncoder.encode("TestPassword1!"), "test-user-username",
 				"ROLE_USER", "Spring Boot Roadmap");
 	}
 
+	@DisplayName("Return a list of 5 users")
 	@Test
 	public void findAll() {
 		String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlIjpbIlJPTEVfVVNFUiIsIlJPTEVfQURNSU4iXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIxMTkzOTY2LCJleHAiOjE3MjEyODAzNjZ9.UEVBOz2smZknOVjQmRcKgcF1DiR8osedb2kYgV7XxGA";
@@ -81,9 +92,7 @@ public class UserServiceTest {
 		assertEquals(5, users.size());
 	}
 
-	// TODO: Review JUnit docs to include a descriptive string; let the tests be the
-	// documentation!
-	// CREATE
+	@DisplayName("Register new user if email and username are unique")
 	@Test
 	void register() {
 		// TODO: call password encode here to remove it below! -Lauren
@@ -109,6 +118,7 @@ public class UserServiceTest {
 		// verify(uDao).save(user); // TODO: why does this fail?
 	}
 
+	@DisplayName("Throw IllegalArgumentException if username is taken")
 	@Test
 	public void registerUsernameTaken() {
 		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!", "test-user-username");
@@ -120,6 +130,7 @@ public class UserServiceTest {
 		verify(uDao, times(1)).getByUsername("test-user-username");
 	}
 
+	@DisplayName("Throw IllegalArgumentException if email is missing '@'")
 	@Test
 	public void registerInvalidEmail() {
 		RegisterDto registerDto = new RegisterDto("test-user-emailtest.com", "TestPassword1!", "test-user-username");
@@ -127,6 +138,7 @@ public class UserServiceTest {
 		assertThrows(IllegalArgumentException.class, () -> us.register(registerDto));
 	}
 
+	@DisplayName("Throw IllegalArgumentException if email is taken")
 	@Test
 	public void registerEmailTaken() {
 		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!", "test-user-username");
@@ -138,6 +150,7 @@ public class UserServiceTest {
 		verify(uDao, times(1)).getByEmail("test-user-email@test.com");
 	}
 
+	@DisplayName("Throw IllegalArgumentException if password is missing a special character")
 	@Test
 	public void registerInvalidPassword() {
 		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1", "test-user-username");
@@ -145,7 +158,7 @@ public class UserServiceTest {
 		assertThrows(IllegalArgumentException.class, () -> us.register(registerDto));
 	}
 
-	// READ
+	@DisplayName("Return user if exists")
 	@Test
 	public void findByUserId() throws AccountNotFoundException {
 		// Arrange
@@ -171,6 +184,7 @@ public class UserServiceTest {
 		assertEquals("Spring Boot Roadmap", result.getPlans().get(0));
 	}
 
+	@DisplayName("Throw AccountNotFoundException if user does not exist")
 	@Test
 	public void findByUserIdAccountNotFound() {
 		when(jwtUtil.extractUserId(token)).thenReturn(1);
@@ -181,7 +195,7 @@ public class UserServiceTest {
 		verify(uDao, times(1)).findById(1);
 	}
 
-	// UPDATE
+	@DisplayName("Return updated token if user exists")
 	@Test
 	void update() throws AccountNotFoundException {
 		// Arrange
@@ -216,6 +230,7 @@ public class UserServiceTest {
 		verify(uDao, atMost(1)).getByEmail(anyString());
 	}
 
+	@DisplayName("Throw AccountNotFoundException if user does not exist")
 	@Test
 	public void updateAccountNotFound() {
 		User mockUser = new User();
@@ -229,6 +244,7 @@ public class UserServiceTest {
 		verify(uDao, times(1)).findById(1);
 	}
 
+	@DisplayName("Throw IllegalArgumentException if username is taken")
 	@Test
 	public void updateUsernameTaken() {
 		User mockUser = getMockUser();
@@ -245,6 +261,7 @@ public class UserServiceTest {
 		verify(uDao, times(1)).getByUsername("test-user-username");
 	}
 
+	@DisplayName("Throw IllegalArgumentException if password is missing a special character")
 	@Test
 	public void updateInvalidPassword() {
 		User mockUser = getMockUser();
@@ -259,6 +276,7 @@ public class UserServiceTest {
 		verify(uDao, times(1)).findById(1);
 	}
 
+	@DisplayName("Throw IllegalArgumentException if email is taken")
 	@Test
 	public void updateEmailTaken() {
 		User mockUser = getMockUser();
@@ -275,7 +293,7 @@ public class UserServiceTest {
 		verify(uDao, times(1)).getByEmail("test-user-email@test.com");
 	}
 
-	// DELETE
+	@DisplayName("Delete user if exists")
 	@Test
 	void delete() throws AccountNotFoundException {
 
@@ -290,6 +308,7 @@ public class UserServiceTest {
 		verify(uDao, atMost(2)).findById(1);
 	}
 
+	@DisplayName("Throw AccountNotFoundException if user does not exist")
 	@Test
 	public void deleteAccountNotFound() {
 		when(jwtUtil.extractUserId(token)).thenReturn(1);
@@ -301,6 +320,7 @@ public class UserServiceTest {
 
 	}
 
+	@DisplayName("Return 'Could not delete account' if account deletion fails")
 	@Test
 	public void deleteIncompleteAction() throws AccountNotFoundException {
 		User mockUser = getMockUser();
@@ -317,7 +337,7 @@ public class UserServiceTest {
 		verify(uDao, times(2)).findById(1);
 	}
 
-	// LOGIN
+	@DisplayName("Return token if username exists and password matches")
 	@Test
 	public void login() throws AccountNotFoundException {
 		User mockUser = getMockUser();
@@ -334,6 +354,7 @@ public class UserServiceTest {
 		assertEquals(token, result);
 	}
 
+	@DisplayName("Return null if password incorrect")
 	@Test
 	public void loginIncorrectPassword() throws AccountNotFoundException {
 		User mockUser = getMockUser();
@@ -347,6 +368,7 @@ public class UserServiceTest {
 		verify(uDao, times(1)).getByUsername("test-user-username");
 	}
 
+	@DisplayName("Throw AccountNotFoundException if username not found")
 	@Test
 	public void loginAccountNotFound() {
 		User mockUser = getMockUser();

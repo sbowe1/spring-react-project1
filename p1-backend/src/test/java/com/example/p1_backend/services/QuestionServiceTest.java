@@ -1,5 +1,32 @@
 package com.example.p1_backend.services;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atMost;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import javax.security.auth.login.AccountNotFoundException;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.example.p1_backend.models.Plan;
 import com.example.p1_backend.models.Question;
 import com.example.p1_backend.models.Topic;
@@ -12,21 +39,6 @@ import com.example.p1_backend.repositories.QuestionDao;
 import com.example.p1_backend.repositories.TopicDao;
 import com.example.p1_backend.repositories.UserDao;
 import com.example.p1_backend.util.JwtUtil;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import javax.security.auth.login.AccountNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class QuestionServiceTest {
@@ -49,6 +61,10 @@ public class QuestionServiceTest {
 	@InjectMocks
 	private QuestionService qs;
 
+	/**
+	 * Creates a mock user
+	 * @return User
+	 */
 	public User getUser() {
 		User user = new User("test-user-email@test.com", "test-user-password", "test-user-username", "ROLE_USER",
 				"Spring Boot Roadmap");
@@ -56,18 +72,30 @@ public class QuestionServiceTest {
 		return user;
 	}
 
+	/**
+	 * Creates a mock topic
+	 * @return Topic
+	 */
 	public Topic getTopic() {
 		Plan plan = new Plan(1, "Spring Boot Roadmap", getUser());
 		return new Topic(1, "Topic 1", "Description", plan, false);
 
 	}
 
+	/**
+	 * Creates a mock question
+	 * @return Question
+	 */
 	public Question getQuestion() {
 		Question question = new Question(1, "question", "answer", false, getTopic());
 		question.setUser(getUser());
 		return question;
 	}
 
+	/**
+	 * Creates a list of mock questions
+	 * @return List<Question>
+	 */
 	public List<Question> getQuestionList() {
 		List<Question> questions = new ArrayList<>();
 		for (int i = 0; i < 5; i++) {
@@ -76,7 +104,7 @@ public class QuestionServiceTest {
 		return questions;
 	}
 
-	// CREATE
+	@DisplayName("Create Question")
 	@Test
 	public void createQuestion() throws AccountNotFoundException {
 		String mockToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
@@ -101,6 +129,7 @@ public class QuestionServiceTest {
 		assertEquals(mockUser, result.getUser());
 	}
 
+	@DisplayName("Throw AccountNotFoundException if user not found")
 	@Test
 	public void createQuestionAccountNotFound() {
 		String mockToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
@@ -114,6 +143,7 @@ public class QuestionServiceTest {
 		verify(userDao, times(1)).findById(1);
 	}
 
+	@DisplayName("Throw NoSuchElementException if topic not found")
 	@Test
 	public void createQuestionTopicNotFound() {
 		String mockToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
@@ -130,7 +160,7 @@ public class QuestionServiceTest {
 		verify(topicDao, times(1)).findById(1);
 	}
 
-	// READ
+	@DisplayName("Return Question if exists")
 	@Test
 	public void readQuestion() {
 		Question mockQuestion = getQuestion();
@@ -150,6 +180,7 @@ public class QuestionServiceTest {
 		assertEquals(mockUser, result.getUser());
 	}
 
+	@DisplayName("Throw NoSuchElementException if Question does not exist")
 	@Test
 	public void readQuestionQuestionNotFound() {
 		when(questionDao.findById(anyInt())).thenReturn(Optional.empty());
@@ -158,6 +189,7 @@ public class QuestionServiceTest {
 		verify(questionDao, times(1)).findById(1);
 	}
 
+	@DisplayName("Return all user's questions if User exists")
 	@Test
 	public void getQuestionByUser() throws AccountNotFoundException {
 		String mockToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
@@ -175,6 +207,7 @@ public class QuestionServiceTest {
 		assertEquals(new QuestionNoUserDto(getQuestion()), result.get(0));
 	}
 
+	@DisplayName("Throw AccountNotFoundException if User not found")
 	@Test
 	public void getQuestionsByUserUserNotFound() {
 		String mockToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXItdXNlcm5hbWUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoicHJvamVjdDF0ZWFtIiwiaWF0IjoxNzIwODE1NzE5LCJleHAiOjE3MjA5MDIxMTl9.sg_lpkxTLfCl-ucxM3VLKg112JhR2FV4dWptFQOqqks";
@@ -187,6 +220,7 @@ public class QuestionServiceTest {
 		verify(userDao, times(1)).findById(anyInt());
 	}
 
+	@DisplayName("Return all questions by topic if Topic exists")
 	@Test
 	public void getQuestionsByTopic() {
 		List<Question> mockQuestionList = getQuestionList();
@@ -202,6 +236,7 @@ public class QuestionServiceTest {
 		assertEquals(new QuestionNoTopicNoUserDto(getQuestion()), result.get(0));
 	}
 
+	@DisplayName("Throw NoSuchElementException if Topic does not exist")
 	@Test
 	public void getQuestionsByTopicTopicNotFound() {
 		when(topicDao.findById(anyInt())).thenReturn(Optional.empty());
@@ -210,6 +245,7 @@ public class QuestionServiceTest {
 		verify(topicDao, times(1)).findById(1);
 	}
 
+	@DisplayName("Return all questions by plan if Plan exists")
 	@Test
 	public void getQuestionsByPlan() {
 		Plan mockPlan = new Plan(1, "Spring Boot Roadmap", getUser());
@@ -229,6 +265,7 @@ public class QuestionServiceTest {
 		assertEquals(actualQuestionList, result);
 	}
 
+	@DisplayName("Throw NoSuchElementException if Plan does not exist")
 	@Test
 	public void getQuestionsByPlanPlanNotFound() {
 		when(planDao.findById(anyInt())).thenReturn(Optional.empty());
@@ -237,7 +274,7 @@ public class QuestionServiceTest {
 		verify(planDao, times(1)).findById(1);
 	}
 
-	// UPDATE
+	@DisplayName("Update question status to correct")
 	@Test
 	public void updateQuestionCorrect() {
 		Question mockQuestion = getQuestion();
@@ -260,6 +297,7 @@ public class QuestionServiceTest {
 		assertEquals(mockUser, result.getUser());
 	}
 
+	@DisplayName("Throw NoSuchElementException if Question does not exist")
 	@Test
 	public void updateQuestionCorrectQuestionNotFound() {
 		when(questionDao.findById(anyInt())).thenReturn(Optional.empty());
@@ -268,6 +306,7 @@ public class QuestionServiceTest {
 		verify(questionDao, times(1)).findById(1);
 	}
 
+	@DisplayName("Update content of question")
 	@Test
 	public void updateQuestionContent() {
 		Question mockQuestion = getQuestion();
@@ -292,6 +331,7 @@ public class QuestionServiceTest {
 		assertEquals(mockUser, result.getUser());
 	}
 
+	@DisplayName("Throw NoSuchElementException if Question does not exist")
 	@Test
 	public void updateQuestionContentQuestionNotFound() {
 		InQuestionDto questionDto = new InQuestionDto();
@@ -303,7 +343,7 @@ public class QuestionServiceTest {
 		verify(questionDao, times(1)).findById(1);
 	}
 
-	// DELETE
+	@DisplayName("Delete Question if exists")
 	@Test
 	public void deleteQuestion() {
 		Question mockQuestion = getQuestion();
@@ -318,6 +358,7 @@ public class QuestionServiceTest {
 		verify(questionDao, atMost(2)).findById(anyInt());
 	}
 
+	@DisplayName("Throw NoSuchElementException if Question does not exist")
 	@Test
 	public void deleteQuestionQuestionNotFound() {
 		when(questionDao.findById(anyInt())).thenReturn(Optional.empty());
@@ -326,6 +367,7 @@ public class QuestionServiceTest {
 		verify(questionDao, times(1)).findById(1);
 	}
 
+	@DisplayName("Throw NoSuchElementException if Question failed to delete")
 	@Test
 	public void deleteQuestionFailedToDelete() {
 		Question mockQuestion = getQuestion();
