@@ -82,12 +82,11 @@ public class UserService {
 		}
 
 		// Password must contain:
-		// at least 1 digit (?=.*[0-9])
 		// at least 1 upper case letter (?=.*[A-Z])
 		// at least one special character (?=.*[!@#$%^&+=])
 		// no white space (?=\S+$)
-		// length 8-16 char .{8,16}
-		String passwordRegex = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&+=])(?=\\S+$).{8,16}$";
+		// length 8-64 char .{8,64}
+		String passwordRegex = "^(?=.*[A-Z])(?=.*[!@#$%^&+=])(?=\\S+$).{8,64}$";
 		if (registerDto.getPassword().isBlank() || !(registerDto.getPassword()).matches(passwordRegex)) {
 			log.warn("Password does not meet requirements");
 			throw new IllegalArgumentException("Password does not meet requirements");
