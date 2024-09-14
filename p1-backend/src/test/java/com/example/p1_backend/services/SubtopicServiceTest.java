@@ -46,7 +46,7 @@ public class SubtopicServiceTest {
 	 * @return User
 	 */
 	private User getMockUser() {
-		return new User("test-user-email@test.com", "test-user-password", "test-user-username", "ROLE_USER",
+		return new User("test-user-email@test.com", "test-user-password", "test-user-name", "ROLE_USER",
 				"Spring Boot Roadmap");
 	}
 

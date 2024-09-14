@@ -11,14 +11,14 @@ import com.example.p1_backend.models.User;
 public interface UserDao extends JpaRepository<User, Integer> {
 
 	/**
-	 * Finds a user by username.
+	 * Finds a user by its name.
 	 * @param name
 	 * @return Optional<User>
 	 */
 	Optional<User> getByName(String name);
 
 	/**
-	 * Finds a user by email.
+	 * Finds a user by its email.
 	 * @param email
 	 * @return Optional<User>
 	 */

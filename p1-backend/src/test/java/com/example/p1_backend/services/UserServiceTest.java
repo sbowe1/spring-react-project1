@@ -62,7 +62,7 @@ public class UserServiceTest {
 	private Iterable<User> getMockUsers(int size) {
 		List<User> users = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
-			users.add(new User("test-email" + i + "@test.com", "TestPassword1!", "test-username" + i, "ROLE_USER",
+			users.add(new User("test-email" + i + "@test.com", "TestPassword1!", "test-name" + i, "ROLE_USER",
 					"test-plan-" + i));
 		}
 		return users;
@@ -73,7 +73,7 @@ public class UserServiceTest {
 	 * @return User
 	 */
 	private User getMockUser() {
-		return new User("test-user-email@test.com", passwordEncoder.encode("TestPassword1!"), "test-user-username",
+		return new User("test-user-email@test.com", passwordEncoder.encode("TestPassword1!"), "test-user-name",
 				"ROLE_USER", "Spring Boot Roadmap");
 	}
 
@@ -92,11 +92,11 @@ public class UserServiceTest {
 		assertEquals(5, users.size());
 	}
 
-	@DisplayName("Register new user if email and username are unique")
+	@DisplayName("Register new user if email is unique")
 	@Test
 	void register() {
 		// TODO: call password encode here to remove it below! -Lauren
-		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!", "test-user-username");
+		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!", "test-user-name");
 		User user = getMockUser();
 		// Because Users create their own plans, there should not be a default plan
 		user.setPlans(new ArrayList<>());
@@ -119,7 +119,7 @@ public class UserServiceTest {
 	@DisplayName("Throw IllegalArgumentException if email is missing '@'")
 	@Test
 	public void registerInvalidEmail() {
-		RegisterDto registerDto = new RegisterDto("test-user-emailtest.com", "TestPassword1!", "test-user-username");
+		RegisterDto registerDto = new RegisterDto("test-user-emailtest.com", "TestPassword1!", "test-user-name");
 
 		assertThrows(IllegalArgumentException.class, () -> us.register(registerDto));
 	}
@@ -127,7 +127,7 @@ public class UserServiceTest {
 	@DisplayName("Throw IllegalArgumentException if email is taken")
 	@Test
 	public void registerEmailTaken() {
-		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!", "test-user-username");
+		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!", "test-user-name");
 		User mockUser = getMockUser();
 
 		when(uDao.getByEmail(anyString())).thenReturn(Optional.of(mockUser));
@@ -139,7 +139,7 @@ public class UserServiceTest {
 	@DisplayName("Throw IllegalArgumentException if password is missing a special character")
 	@Test
 	public void registerInvalidPassword() {
-		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1", "test-user-username");
+		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1", "test-user-name");
 
 		assertThrows(IllegalArgumentException.class, () -> us.register(registerDto));
 	}
@@ -164,7 +164,7 @@ public class UserServiceTest {
 		assertEquals(mockUser.getUserId(), result.getUserId());
 		assertEquals("test-user-email@test.com", result.getEmail());
 		assertTrue(passwordEncoder.matches("TestPassword1!", result.getPassword()));
-		assertEquals("test-user-username", result.getName());
+		assertEquals("test-user-name", result.getName());
 		assertEquals("ROLE_USER", result.getRoles().get(0)); // TODO: grab roles
 																// dynamically
 		assertEquals("Spring Boot Roadmap", result.getPlans().get(0));
@@ -206,7 +206,7 @@ public class UserServiceTest {
 		assertEquals(currentUser.getUserId(), updatedUser.getUserId());
 		assertEquals("test-user-email@test.com", updatedUser.getEmail());
 		assertTrue(passwordEncoder.matches(updatedUser.getPassword(), currentUser.getPassword()));
-		assertEquals("test-user-username", updatedUser.getName());
+		assertEquals("test-user-name", updatedUser.getName());
 		assertEquals("ROLE_USER", updatedUser.getRoles().get(0)); // TODO: grab roles
 																	// dynamically
 		assertEquals("Spring Boot Roadmap", updatedUser.getPlans().get(0));
@@ -228,23 +228,6 @@ public class UserServiceTest {
 		assertThrows(AccountNotFoundException.class, () -> us.update("Bearer " + token, mockUser));
 		verify(jwtUtil, times(1)).extractUserId(token);
 		verify(uDao, times(1)).findById(1);
-	}
-
-	@DisplayName("Throw IllegalArgumentException if username is taken")
-	@Test
-	public void updateUsernameTaken() {
-		User mockUser = getMockUser();
-		User updatedUser = new User();
-		updatedUser.setName(mockUser.getName());
-
-		when(jwtUtil.extractUserId(anyString())).thenReturn(1);
-		when(uDao.findById(anyInt())).thenReturn(Optional.of(mockUser));
-		when(uDao.getByName(anyString())).thenReturn(Optional.of(mockUser));
-
-		assertThrows(IllegalArgumentException.class, () -> us.update("Bearer " + token, updatedUser));
-		verify(jwtUtil, times(1)).extractUserId(token);
-		verify(uDao, times(1)).findById(1);
-		verify(uDao, times(1)).getByName("test-user-username");
 	}
 
 	@DisplayName("Throw IllegalArgumentException if password is missing a special character")
@@ -354,7 +337,7 @@ public class UserServiceTest {
 		verify(uDao, times(1)).getByEmail(mockUser.getEmail());
 	}
 
-	@DisplayName("Throw AccountNotFoundException if username not found")
+	@DisplayName("Throw AccountNotFoundException if email not found")
 	@Test
 	public void loginAccountNotFound() {
 		User mockUser = getMockUser();

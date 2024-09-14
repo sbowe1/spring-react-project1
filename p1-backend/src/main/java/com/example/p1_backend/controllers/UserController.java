@@ -37,10 +37,9 @@ public class UserController {
 	}
 
 	/**
-	 * Registers a new user. First checks that username is unique. Then checks that email
-	 * is a valid email address and unique. Finally, checks that password meets
-	 * requirements.
-	 * @param registerDto email, password, username
+	 * Registers a new user. First checks that email is a valid email address and unique.
+	 * Finally, checks that password meets requirements.
+	 * @param registerDto email, password, name
 	 * @return String
 	 */
 	@PostMapping("register")

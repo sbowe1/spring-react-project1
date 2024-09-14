@@ -66,7 +66,7 @@ public class QuestionServiceTest {
 	 * @return User
 	 */
 	public User getUser() {
-		User user = new User("test-user-email@test.com", "test-user-password", "test-user-username", "ROLE_USER",
+		User user = new User("test-user-email@test.com", "test-user-password", "test-user-name", "ROLE_USER",
 				"Spring Boot Roadmap");
 		user.setUserId(1);
 		return user;

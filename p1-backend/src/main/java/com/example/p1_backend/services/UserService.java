@@ -92,7 +92,7 @@ public class UserService {
 		User newUser = new User();
 		newUser.setEmail(registerDto.getEmail());
 		newUser.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-		newUser.setName(registerDto.getUsername());
+		newUser.setName(registerDto.getName());
 		newUser.getRoles().add("ROLE_USER");
 
 		// persist user to database
@@ -138,13 +138,6 @@ public class UserService {
 		}
 
 		if (updatedUser.getName() != null && !updatedUser.getName().isBlank()) {
-			// Ensuring that name is not taken
-			Optional<User> optUser2 = uDao.getByName(updatedUser.getName());
-			if (optUser2.isPresent() && optUser2.get().getUserId() != userId) {
-				log.warn("name is already taken");
-				throw new IllegalArgumentException("Update failed; Invalid name");
-			}
-
 			optUser.get().setName(updatedUser.getName());
 		}
 		String passwordRegex = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&+=])(?=\\S+$).{8,16}$";
