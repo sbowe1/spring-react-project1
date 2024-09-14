@@ -42,7 +42,6 @@ public class TopicServiceTest {
 
 	/**
 	 * Creates a mock User object
-	 * 
 	 * @return User
 	 */
 	private User getMockUser() {
@@ -52,7 +51,6 @@ public class TopicServiceTest {
 
 	/**
 	 * Creates a mock Plan object
-	 * 
 	 * @return Plan
 	 */
 	public Plan getPlan() {
@@ -61,7 +59,6 @@ public class TopicServiceTest {
 
 	/**
 	 * Creates a mock Topic object
-	 * 
 	 * @return Topic
 	 */
 	public Topic getTopic() {

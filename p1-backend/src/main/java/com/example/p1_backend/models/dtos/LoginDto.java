@@ -5,12 +5,12 @@ import lombok.Data;
 @Data
 public class LoginDto {
 
-	private String username;
+	private String email;
 
 	private String password;
 
-	public LoginDto(String username, String password) {
-		this.username = username;
+	public LoginDto(String email, String password) {
+		this.email = email;
 		this.password = password;
 	}
 

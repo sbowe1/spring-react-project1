@@ -28,25 +28,24 @@ public class User {
 	@JsonIgnore
 	private String password;
 
-	@Column(unique = true)
-	private String username;
+	private String name;
 
 	private List<String> roles = new ArrayList<>();
 
 	private List<String> plans = new ArrayList<>();
 
-	public User(String email, String password, String username, String role, String plan) {
+	public User(String email, String password, String name, String role, String plan) {
 		this.email = email;
 		this.password = password;
-		this.username = username;
+		this.name = name;
 		this.roles.add(role);
 		this.plans.add(plan);
 	}
 
-	public User(String email, String password, String username, List<String> roles, List<String> plans) {
+	public User(String email, String password, String name, List<String> roles, List<String> plans) {
 		this.email = email;
 		this.password = password;
-		this.username = username;
+		this.name = name;
 		this.roles = roles;
 		this.plans = plans;
 	}
