@@ -18,9 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SubtopicService {
 
-	private SubtopicDao subtopicDao;
+	private final SubtopicDao subtopicDao;
 
-	private TopicDao topicDao;
+	private final TopicDao topicDao;
 
 	@Autowired
 	public SubtopicService(SubtopicDao subtopicDao, TopicDao topicDao) {
@@ -30,9 +30,9 @@ public class SubtopicService {
 
 	/**
 	 * Creates a new subtopic.
-	 * @param topicId
-	 * @param subtopicDto
-	 * @return Subtopic
+	 * @param topicId The ID of the topic associated with the new subtopic
+	 * @param subtopicDto DTO consisting of: subtopic title, description
+	 * @return Newly created subtopic
 	 */
 	public Subtopic create(int topicId, InSubtopicDto subtopicDto) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
@@ -48,8 +48,8 @@ public class SubtopicService {
 	}
 
 	/**
-	 * Reads a subtopic by id.
-	 * @param subtopicId
+	 * Reads a subtopic by its ID.
+	 * @param subtopicId the ID of the subtopic to search for in the database
 	 * @return Subtopic
 	 */
 	public Subtopic readSubtopic(int subtopicId) {
@@ -63,9 +63,9 @@ public class SubtopicService {
 	}
 
 	/**
-	 * Updates a subtopic's status.
-	 * @param subtopicId
-	 * @return Subtopic
+	 * Toggles a subtopic's completion status.
+	 * @param subtopicId The ID of the subtopic to be updated
+	 * @return The updated subtopic
 	 */
 	public Subtopic updateSubtopic(int subtopicId) {
 		Optional<Subtopic> optSubtopic = subtopicDao.findById(subtopicId);

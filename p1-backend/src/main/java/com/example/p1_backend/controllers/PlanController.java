@@ -35,10 +35,10 @@ public class PlanController {
 
 	/**
 	 * Creates a new plan.
-	 * @param token
-	 * @param name
-	 * @return Plan
-	 * @throws AccountNotFoundException
+	 * @param token The user's Authorization token
+	 * @param name The name of the new plan
+	 * @return The newly created plan
+	 * @throws AccountNotFoundException If the user is not found
 	 */
 	@PostMapping("create")
 	public ResponseEntity<Plan> createPlan(@RequestHeader("Authorization") String token, @RequestBody String name)
@@ -49,7 +49,7 @@ public class PlanController {
 
 	/**
 	 * Reads a plan.
-	 * @param planId
+	 * @param planId The ID of the desired plan
 	 * @return Plan
 	 */
 	@GetMapping("{planId}")
@@ -59,8 +59,13 @@ public class PlanController {
 	}
 
 	/**
-	 * Reads a plan's contents.
-	 * @return PlanContent - Plan with List of its Topics and Subtopics
+	 * Reads a plan's contents. The contents are a list of all topics, subtopics, and
+	 * resources associated with the plan. Topics and its resources are listed first,
+	 * followed by the topic's subtopics and their resources. This pattern is repeated
+	 * until all topics and subtopics in the plan have been covered.
+	 * @param token The user's Authorization token
+	 * @param planId The ID of the desired plan
+	 * @return Plan with contents
 	 */
 	@GetMapping("content/{planId}")
 	public ResponseEntity<PlanContent> readPlanContents(@RequestHeader("Authorization") String token,
@@ -71,9 +76,9 @@ public class PlanController {
 
 	/**
 	 * Deletes a plan.
-	 * @param planId
-	 * @return String
-	 * @throws AccountNotFoundException
+	 * @param planId The ID of the plan to be deleted
+	 * @return Successful deletion message; Failure message if an error occurs
+	 * @throws AccountNotFoundException If the user is not found
 	 */
 	@DeleteMapping("{planId}")
 	public ResponseEntity<String> deletePlan(@PathVariable int planId) throws AccountNotFoundException {

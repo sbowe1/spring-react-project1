@@ -32,9 +32,9 @@ public class TopicController {
 
 	/**
 	 * Creates a new topic.
-	 * @param planId
-	 * @param topicDto
-	 * @return Topic
+	 * @param planId The ID of the plan associated with the new topic
+	 * @param topicDto DTO consisting of: topic name, description
+	 * @return Newly created topic
 	 */
 	@PostMapping("create/{planId}")
 	public ResponseEntity<Topic> createTopic(@PathVariable int planId, @RequestBody InTopicDto topicDto) {
@@ -43,8 +43,8 @@ public class TopicController {
 	}
 
 	/**
-	 * Reads a topic by id.
-	 * @param topicId
+	 * Reads a topic by its ID.
+	 * @param topicId The ID of the desired topic
 	 * @return Topic
 	 */
 	@GetMapping("{topicId}")
@@ -54,9 +54,9 @@ public class TopicController {
 	}
 
 	/**
-	 * Completes a topic.
-	 * @param topicId
-	 * @return Topic
+	 * Toggles a topic's completion status.
+	 * @param topicId The ID of the topic to be updated
+	 * @return The updated topic
 	 */
 	@PatchMapping("complete/{topicId}")
 	public ResponseEntity<Topic> completeTopic(@PathVariable int topicId) {

@@ -11,10 +11,12 @@ import com.example.p1_backend.models.Plan;
 public interface PlanDao extends JpaRepository<Plan, Integer> {
 
 	/**
-	 * Finds a plan by name.
-	 * @param name
+	 * Finds a plan by its name and user's ID. Multiple users may have plans with the same
+	 * name, so plans are uniquely identified by plan ID, or by plan name + user ID.
+	 * @param name The name of the plan to search for in the database
+	 * @param userId The ID of the user
 	 * @return Optional<Plan>
 	 */
-	Optional<Plan> getByName(String name);
+	Optional<Plan> getByNameAndUserUserId(String name, int userId);
 
 }

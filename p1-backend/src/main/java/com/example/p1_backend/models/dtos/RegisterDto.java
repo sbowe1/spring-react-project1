@@ -9,12 +9,12 @@ public class RegisterDto {
 
 	private String password;
 
-	private String username;
+	private String name;
 
-	public RegisterDto(String email, String password, String username) {
+	public RegisterDto(String email, String password, String name) {
 		this.email = email;
 		this.password = password;
-		this.username = username;
+		this.name = name;
 	}
 
 }

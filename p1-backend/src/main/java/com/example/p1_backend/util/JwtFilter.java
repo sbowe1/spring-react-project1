@@ -39,17 +39,17 @@ public class JwtFilter extends OncePerRequestFilter {
 		// Ensures that Authorization Header is occupied
 		String authHeader = request.getHeader("Authorization");
 		String jwt = null;
-		String username = null;
+		String name = null;
 
 		if (authHeader != null && authHeader.startsWith("Bearer ")) {
 			jwt = authHeader.substring(7);
-			username = jwtUtil.extractUsername(jwt);
+			name = jwtUtil.extractName(jwt);
 		}
 
 		// Validation checks
-		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+		if (name != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			// Ensures that the user exists
-			Optional<User> user = userDao.getByUsername(username);
+			Optional<User> user = userDao.getByName(name);
 
 			if (jwtUtil.validateToken(jwt) && user.isPresent()) {
 				// Sets principal to user

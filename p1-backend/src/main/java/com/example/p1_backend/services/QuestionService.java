@@ -50,11 +50,11 @@ public class QuestionService {
 
 	/**
 	 * Creates a new question.
-	 * @param token
-	 * @param topicId
-	 * @param questionDto
-	 * @return Question
-	 * @throws AccountNotFoundException
+	 * @param token The user's Authorization token
+	 * @param topicId The ID of the topic associated with the question
+	 * @param questionDto DTO consisting of: question, answer
+	 * @return The newly created question
+	 * @throws AccountNotFoundException If the user is not found
 	 */
 	public Question createQuestion(String token, int topicId, InQuestionDto questionDto)
 			throws AccountNotFoundException {
@@ -78,8 +78,8 @@ public class QuestionService {
 	}
 
 	/**
-	 * Reads a question by id.
-	 * @param questionId
+	 * Reads a question by its ID.
+	 * @param questionId The ID of the question to search in the database
 	 * @return Question
 	 */
 	public Question readQuestion(int questionId) {
@@ -93,10 +93,10 @@ public class QuestionService {
 	}
 
 	/**
-	 * Reads all questions made by a user.
-	 * @param token
-	 * @return List<QuestionNoUserDto>
-	 * @throws AccountNotFoundException
+	 * Reads all questions created by a user.
+	 * @param token The user's Authorization token
+	 * @return List<Question>
+	 * @throws AccountNotFoundException If the user is not found
 	 */
 	public List<QuestionNoUserDto> getQuestionsByUser(String token) throws AccountNotFoundException {
 		int userId = jwtUtil.extractUserId(token.substring(7));
@@ -116,9 +116,9 @@ public class QuestionService {
 	}
 
 	/**
-	 * Reads all questions by a topicId.
-	 * @param topicId
-	 * @return List<QuestionNoTopicNoUserDto>
+	 * Reads all questions in a topic.
+	 * @param topicId The ID of the topic associated with the questions
+	 * @return List<Question>
 	 */
 	public List<QuestionNoTopicNoUserDto> getQuestionsByTopic(int topicId) {
 		if (topicDao.findById(topicId).isEmpty()) {
@@ -137,9 +137,10 @@ public class QuestionService {
 	}
 
 	/**
-	 * Reads all questions by a planId.
-	 * @param planId
-	 * @return List<QuestionNoUserDto>
+	 * Reads all questions in a plan.
+	 * @param planId The ID of the plan associated with the questions
+	 * @return List of questions. Each question states which topic it belongs to in the
+	 * plan.
 	 */
 	public List<QuestionNoUserDto> getQuestionsByPlan(int planId) {
 		if (planDao.findById(planId).isEmpty()) {
@@ -160,9 +161,9 @@ public class QuestionService {
 	}
 
 	/**
-	 * Toggles a question's correct status.
-	 * @param questionId
-	 * @return Question
+	 * Toggles a question's correctness status.
+	 * @param questionId The ID of the question to be updated
+	 * @return The updated question
 	 */
 	public Question updateQuestionCorrect(int questionId) {
 		Optional<Question> optQuestion = questionDao.findById(questionId);
@@ -177,10 +178,10 @@ public class QuestionService {
 	}
 
 	/**
-	 * Updates a question's content.
-	 * @param questionId
-	 * @param questionDto
-	 * @return Question
+	 * Updates a question's content (either the question itself, or the answer).
+	 * @param questionId The ID of the question to be updated
+	 * @param questionDto A question object including all the fields to be updated
+	 * @return The updated question
 	 */
 	public Question updateQuestionContent(int questionId, InQuestionDto questionDto) {
 		Optional<Question> optQuestion = questionDao.findById(questionId);
@@ -201,9 +202,9 @@ public class QuestionService {
 	}
 
 	/**
-	 * Deletes a question by id.
-	 * @param questionId
-	 * @return String
+	 * Deletes a question by its ID.
+	 * @param questionId The ID of the question to be deleted
+	 * @return Successful deletion message; Failure message if error occurs
 	 */
 	public String deleteQuestion(int questionId) {
 		Optional<Question> optQuestion = questionDao.findById(questionId);

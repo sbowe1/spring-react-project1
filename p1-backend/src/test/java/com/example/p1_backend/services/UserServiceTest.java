@@ -56,13 +56,13 @@ public class UserServiceTest {
 
 	/**
 	 * Creates a list of mock users
-	 * @param size
+	 * @param size The size of the list of users to create
 	 * @return List<User>
 	 */
 	private Iterable<User> getMockUsers(int size) {
 		List<User> users = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
-			users.add(new User("test-email" + i + "@test.com", "TestPassword1!", "test-username" + i, "ROLE_USER",
+			users.add(new User("test-email" + i + "@test.com", "TestPassword1!", "test-name" + i, "ROLE_USER",
 					"test-plan-" + i));
 		}
 		return users;
@@ -73,7 +73,7 @@ public class UserServiceTest {
 	 * @return User
 	 */
 	private User getMockUser() {
-		return new User("test-user-email@test.com", passwordEncoder.encode("TestPassword1!"), "test-user-username",
+		return new User("test-user-email@test.com", passwordEncoder.encode("TestPassword1!"), "test-user-name",
 				"ROLE_USER", "Spring Boot Roadmap");
 	}
 
@@ -92,18 +92,16 @@ public class UserServiceTest {
 		assertEquals(5, users.size());
 	}
 
-	@DisplayName("Register new user if email and username are unique")
+	@DisplayName("Register new user if email is unique")
 	@Test
 	void register() {
 		// TODO: call password encode here to remove it below! -Lauren
-		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!", "test-user-username");
+		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!", "test-user-name");
 		User user = getMockUser();
 		// Because Users create their own plans, there should not be a default plan
 		user.setPlans(new ArrayList<>());
 
 		// Set expected behavior
-		// check unique username
-		when(uDao.getByUsername(registerDto.getUsername())).thenReturn(Optional.empty());
 		// check unique email
 		when(uDao.getByEmail(registerDto.getEmail())).thenReturn(Optional.empty());
 		user.setUserId(1);
@@ -114,26 +112,14 @@ public class UserServiceTest {
 
 		// Assert
 		assertNotNull(result);
-		assertEquals("User " + user.getUsername() + " created successfully", result);
+		assertEquals("User " + user.getName() + " created successfully", result);
 		// verify(uDao).save(user); // TODO: why does this fail?
-	}
-
-	@DisplayName("Throw IllegalArgumentException if username is taken")
-	@Test
-	public void registerUsernameTaken() {
-		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!", "test-user-username");
-		User mockUser = getMockUser();
-
-		when(uDao.getByUsername(anyString())).thenReturn(Optional.of(mockUser));
-
-		assertThrows(IllegalArgumentException.class, () -> us.register(registerDto));
-		verify(uDao, times(1)).getByUsername("test-user-username");
 	}
 
 	@DisplayName("Throw IllegalArgumentException if email is missing '@'")
 	@Test
 	public void registerInvalidEmail() {
-		RegisterDto registerDto = new RegisterDto("test-user-emailtest.com", "TestPassword1!", "test-user-username");
+		RegisterDto registerDto = new RegisterDto("test-user-emailtest.com", "TestPassword1!", "test-user-name");
 
 		assertThrows(IllegalArgumentException.class, () -> us.register(registerDto));
 	}
@@ -141,7 +127,7 @@ public class UserServiceTest {
 	@DisplayName("Throw IllegalArgumentException if email is taken")
 	@Test
 	public void registerEmailTaken() {
-		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!", "test-user-username");
+		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1!", "test-user-name");
 		User mockUser = getMockUser();
 
 		when(uDao.getByEmail(anyString())).thenReturn(Optional.of(mockUser));
@@ -153,7 +139,7 @@ public class UserServiceTest {
 	@DisplayName("Throw IllegalArgumentException if password is missing a special character")
 	@Test
 	public void registerInvalidPassword() {
-		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1", "test-user-username");
+		RegisterDto registerDto = new RegisterDto("test-user-email@test.com", "TestPassword1", "test-user-name");
 
 		assertThrows(IllegalArgumentException.class, () -> us.register(registerDto));
 	}
@@ -178,7 +164,7 @@ public class UserServiceTest {
 		assertEquals(mockUser.getUserId(), result.getUserId());
 		assertEquals("test-user-email@test.com", result.getEmail());
 		assertTrue(passwordEncoder.matches("TestPassword1!", result.getPassword()));
-		assertEquals("test-user-username", result.getUsername());
+		assertEquals("test-user-name", result.getName());
 		assertEquals("ROLE_USER", result.getRoles().get(0)); // TODO: grab roles
 																// dynamically
 		assertEquals("Spring Boot Roadmap", result.getPlans().get(0));
@@ -209,7 +195,7 @@ public class UserServiceTest {
 		when(jwtUtil.generateToken(any(User.class))).thenReturn(token);
 
 		// Act
-		User updatedUser = new User(currentUser.getEmail(), "TestPassword1!", currentUser.getUsername(),
+		User updatedUser = new User(currentUser.getEmail(), "TestPassword1!", currentUser.getName(),
 				currentUser.getRoles(), currentUser.getPlans());
 		updatedUser.setUserId(currentUser.getUserId());
 
@@ -220,13 +206,13 @@ public class UserServiceTest {
 		assertEquals(currentUser.getUserId(), updatedUser.getUserId());
 		assertEquals("test-user-email@test.com", updatedUser.getEmail());
 		assertTrue(passwordEncoder.matches(updatedUser.getPassword(), currentUser.getPassword()));
-		assertEquals("test-user-username", updatedUser.getUsername());
+		assertEquals("test-user-name", updatedUser.getName());
 		assertEquals("ROLE_USER", updatedUser.getRoles().get(0)); // TODO: grab roles
 																	// dynamically
 		assertEquals("Spring Boot Roadmap", updatedUser.getPlans().get(0));
 		assertEquals(token, result);
 		verify(uDao, times(1)).findById(anyInt());
-		verify(uDao, atMost(1)).getByUsername(anyString());
+		verify(uDao, atMost(1)).getByName(anyString());
 		verify(uDao, atMost(1)).getByEmail(anyString());
 	}
 
@@ -242,23 +228,6 @@ public class UserServiceTest {
 		assertThrows(AccountNotFoundException.class, () -> us.update("Bearer " + token, mockUser));
 		verify(jwtUtil, times(1)).extractUserId(token);
 		verify(uDao, times(1)).findById(1);
-	}
-
-	@DisplayName("Throw IllegalArgumentException if username is taken")
-	@Test
-	public void updateUsernameTaken() {
-		User mockUser = getMockUser();
-		User updatedUser = new User();
-		updatedUser.setUsername(mockUser.getUsername());
-
-		when(jwtUtil.extractUserId(anyString())).thenReturn(1);
-		when(uDao.findById(anyInt())).thenReturn(Optional.of(mockUser));
-		when(uDao.getByUsername(anyString())).thenReturn(Optional.of(mockUser));
-
-		assertThrows(IllegalArgumentException.class, () -> us.update("Bearer " + token, updatedUser));
-		verify(jwtUtil, times(1)).extractUserId(token);
-		verify(uDao, times(1)).findById(1);
-		verify(uDao, times(1)).getByUsername("test-user-username");
 	}
 
 	@DisplayName("Throw IllegalArgumentException if password is missing a special character")
@@ -337,15 +306,15 @@ public class UserServiceTest {
 		verify(uDao, times(2)).findById(1);
 	}
 
-	@DisplayName("Return token if username exists and password matches")
+	@DisplayName("Return token if email exists and password matches")
 	@Test
 	public void login() throws AccountNotFoundException {
 		User mockUser = getMockUser();
 		mockUser.setUserId(1);
 
-		LoginDto loginDto = new LoginDto(mockUser.getUsername(), "TestPassword1!");
+		LoginDto loginDto = new LoginDto(mockUser.getEmail(), "TestPassword1!");
 
-		when(uDao.getByUsername(loginDto.getUsername())).thenReturn(Optional.of(mockUser));
+		when(uDao.getByEmail(loginDto.getEmail())).thenReturn(Optional.of(mockUser));
 		when(jwtUtil.generateToken(mockUser)).thenReturn(token);
 
 		String result = us.login(loginDto);
@@ -354,30 +323,31 @@ public class UserServiceTest {
 		assertEquals(token, result);
 	}
 
-	@DisplayName("Return null if password incorrect")
+	@DisplayName("Return failure message if password incorrect")
 	@Test
 	public void loginIncorrectPassword() throws AccountNotFoundException {
 		User mockUser = getMockUser();
-		LoginDto loginDto = new LoginDto(mockUser.getUsername(), "TestPassword2!");
+		LoginDto loginDto = new LoginDto(mockUser.getEmail(), "TestPassword2!");
 
-		when(uDao.getByUsername(loginDto.getUsername())).thenReturn(Optional.of(mockUser));
+		when(uDao.getByEmail(loginDto.getEmail())).thenReturn(Optional.of(mockUser));
 
 		String result = us.login(loginDto);
 
-		assertNull(result);
-		verify(uDao, times(1)).getByUsername("test-user-username");
+		assertNotNull(result);
+		assertEquals("Login failed! Invalid email or password", result);
+		verify(uDao, times(1)).getByEmail(mockUser.getEmail());
 	}
 
-	@DisplayName("Throw AccountNotFoundException if username not found")
+	@DisplayName("Throw AccountNotFoundException if email not found")
 	@Test
 	public void loginAccountNotFound() {
 		User mockUser = getMockUser();
-		LoginDto loginDto = new LoginDto(mockUser.getUsername(), "TestPassword1!");
+		LoginDto loginDto = new LoginDto(mockUser.getEmail(), "TestPassword1!");
 
-		when(uDao.getByUsername(loginDto.getUsername())).thenReturn(Optional.empty());
+		when(uDao.getByEmail(loginDto.getEmail())).thenReturn(Optional.empty());
 
 		assertThrows(AccountNotFoundException.class, () -> us.login(loginDto));
-		verify(uDao, times(1)).getByUsername("test-user-username");
+		verify(uDao, times(1)).getByEmail(mockUser.getEmail());
 	}
 
 }

@@ -41,11 +41,11 @@ public class QuestionController {
 
 	/**
 	 * Creates a new question.
-	 * @param token
-	 * @param topicId
-	 * @param questionDto
-	 * @return Question
-	 * @throws AccountNotFoundException
+	 * @param token The user's Authorization token
+	 * @param topicId The ID of the topic associated with the question
+	 * @param questionDto DTO consisting of: question, answer
+	 * @return The newly created question
+	 * @throws AccountNotFoundException If the user is not found
 	 */
 	@PostMapping("create/{topicId}")
 	public ResponseEntity<Question> createQuestion(@RequestHeader("Authorization") String token,
@@ -56,7 +56,7 @@ public class QuestionController {
 
 	/**
 	 * Reads a question.
-	 * @param questionId
+	 * @param questionId The ID of the desired question
 	 * @return Question
 	 */
 	@GetMapping("{questionId}")
@@ -66,8 +66,9 @@ public class QuestionController {
 	}
 
 	/**
-	 * Reads all questions.
-	 * @return List<QuestionNoUserDto>
+	 * Reads all questions created by a user.
+	 * @return List<Question>
+	 * @throws AccountNotFoundException If the user is not found
 	 */
 	@GetMapping("user")
 	public ResponseEntity<List<QuestionNoUserDto>> getQuestionsByUser(@RequestHeader("Authorization") String token)
@@ -77,9 +78,9 @@ public class QuestionController {
 	}
 
 	/**
-	 * Reads all questions by topic.
-	 * @param topicId
-	 * @return List<QuestionNoTopicNoUserDto>
+	 * Reads all questions in a topic.
+	 * @param topicId The ID of the topic associated with the questions
+	 * @return List<Question>
 	 */
 	@GetMapping("/topic/{topicId}")
 	public ResponseEntity<List<QuestionNoTopicNoUserDto>> getQuestionByTopic(@PathVariable int topicId) {
@@ -88,9 +89,10 @@ public class QuestionController {
 	}
 
 	/**
-	 * Reads all questions by plan.
-	 * @param planId
-	 * @return List<QuestionNoUserDto>
+	 * Reads all questions in a plan.
+	 * @param planId The ID of the plan associated with the questions
+	 * @return List of questions. Each question states which topic it belongs to in the
+	 * plan.
 	 */
 	@GetMapping("plan/{planId}")
 	public ResponseEntity<List<QuestionNoUserDto>> getQuestionByPlan(@PathVariable int planId) {
@@ -99,9 +101,9 @@ public class QuestionController {
 	}
 
 	/**
-	 * Updates a question to be correct.
-	 * @param questionId
-	 * @return Question
+	 * Toggles a question's correctness status.
+	 * @param questionId The ID of the question to be updated
+	 * @return The updated question
 	 */
 	@PatchMapping("correct/{questionId}")
 	public ResponseEntity<Question> updateQuestionCorrect(@PathVariable int questionId) {
@@ -110,9 +112,10 @@ public class QuestionController {
 	}
 
 	/**
-	 * Toggles a question's correct status.
-	 * @param questionId
-	 * @return Question
+	 * Updates a question's content (either the question itself, or the answer).
+	 * @param questionId The ID of the question to be updated
+	 * @param questionDto A question object including all the fields to be updated
+	 * @return The updated question
 	 */
 	@PutMapping("{questionId}")
 	public ResponseEntity<Question> updateQuestionContent(@PathVariable int questionId,
@@ -123,8 +126,8 @@ public class QuestionController {
 
 	/**
 	 * Deletes a question.
-	 * @param questionId
-	 * @return String
+	 * @param questionId The ID of the question to be deleted
+	 * @return Successful deletion message; Failure message if error occurs
 	 */
 	@DeleteMapping("{questionId}")
 	public ResponseEntity<String> deleteQuestion(@PathVariable int questionId) {

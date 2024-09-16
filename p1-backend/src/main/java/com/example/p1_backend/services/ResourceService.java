@@ -21,11 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ResourceService {
 
-	private ResourceDao resourceDao;
+	private final ResourceDao resourceDao;
 
-	private TopicDao topicDao;
+	private final TopicDao topicDao;
 
-	private SubtopicDao subtopicDao;
+	private final SubtopicDao subtopicDao;
 
 	@Autowired
 	public ResourceService(ResourceDao resourceDao, TopicDao topicDao, SubtopicDao subtopicDao) {
@@ -35,10 +35,12 @@ public class ResourceService {
 	}
 
 	/**
-	 * Creates a new resource with no subtopic.
-	 * @param topicId
-	 * @param resourceDto
-	 * @return OutResourceDto
+	 * Creates a new resource on the topic level. Resources created with this method will
+	 * have no subtopic associated with them.
+	 * @param topicId The ID of the topic associated with the new resource
+	 * @param resourceDto DTO consisting of: resource title, description, type, URL
+	 * (optional)
+	 * @return Resource, including its relevant topic
 	 */
 	public OutResourceDto createResourceNoSubtopic(int topicId, InResourceDto resourceDto) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
@@ -64,11 +66,13 @@ public class ResourceService {
 	}
 
 	/**
-	 * Creates a new resource with a subtopic.
-	 * @param topicId
-	 * @param subtopicId
-	 * @param resourceDto
-	 * @return OutResourceDto
+	 * Creates a new resource on the subtopic level. Resources created with this method
+	 * will also have a topic associated with them.
+	 * @param topicId The ID of the topic associated with the resource
+	 * @param subtopicId The ID of the subtopic associated with the resource
+	 * @param resourceDto DTO consisting of: resource title, description, type, URL
+	 * (optional)
+	 * @return Resource, including relevant topic and subtopic
 	 */
 	public OutResourceDto createResourceSubtopic(int topicId, int subtopicId, InResourceDto resourceDto) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);
@@ -102,9 +106,9 @@ public class ResourceService {
 	}
 
 	/**
-	 * Reads a resource by id.
-	 * @param resourceId
-	 * @return OutResourceDto
+	 * Reads a resource by its ID.
+	 * @param resourceId The ID of the resource to search for in the database
+	 * @return Resource
 	 */
 	public OutResourceDto readResource(int resourceId) {
 		Optional<Resource> optResource = resourceDao.findById(resourceId);
@@ -127,10 +131,11 @@ public class ResourceService {
 	}
 
 	/**
-	 * Updates a resource.
-	 * @param resourceId
-	 * @param resourceDto
-	 * @return OutResourceDto
+	 * Updates a resource's content.
+	 * @param resourceId The ID of the resource to be updated
+	 * @param resourceDto A full/partial resource object containing all the fields to be
+	 * updated
+	 * @return The updated resource
 	 */
 	public OutResourceDto updateResource(int resourceId, InResourceDto resourceDto) {
 		Optional<Resource> optResource = resourceDao.findById(resourceId);

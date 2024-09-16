@@ -43,8 +43,8 @@ public class JwtUtil {
 		return Jwts.builder()
 			// Stores userId in the subject of the token
 			.subject(String.format("%s", user.getUserId()))
-			// Encodes username and roles in the claims of the token
-			.claim("username", user.getUsername())
+			// Encodes name and roles in the claims of the token
+			.claim("name", user.getName())
 			.claim("role", user.getRoles())
 			.issuer("project1team")
 			.issuedAt(new Date())
@@ -59,14 +59,9 @@ public class JwtUtil {
 			.parseInt(Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token).getPayload().getSubject());
 	}
 
-	// Extract username from JWT token
-	public String extractUsername(String token) {
-		return Jwts.parser()
-			.verifyWith(KEY)
-			.build()
-			.parseSignedClaims(token)
-			.getPayload()
-			.get("username", String.class);
+	// Extract name from JWT token
+	public String extractName(String token) {
+		return Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token).getPayload().get("name", String.class);
 	}
 
 	// Extract roles from JWT token

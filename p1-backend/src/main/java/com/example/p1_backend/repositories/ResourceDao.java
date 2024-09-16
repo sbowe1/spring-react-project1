@@ -11,8 +11,8 @@ import com.example.p1_backend.models.Resource;
 public interface ResourceDao extends JpaRepository<Resource, Integer> {
 
 	/**
-	 * Finds all resources by topic id.
-	 * @param topicId
+	 * Finds all resources by topic ID.
+	 * @param topicId The ID of the topic associated with the resource(s) in the database
 	 * @return List<Resource>
 	 */
 	List<Resource> findAllByTopicTopicId(int topicId);

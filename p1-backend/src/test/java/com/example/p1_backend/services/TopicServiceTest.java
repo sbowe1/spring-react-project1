@@ -42,17 +42,15 @@ public class TopicServiceTest {
 
 	/**
 	 * Creates a mock User object
-	 * 
 	 * @return User
 	 */
 	private User getMockUser() {
-		return new User("test-user-email@test.com", "test-user-password", "test-user-username", "ROLE_USER",
+		return new User("test-user-email@test.com", "test-user-password", "test-user-name", "ROLE_USER",
 				"Spring Boot Roadmap");
 	}
 
 	/**
 	 * Creates a mock Plan object
-	 * 
 	 * @return Plan
 	 */
 	public Plan getPlan() {
@@ -61,7 +59,6 @@ public class TopicServiceTest {
 
 	/**
 	 * Creates a mock Topic object
-	 * 
 	 * @return Topic
 	 */
 	public Topic getTopic() {

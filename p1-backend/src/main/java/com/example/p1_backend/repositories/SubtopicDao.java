@@ -11,8 +11,8 @@ import com.example.p1_backend.models.Subtopic;
 public interface SubtopicDao extends JpaRepository<Subtopic, Integer> {
 
 	/**
-	 * Finds all subtopics by topic id.
-	 * @param topicId
+	 * Finds all subtopics by its topic ID.
+	 * @param topicId The ID of the topic associated with the subtopic(s)
 	 * @return List<Subtopic>
 	 */
 	List<Subtopic> findAllByTopicTopicId(int topicId);
