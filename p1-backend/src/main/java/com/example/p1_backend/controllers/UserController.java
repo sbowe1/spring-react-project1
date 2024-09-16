@@ -39,8 +39,8 @@ public class UserController {
 	/**
 	 * Registers a new user. First checks that email is a valid email address and unique.
 	 * Finally, checks that password meets requirements.
-	 * @param registerDto email, password, name
-	 * @return String
+	 * @param registerDto DTO consisting of: email, password, name
+	 * @return Successful registration message
 	 */
 	@PostMapping("register")
 	public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
@@ -49,13 +49,13 @@ public class UserController {
 	}
 
 	/**
-	 * Views the profile of the user.
-	 * @param token
-	 * @return User
-	 * @throws AccountNotFoundException
+	 * Views the account details of the user.
+	 * @param token The user's Authorization token
+	 * @return User object, excluding its password
+	 * @throws AccountNotFoundException If the user is not found
 	 */
-	@GetMapping("profile")
-	public ResponseEntity<User> viewProfile(@RequestHeader("Authorization") String token)
+	@GetMapping("account-details")
+	public ResponseEntity<User> accountDetails(@RequestHeader("Authorization") String token)
 			throws AccountNotFoundException {
 		User user = us.findByUserId(token);
 		return new ResponseEntity<>(user, OK);
@@ -63,8 +63,8 @@ public class UserController {
 
 	/**
 	 * Views all users in the database.
-	 * @param token
-	 * @return String
+	 * @param token The user's Authorization token
+	 * @return List of all users in the database if the user has the role "ROLE_ADMIN"
 	 */
 	@GetMapping
 	public ResponseEntity<List<User>> viewAllUsers(@RequestHeader("Authorization") String token) {
@@ -73,11 +73,11 @@ public class UserController {
 	}
 
 	/**
-	 * Updates the user's profile.
-	 * @param token
-	 * @param updateUser
-	 * @return String
-	 * @throws AccountNotFoundException
+	 * Updates the user's account details.
+	 * @param token The user's Authorization token
+	 * @param updateUser A user object consisting of all fields to be updated
+	 * @return The user's updated Authorization token
+	 * @throws AccountNotFoundException If the user is not found
 	 */
 	@PutMapping("update")
 	public ResponseEntity<String> update(@RequestHeader("Authorization") String token, @RequestBody User updateUser)
@@ -88,9 +88,9 @@ public class UserController {
 
 	/**
 	 * Deletes the user's account.
-	 * @param token
-	 * @return String
-	 * @throws AccountNotFoundException
+	 * @param token The user's Authorization
+	 * @return Successful deletion message
+	 * @throws AccountNotFoundException If the user is not found
 	 */
 	@DeleteMapping
 	public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String token)
@@ -101,9 +101,9 @@ public class UserController {
 
 	/**
 	 * Logs in the user.
-	 * @param loginDto email, password
-	 * @return String
-	 * @throws AccountNotFoundException
+	 * @param loginDto DTO consisting of: email, password
+	 * @return The user's Authorization token; Failure message if password does not match
+	 * @throws AccountNotFoundException If the user is not found
 	 */
 	@PostMapping("login")
 	public ResponseEntity<String> login(@RequestBody LoginDto loginDto) throws AccountNotFoundException {

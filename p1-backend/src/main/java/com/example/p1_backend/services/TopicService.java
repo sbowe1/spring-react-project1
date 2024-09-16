@@ -18,9 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TopicService {
 
-	private TopicDao topicDao;
+	private final TopicDao topicDao;
 
-	private PlanDao planDao;
+	private final PlanDao planDao;
 
 	@Autowired
 	public TopicService(TopicDao topicDao, PlanDao planDao) {
@@ -30,9 +30,9 @@ public class TopicService {
 
 	/**
 	 * Creates a new topic.
-	 * @param planId
-	 * @param topicDto
-	 * @return Topic
+	 * @param planId The ID of the plan associated with the new topic
+	 * @param topicDto DTO consisting of: topic name, description
+	 * @return Newly created topic
 	 */
 	public Topic createTopic(int planId, InTopicDto topicDto) {
 		Optional<Plan> optPlan = planDao.findById(planId);
@@ -46,8 +46,8 @@ public class TopicService {
 	}
 
 	/**
-	 * Reads a topic by id.
-	 * @param topicId
+	 * Reads a topic by its ID.
+	 * @param topicId The ID of the topic to search for in the database
 	 * @return Topic
 	 */
 	public Topic findByTopicId(int topicId) {
@@ -61,9 +61,9 @@ public class TopicService {
 	}
 
 	/**
-	 * Updates a topic's status.
-	 * @param topicId
-	 * @return Topic
+	 * Toggles a topic's completion status.
+	 * @param topicId The ID of the topic to be updated
+	 * @return The updated topic
 	 */
 	public Topic update(int topicId) {
 		Optional<Topic> optTopic = topicDao.findById(topicId);

@@ -56,7 +56,7 @@ public class UserServiceTest {
 
 	/**
 	 * Creates a list of mock users
-	 * @param size
+	 * @param size The size of the list of users to create
 	 * @return List<User>
 	 */
 	private Iterable<User> getMockUsers(int size) {
@@ -323,7 +323,7 @@ public class UserServiceTest {
 		assertEquals(token, result);
 	}
 
-	@DisplayName("Return null if password incorrect")
+	@DisplayName("Return failure message if password incorrect")
 	@Test
 	public void loginIncorrectPassword() throws AccountNotFoundException {
 		User mockUser = getMockUser();
@@ -333,7 +333,8 @@ public class UserServiceTest {
 
 		String result = us.login(loginDto);
 
-		assertNull(result);
+		assertNotNull(result);
+		assertEquals("Login failed! Invalid email or password", result);
 		verify(uDao, times(1)).getByEmail(mockUser.getEmail());
 	}
 

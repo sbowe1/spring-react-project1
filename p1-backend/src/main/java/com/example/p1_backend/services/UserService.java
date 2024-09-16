@@ -40,8 +40,8 @@ public class UserService {
 	/**
 	 * Finds all users in the database. Only users with the role "ROLE_ADMIN" are allowed
 	 * to access this method.
-	 * @param token Authorization token
-	 * @return List of Users in the database
+	 * @param token The user's Authorization token
+	 * @return List of users in the database
 	 */
 	public List<User> findAll(String token) {
 		ArrayList<String> roles = jwtUtil.extractRoles(token.substring(7));
@@ -60,7 +60,7 @@ public class UserService {
 	 * Requirements: - 1 Upper Case Letter - 1 Special Character - No White Space - 8-64
 	 * Characters
 	 * @param registerDto DTO consisting of: email, password, name
-	 * @return Successful creation String
+	 * @return Successful registration message
 	 */
 	public String register(RegisterDto registerDto) {
 		// validate email is a valid email address and unique
@@ -105,8 +105,8 @@ public class UserService {
 	/**
 	 * Finds a user by its userId. Only the user with the userId in the token is allowed
 	 * to access this method.
-	 * @param token Authorization token
-	 * @return User object
+	 * @param token The user's Authorization token
+	 * @return User object, excluding its password
 	 */
 	public User findByUserId(String token) throws AccountNotFoundException {
 		// Substring to remove "Bearer " from the token String
@@ -123,10 +123,10 @@ public class UserService {
 	/**
 	 * Updates a user's account information. Only the user with the userId in the token is
 	 * allowed to access this method.
-	 * @param token Authorization token
-	 * @param updatedUser Full/Partial User object with fields to be updated
-	 * @return User's updated Authorization token
-	 * @throws AccountNotFoundException If the User object is not found
+	 * @param token The user's Authorization token
+	 * @param updatedUser A full/partial user object with only the fields to be updated
+	 * @return The user's updated Authorization token
+	 * @throws AccountNotFoundException If the user is not found
 	 */
 	public String update(String token, User updatedUser) throws AccountNotFoundException {
 		int userId = jwtUtil.extractUserId(token.substring(7));
@@ -175,9 +175,9 @@ public class UserService {
 	/**
 	 * Deletes a user's account. Only the user with the userId in the token is allowed to
 	 * access this method.
-	 * @param token Authorization token
+	 * @param token The user's Authorization token
 	 * @return Successful deletion String
-	 * @throws AccountNotFoundException If the User object is not found
+	 * @throws AccountNotFoundException If the user is not found
 	 */
 	@Transactional
 	public String delete(String token) throws AccountNotFoundException {
@@ -203,9 +203,9 @@ public class UserService {
 	/**
 	 * Logs in a user. If the user is found in the database and the password matches, an
 	 * authorization token is generated.
-	 * @param loginDto DTO consisting of: name, password
-	 * @return User's Authorization token
-	 * @throws AccountNotFoundException If the User object is not found
+	 * @param loginDto DTO consisting of: email, password
+	 * @return The user's Authorization token; Failure message if password does not match
+	 * @throws AccountNotFoundException If the user is not found
 	 */
 	public String login(LoginDto loginDto) throws AccountNotFoundException {
 		Optional<User> optUser = uDao.getByEmail(loginDto.getEmail());
@@ -222,7 +222,7 @@ public class UserService {
 		}
 		else {
 			log.warn("Login failed; Invalid name or password");
-			return null;
+			return "Login failed! Invalid email or password";
 		}
 	}
 

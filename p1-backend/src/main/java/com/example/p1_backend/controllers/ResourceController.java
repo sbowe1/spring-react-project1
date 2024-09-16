@@ -31,10 +31,12 @@ public class ResourceController {
 	}
 
 	/**
-	 * Creates a new resource without a subtopic.
-	 * @param topicId
-	 * @param resourceDto
-	 * @return OutResourceDto
+	 * Creates a new resource on the topic level. Resources created with this method will
+	 * have no subtopic associated with them.
+	 * @param topicId The ID of the topic associated with the new resource
+	 * @param resourceDto DTO consisting of: resource title, description, type, URL
+	 * (optional)
+	 * @return Resource, including its relevant topic
 	 */
 	@PostMapping("{topicId}")
 	public ResponseEntity<OutResourceDto> createNoSubtopic(@PathVariable int topicId,
@@ -44,11 +46,13 @@ public class ResourceController {
 	}
 
 	/**
-	 * Creates a new resource with a subtopic.
-	 * @param topicId
-	 * @param subtopicId
-	 * @param resourceDto
-	 * @return OutResourceDto
+	 * Creates a new resource on the subtopic level. Resources created with this method
+	 * will also have a topic associated with them.
+	 * @param topicId The ID of the topic associated with the resource
+	 * @param subtopicId The ID of the subtopic associated with the resource
+	 * @param resourceDto DTO consisting of: resource title, description, type, URL
+	 * (optional)
+	 * @return Resource, including its relevant topic and subtopic
 	 */
 	@PostMapping("{topicId}/{subtopicId}")
 	public ResponseEntity<OutResourceDto> createWithSubtopic(@PathVariable int topicId, @PathVariable int subtopicId,
@@ -58,9 +62,9 @@ public class ResourceController {
 	}
 
 	/**
-	 * Reads a resource by id.
-	 * @param resourceId
-	 * @return OutResourceDto
+	 * Reads a resource by its ID.
+	 * @param resourceId The ID of the desired resource
+	 * @return Resource
 	 */
 	@GetMapping("{resourceId}")
 	public ResponseEntity<OutResourceDto> readResource(@PathVariable int resourceId) {
@@ -69,10 +73,10 @@ public class ResourceController {
 	}
 
 	/**
-	 * Updates a resource.
-	 * @param resourceId
-	 * @param inResourceDto
-	 * @return OutResourceDto
+	 * Updates a resource's content.
+	 * @param resourceId The ID of the resource to be updated
+	 * @param inResourceDto A resource object consisting of all the fields to be updated
+	 * @return The updated resource
 	 */
 	@PatchMapping("{resourceId}")
 	public ResponseEntity<OutResourceDto> updateResoure(@PathVariable int resourceId,

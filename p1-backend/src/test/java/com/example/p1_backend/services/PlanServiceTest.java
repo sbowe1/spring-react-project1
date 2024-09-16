@@ -87,7 +87,7 @@ public class PlanServiceTest {
 		Plan mockPlan = new Plan(name, mockUser);
 		mockPlan.setPlanId(1);
 
-		when(planDao.getByName(name)).thenReturn(Optional.empty());
+		when(planDao.getByNameAndUserUserId(anyString(), anyInt())).thenReturn(Optional.empty());
 		when(jwtUtil.extractUserId(anyString())).thenReturn(mockUser.getUserId());
 		when(userDao.findById(anyInt())).thenReturn(Optional.of(mockUser));
 		when(planDao.save(any(Plan.class))).thenReturn(mockPlan);
@@ -106,10 +106,12 @@ public class PlanServiceTest {
 		User mockUser = getMockUser();
 		Plan mockPlan = new Plan(name, mockUser);
 
-		when(planDao.getByName(name)).thenReturn(Optional.of(mockPlan));
+		when(jwtUtil.extractUserId(anyString())).thenReturn(mockUser.getUserId());
+		when(userDao.findById(anyInt())).thenReturn(Optional.of(mockUser));
+		when(planDao.getByNameAndUserUserId(anyString(), anyInt())).thenReturn(Optional.of(mockPlan));
 
 		assertThrows(KeyAlreadyExistsException.class, () -> ps.createPlan("Bearer " + token, name));
-		verify(planDao, times(1)).getByName(name);
+		verify(planDao, times(1)).getByNameAndUserUserId(name, 0);
 	}
 
 	@DisplayName("Throws AccountNotFoundException when creating a plan for a user that does not exist")
@@ -119,12 +121,10 @@ public class PlanServiceTest {
 		User mockUser = getMockUser();
 		mockUser.setUserId(1);
 
-		when(planDao.getByName(name)).thenReturn(Optional.empty());
 		when(jwtUtil.extractUserId(anyString())).thenReturn(mockUser.getUserId());
 		when(userDao.findById(anyInt())).thenReturn(Optional.empty());
 
 		assertThrows(AccountNotFoundException.class, () -> ps.createPlan("Bearer " + token, name));
-		verify(planDao, times(1)).getByName(name);
 		verify(jwtUtil, times(1)).extractUserId(token);
 		verify(userDao, times(1)).findById(1);
 	}

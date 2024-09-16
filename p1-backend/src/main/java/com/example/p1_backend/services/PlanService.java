@@ -57,23 +57,24 @@ public class PlanService {
 
 	/**
 	 * Creates a new plan.
-	 * @param token
-	 * @param name
-	 * @return Plan
-	 * @throws AccountNotFoundException
+	 * @param token The user's Authorization token
+	 * @param name The name of the new plan
+	 * @return The newly created plan
+	 * @throws AccountNotFoundException If the user is not found
 	 */
 	public Plan createPlan(String token, String name) throws AccountNotFoundException {
-		Optional<Plan> optPlan = planDao.getByName(name);
-		if (optPlan.isPresent()) {
-			log.warn("That plan already exists");
-			throw new KeyAlreadyExistsException("That plan already exists");
-		}
-
 		int userId = jwtUtil.extractUserId(token.substring(7));
 
 		Optional<User> optUser = userDao.findById(userId);
 		if (optUser.isEmpty()) {
 			throw new AccountNotFoundException("User with userId: " + userId + " not found");
+		}
+
+		// Ensuring user doesn't already have a plan with that name
+		Optional<Plan> optPlan = planDao.getByNameAndUserUserId(name, userId);
+		if (optPlan.isPresent()) {
+			log.warn("That plan already exists");
+			throw new KeyAlreadyExistsException("That plan already exists");
 		}
 
 		log.info("Plan: {} created successfully", name);
@@ -88,8 +89,8 @@ public class PlanService {
 	}
 
 	/**
-	 * Reads a plan by id.
-	 * @param planId
+	 * Reads a plan by its ID.
+	 * @param planId The ID of the plan to search for in the database
 	 * @return Plan
 	 */
 	public Plan readPlan(int planId) {
@@ -103,8 +104,13 @@ public class PlanService {
 	}
 
 	/**
-	 * Reads a plan's contents.
-	 * @return PlanContent - Plan with List of its Topics and Subtopics
+	 * Reads a plan's contents. The contents are a list of all topics, subtopics, and
+	 * resources associated with the plan. Topics and its resources are listed first,
+	 * followed by the topic's subtopics and their resources. This pattern is repeated
+	 * until all topics and subtopics in the plan have been covered.
+	 * @param token The user's Authorization token
+	 * @param planId The ID of the plan to search for in the database
+	 * @return Plan with contents
 	 */
 	public PlanContent readPlanContents(String token, int planId) {
 		int userId = jwtUtil.extractUserId(token.substring(7));
@@ -157,10 +163,10 @@ public class PlanService {
 	}
 
 	/**
-	 * Deletes a plan by id.
-	 * @param planId
-	 * @return String
-	 * @throws AccountNotFoundException
+	 * Deletes a plan by its ID.
+	 * @param planId The ID of the plan to be deleted
+	 * @return Successful deletion message; Failure message if an error occurs
+	 * @throws AccountNotFoundException If the user is not found
 	 */
 	public String deletePlan(int planId) throws AccountNotFoundException {
 		Optional<Plan> optPlan = planDao.findById(planId);

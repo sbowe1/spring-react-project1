@@ -11,15 +11,15 @@ import com.example.p1_backend.models.Question;
 public interface QuestionDao extends JpaRepository<Question, Integer> {
 
 	/**
-	 * Finds all questions by user id.
-	 * @param userId
+	 * Finds all questions by user ID.
+	 * @param userId The ID of the user associated with the question(s)
 	 * @return List<Question>
 	 */
 	List<Question> findAllByUserUserId(int userId);
 
 	/**
-	 * Finds all questions by topic id.
-	 * @param topicId
+	 * Finds all questions by topic ID.
+	 * @param topicId The ID of the topic associated with the question(s)
 	 * @return List<Question>
 	 */
 	List<Question> findAllByTopicTopicId(int topicId);

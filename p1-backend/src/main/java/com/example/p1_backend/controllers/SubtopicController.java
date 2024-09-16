@@ -32,9 +32,9 @@ public class SubtopicController {
 
 	/**
 	 * Creates a new subtopic.
-	 * @param topicId
-	 * @param subtopicDto
-	 * @return Subtopic
+	 * @param topicId The ID of the topic associated with the new subtopic
+	 * @param subtopicDto DTO consisting of: subtopic title, description
+	 * @return Newly created subtopic
 	 */
 	@PostMapping("create/{topicId}")
 	public ResponseEntity<Subtopic> create(@PathVariable int topicId, @RequestBody InSubtopicDto subtopicDto) {
@@ -43,8 +43,8 @@ public class SubtopicController {
 	}
 
 	/**
-	 * Reads a subtopic by id.
-	 * @param subtopicId
+	 * Reads a subtopic by its ID.
+	 * @param subtopicId The ID of the desired subtopic
 	 * @return Subtopic
 	 */
 	@GetMapping("{subtopicId}")
@@ -54,9 +54,9 @@ public class SubtopicController {
 	}
 
 	/**
-	 * Toggles the Subtopic's complete status.
-	 * @param subtopicId
-	 * @return Subtopic
+	 * Toggles the subtopic's completion status.
+	 * @param subtopicId The ID of the subtopic to be updated
+	 * @return The updated subtopic
 	 */
 	@PatchMapping("complete/{subtopicId}")
 	public ResponseEntity<Subtopic> updateSubtopic(@PathVariable int subtopicId) {
